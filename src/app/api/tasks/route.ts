@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createTaskSchema } from '@/lib/validations'
 
 // Créer une tâche
 export async function POST(request: Request) {
@@ -9,12 +10,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
-  const { title, description, colocId, assignedToId, dueDate, recurrence, difficulty } =
-    await request.json()
-
-  if (!title || !colocId) {
-    return NextResponse.json({ error: 'Titre et coloc requis' }, { status: 400 })
+  const result = createTaskSchema.safeParse(await request.json())
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
+  const { title, description, colocId, assignedToId, dueDate, recurrence, difficulty } = result.data
 
   // Vérifier que l'user est membre de la coloc
   const membership = await prisma.userColoc.findUnique({
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     data: {
       title,
       description,
-      difficulty: difficulty || 'medium',
+      difficulty,
       colocId,
       assignedToId,
       dueDate: dueDate ? new Date(dueDate) : null,

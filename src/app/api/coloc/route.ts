@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { createColocSchema } from '@/lib/validations'
 
 // Créer une colocation
 export async function POST(request: Request) {
@@ -9,10 +10,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
-  const { name } = await request.json()
-  if (!name) {
-    return NextResponse.json({ error: 'Nom requis' }, { status: 400 })
+  const result = createColocSchema.safeParse(await request.json())
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
+  const { name } = result.data
 
   const coloc = await prisma.colocation.create({
     data: {

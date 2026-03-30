@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { api } from '@/lib/api'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -16,20 +17,13 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
 
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    })
-
-    if (!res.ok) {
-      const data = await res.json()
-      setError(data.error || 'Erreur lors de l\'inscription')
+    try {
+      await api.post('/api/auth/register', { username, password })
+      router.push('/login')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de l\'inscription')
       setLoading(false)
-      return
     }
-
-    router.push('/login')
   }
 
   return (

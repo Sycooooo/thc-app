@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
+import { api } from '@/lib/api'
 import type { Member } from '@/types'
 
 export default function AddTaskForm({
@@ -26,18 +26,14 @@ export default function AddTaskForm({
     e.preventDefault()
     setLoading(true)
 
-    await fetch('/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title,
-        description: description || null,
-        colocId,
-        assignedToId: assignedToId || null,
-        dueDate: dueDate || null,
-        recurrence: recurrence || null,
-        difficulty,
-      }),
+    await api.post('/api/tasks', {
+      title,
+      description: description || null,
+      colocId,
+      assignedToId: assignedToId || null,
+      dueDate: dueDate || null,
+      recurrence: recurrence || null,
+      difficulty,
     })
 
     setTitle('')

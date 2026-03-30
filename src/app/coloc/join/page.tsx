@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { api } from '@/lib/api'
 
 export default function JoinColocPage() {
   const router = useRouter()
@@ -15,21 +16,13 @@ export default function JoinColocPage() {
     setLoading(true)
     setError('')
 
-    const res = await fetch('/api/coloc/join', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inviteCode: code.trim() }),
-    })
-
-    if (!res.ok) {
-      const data = await res.json()
-      setError(data.error || 'Code invalide')
+    try {
+      const coloc = await api.post('/api/coloc/join', { inviteCode: code.trim() })
+      router.push(`/coloc/${coloc.id}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Code invalide')
       setLoading(false)
-      return
     }
-
-    const coloc = await res.json()
-    router.push(`/coloc/${coloc.id}`)
   }
 
   return (

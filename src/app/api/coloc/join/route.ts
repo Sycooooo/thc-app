@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { joinColocSchema } from '@/lib/validations'
 
 export async function POST(request: Request) {
   const session = await auth()
@@ -8,10 +9,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
-  const { inviteCode } = await request.json()
-  if (!inviteCode) {
-    return NextResponse.json({ error: 'Code requis' }, { status: 400 })
+  const result = joinColocSchema.safeParse(await request.json())
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
+  const { inviteCode } = result.data
 
   const coloc = await prisma.colocation.findUnique({ where: { inviteCode } })
   if (!coloc) {

@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { api } from '@/lib/api'
 
 export default function AvatarUpload({
   currentAvatar,
@@ -27,13 +28,11 @@ export default function AvatarUpload({
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const res = await fetch('/api/profile/avatar', {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (res.ok) {
+    try {
+      await api.upload('/api/profile/avatar', formData)
       router.refresh()
+    } catch {
+      // Erreur silencieuse pour l'instant
     }
     setLoading(false)
   }

@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { registerSchema } from '@/lib/validations'
 
 export async function POST(request: Request) {
-  const { username, password } = await request.json()
-
-  if (!username || !password) {
-    return NextResponse.json({ error: 'Champs manquants' }, { status: 400 })
+  const result = registerSchema.safeParse(await request.json())
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
-
-  if (username.length < 3) {
-    return NextResponse.json({ error: 'Identifiant trop court (3 caractères min)' }, { status: 400 })
-  }
+  const { username, password } = result.data
 
   const exists = await prisma.user.findUnique({ where: { username } })
   if (exists) {

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { api } from '@/lib/api'
 
 export default function NewColocPage() {
   const router = useRouter()
@@ -15,21 +16,13 @@ export default function NewColocPage() {
     setLoading(true)
     setError('')
 
-    const res = await fetch('/api/coloc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
-    })
-
-    if (!res.ok) {
-      const data = await res.json()
-      setError(data.error || 'Erreur')
+    try {
+      const coloc = await api.post('/api/coloc', { name })
+      router.push(`/coloc/${coloc.id}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur')
       setLoading(false)
-      return
     }
-
-    const coloc = await res.json()
-    router.push(`/coloc/${coloc.id}`)
   }
 
   return (

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { XP_REWARDS, DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/lib/xp'
+import { api } from '@/lib/api'
 import type { Task } from '@/types'
 
 export default function TaskList({
@@ -22,8 +23,7 @@ export default function TaskList({
 
   async function completeTask(taskId: string, difficulty: string) {
     setCompleting(taskId)
-    const res = await fetch(`/api/tasks/${taskId}/complete`, { method: 'POST' })
-    const data = await res.json()
+    const data = await api.post(`/api/tasks/${taskId}/complete`)
     setXpPopup({ taskId, xp: data.xpGained })
     setTimeout(() => {
       setXpPopup(null)
