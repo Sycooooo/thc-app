@@ -9,7 +9,13 @@ class ApiError extends Error {
 }
 
 async function handleResponse(res: Response) {
-  const data = await res.json()
+  const text = await res.text()
+  let data
+  try {
+    data = text ? JSON.parse(text) : {}
+  } catch {
+    throw new ApiError(res.status, 'Réponse invalide du serveur')
+  }
   if (!res.ok) {
     throw new ApiError(res.status, data.error || 'Une erreur est survenue')
   }
@@ -19,11 +25,12 @@ async function handleResponse(res: Response) {
 export const api = {
   // Pour envoyer des données JSON (créer une tâche, s'inscrire, etc.)
   async post(url: string, body?: Record<string, unknown>) {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: body ? JSON.stringify(body) : undefined,
-    })
+    const options: RequestInit = { method: 'POST' }
+    if (body) {
+      options.headers = { 'Content-Type': 'application/json' }
+      options.body = JSON.stringify(body)
+    }
+    const res = await fetch(url, options)
     return handleResponse(res)
   },
 

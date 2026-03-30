@@ -30,19 +30,24 @@ export default function TaskList({
 
   async function completeTask(taskId: string) {
     setCompleting(taskId)
-    const data = await api.post(`/api/tasks/${taskId}/complete`)
-    setPopup({
-      taskId,
-      xp: data.xpGained,
-      coins: data.coinsGained,
-      streak: data.streak,
-      multiplier: data.streakMultiplier,
-      achievements: data.newAchievements || [],
-    })
-    setTimeout(() => {
-      setPopup(null)
+    try {
+      const data = await api.post(`/api/tasks/${taskId}/complete`)
+      setPopup({
+        taskId,
+        xp: data.xpGained,
+        coins: data.coinsGained,
+        streak: data.streak,
+        multiplier: data.streakMultiplier,
+        achievements: data.newAchievements || [],
+      })
+      setTimeout(() => {
+        setPopup(null)
+        router.refresh()
+      }, 2500)
+    } catch (err) {
+      console.error('Erreur complétion tâche:', err)
       router.refresh()
-    }, 2500)
+    }
     setCompleting(null)
   }
 

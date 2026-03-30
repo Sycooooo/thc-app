@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { XP_REWARDS, COIN_REWARDS, getStreakMultiplier } from '@/lib/xp'
+import { XP_REWARDS, COIN_REWARDS, getStreakMultiplier, getLevel } from '@/lib/xp'
 
 export async function POST(
   _request: Request,
@@ -67,13 +67,13 @@ export async function POST(
   const xpGained = Math.round(baseXp * streakMultiplier)
   const coinsGained = COIN_REWARDS[task.difficulty] ?? 0
 
-  // === Mise à jour en base (tout d'un coup, de façon atomique) ===
-  await prisma.$transaction([
-    prisma.task.update({ where: { id }, data: { status: 'done' } }),
-    prisma.taskHistory.create({
+  // === Mise à jour en base ===
+  try {
+    await prisma.task.update({ where: { id }, data: { status: 'done' } })
+    await prisma.taskHistory.create({
       data: { taskId: id, completedById: session.user.id },
-    }),
-    prisma.user.update({
+    })
+    await prisma.user.update({
       where: { id: session.user.id },
       data: {
         xp: { increment: xpGained },
@@ -82,16 +82,24 @@ export async function POST(
         longestStreak: newLongestStreak,
         lastActiveDate: today,
       },
-    }),
-    prisma.score.upsert({
+    })
+    await prisma.score.upsert({
       where: { userId_colocId: { userId: session.user.id, colocId: task.colocId } },
       update: { points: { increment: xpGained } },
       create: { userId: session.user.id, colocId: task.colocId, points: xpGained },
-    }),
-  ])
+    })
+  } catch (err) {
+    console.error('Erreur mise à jour:', err)
+    return NextResponse.json({ error: 'Erreur lors de la mise à jour' }, { status: 500 })
+  }
 
   // === Vérification des achievements ===
-  const newAchievements = await checkAchievements(session.user.id)
+  let newAchievements: { name: string; icon: string; reward: number }[] = []
+  try {
+    newAchievements = await checkAchievements(session.user.id)
+  } catch (err) {
+    console.error('Erreur achievements:', err)
+  }
 
   return NextResponse.json({
     success: true,
@@ -137,11 +145,9 @@ async function checkAchievements(userId: string) {
       case 'streak':
         earned = user.currentStreak >= target
         break
-      case 'level': {
-        const { getLevel } = await import('@/lib/xp')
+      case 'level':
         earned = getLevel(user.xp) >= target
         break
-      }
       case 'coins':
         earned = user.currency >= target
         break
