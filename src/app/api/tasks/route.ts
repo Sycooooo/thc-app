@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
-  const { title, description, colocId, assignedToId, dueDate, recurrence } =
+  const { title, description, colocId, assignedToId, dueDate, recurrence, difficulty } =
     await request.json()
 
   if (!title || !colocId) {
@@ -28,12 +28,13 @@ export async function POST(request: Request) {
     data: {
       title,
       description,
+      difficulty: difficulty || 'medium',
       colocId,
       assignedToId,
       dueDate: dueDate ? new Date(dueDate) : null,
       recurrence,
     },
-    include: { assignedTo: { select: { id: true, name: true, avatar: true } } },
+    include: { assignedTo: { select: { id: true, username: true, avatar: true } } },
   })
 
   return NextResponse.json(task, { status: 201 })
@@ -62,7 +63,7 @@ export async function GET(request: Request) {
 
   const tasks = await prisma.task.findMany({
     where: { colocId },
-    include: { assignedTo: { select: { id: true, name: true, avatar: true } } },
+    include: { assignedTo: { select: { id: true, username: true, avatar: true } } },
     orderBy: [{ status: 'asc' }, { dueDate: 'asc' }, { createdAt: 'desc' }],
   })
 

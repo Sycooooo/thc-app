@@ -3,15 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-type Task = {
-  id: string
-  title: string
-  description: string | null
-  status: string
-  recurrence: string | null
-  dueDate: Date | null
-  assignedTo: { id: string; name: string; avatar: string | null } | null
-}
+import { XP_REWARDS, DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/lib/xp'
+import type { Task } from '@/types'
 
 export default function TaskList({
   tasks,
@@ -22,14 +15,20 @@ export default function TaskList({
 }) {
   const router = useRouter()
   const [completing, setCompleting] = useState<string | null>(null)
+  const [xpPopup, setXpPopup] = useState<{ taskId: string; xp: number } | null>(null)
 
   const pending = tasks.filter((t) => t.status === 'pending')
   const done = tasks.filter((t) => t.status === 'done')
 
-  async function completeTask(taskId: string) {
+  async function completeTask(taskId: string, difficulty: string) {
     setCompleting(taskId)
-    await fetch(`/api/tasks/${taskId}/complete`, { method: 'POST' })
-    router.refresh()
+    const res = await fetch(`/api/tasks/${taskId}/complete`, { method: 'POST' })
+    const data = await res.json()
+    setXpPopup({ taskId, xp: data.xpGained })
+    setTimeout(() => {
+      setXpPopup(null)
+      router.refresh()
+    }, 1500)
     setCompleting(null)
   }
 
@@ -57,12 +56,19 @@ export default function TaskList({
             {pending.map((task) => (
               <div
                 key={task.id}
-                className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4"
+                className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4 relative overflow-hidden"
               >
+                {/* Popup XP */}
+                {xpPopup?.taskId === task.id && (
+                  <div className="absolute inset-0 bg-indigo-600 flex items-center justify-center rounded-xl animate-pulse">
+                    <span className="text-white font-bold text-xl">+{xpPopup.xp} XP ⭐</span>
+                  </div>
+                )}
+
                 <button
-                  onClick={() => completeTask(task.id)}
+                  onClick={() => completeTask(task.id, task.difficulty)}
                   disabled={completing === task.id}
-                  className="w-6 h-6 rounded-full border-2 border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition flex-shrink-0 disabled:opacity-50"
+                  className="w-7 h-7 rounded-full border-2 border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition flex-shrink-0 disabled:opacity-50"
                   title="Marquer comme fait"
                 />
                 <div className="flex-1 min-w-0">
@@ -70,10 +76,13 @@ export default function TaskList({
                   {task.description && (
                     <p className="text-sm text-gray-500 mt-0.5">{task.description}</p>
                   )}
-                  <div className="flex items-center gap-3 mt-1">
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${DIFFICULTY_COLORS[task.difficulty]}`}>
+                      {DIFFICULTY_LABELS[task.difficulty]} · +{XP_REWARDS[task.difficulty]} XP
+                    </span>
                     {task.assignedTo && (
                       <span className="text-xs text-gray-500">
-                        👤 {task.assignedTo.name}
+                        👤 {task.assignedTo.username}
                         {task.assignedTo.id === currentUserId && ' (toi)'}
                       </span>
                     )}
