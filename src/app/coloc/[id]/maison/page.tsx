@@ -39,8 +39,8 @@ export default async function MaisonPage({
   })
 
   return (
-    <div className="min-h-screen bg-bg">
-      <header className="bg-bg-secondary border-b border-b px-6 py-4 flex items-center justify-between">
+    <div className="h-screen bg-bg flex flex-col overflow-hidden">
+      <header className="flex-shrink-0 bg-bg-secondary border-b border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←
@@ -59,21 +59,19 @@ export default async function MaisonPage({
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-6">
-        <InteractiveHouse
-          tasks={tasks.map((t) => ({
-            id: t.id,
-            title: t.title,
-            description: t.description,
-            status: t.status,
-            difficulty: t.difficulty,
-            room: t.room,
-            assignedTo: t.assignedTo,
-          }))}
-          colocId={id}
-          currentUserId={session.user!.id}
-        />
-      </main>
+      <InteractiveHouse
+        tasks={tasks.map((t) => ({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          status: t.status,
+          difficulty: t.difficulty,
+          room: t.room,
+          assignedTo: t.assignedTo,
+        }))}
+        colocId={id}
+        currentUserId={session.user!.id}
+      />
     </div>
   )
 }
