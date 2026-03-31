@@ -1,30 +1,144 @@
 @import "tailwindcss";
 
+/* === Dark mode variant pour Tailwind v4 === */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* === Thème Light (cosy warm) === */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f5f0e8;
+  --bg-secondary: #ede6d8;
+  --surface: #fffbf5;
+  --surface-hover: #f7f2ea;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-secondary: #ea580c;
+  --accent-secondary-hover: #dc4e04;
+  --accent-tertiary: #2563eb;
+  --text: #1c1917;
+  --text-muted: #78716c;
+  --text-faint: #a8a29e;
+  --border: #e7e0d5;
+  --border-hover: #d6cfc4;
+  --shadow: 0 4px 20px rgba(120, 80, 40, 0.08);
+  --shadow-lg: 0 8px 32px rgba(120, 80, 40, 0.12);
+  --input-bg: #fffbf5;
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --warning-bg: #fef9c3;
+  --scrollbar-thumb: #d6cfc4;
+  --scrollbar-hover: #bfb8ad;
+  --grain-opacity: 0.03;
 }
 
+/* === Thème Dark (Midnight Aesthetic) === */
+.dark {
+  --bg: #0d0d0d;
+  --bg-secondary: #141420;
+  --surface: #1c1c2e;
+  --surface-hover: #252540;
+  --accent: #a855f7;
+  --accent-hover: #9333ea;
+  --accent-secondary: #f97316;
+  --accent-secondary-hover: #ea580c;
+  --accent-tertiary: #38bdf8;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+  --border: #2d2d3d;
+  --border-hover: #3d3d50;
+  --shadow: 0 4px 30px rgba(168, 85, 247, 0.15);
+  --shadow-lg: 0 8px 40px rgba(168, 85, 247, 0.2);
+  --input-bg: #1c1c2e;
+  --success: #4ade80;
+  --success-bg: rgba(74, 222, 128, 0.1);
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.1);
+  --warning-bg: rgba(250, 204, 21, 0.1);
+  --scrollbar-thumb: #2d2d3d;
+  --scrollbar-hover: #3d3d50;
+  --grain-opacity: 0.05;
+}
+
+/* === Tailwind theme tokens === */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-bg: var(--bg);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-secondary-hover: var(--accent-secondary-hover);
+  --color-accent-tertiary: var(--accent-tertiary);
+  --color-t-primary: var(--text);
+  --color-t-muted: var(--text-muted);
+  --color-t-faint: var(--text-faint);
+  --color-b: var(--border);
+  --color-b-hover: var(--border-hover);
+  --color-input-bg: var(--input-bg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-warning-bg: var(--warning-bg);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-bebas);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #171717;
-  }
-}
-
-input, select, textarea {
-  color: #171717;
-}
-
+/* === Base styles === */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Film grain overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Inputs adaptatifs */
+input, select, textarea {
+  color: var(--text);
+  background: var(--input-bg);
+}
+
+/* Placeholder */
+input::placeholder, textarea::placeholder {
+  color: var(--text-faint);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+/* Selection */
+::selection {
+  background: var(--accent);
+  color: white;
 }

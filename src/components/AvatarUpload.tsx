@@ -41,7 +41,7 @@ export default function AvatarUpload({
     <div className="relative">
       <button
         onClick={() => inputRef.current?.click()}
-        className="relative w-24 h-24 rounded-full overflow-hidden bg-indigo-100 flex items-center justify-center hover:opacity-80 transition group"
+        className="relative w-24 h-24 rounded-full overflow-hidden bg-accent/20 flex items-center justify-center hover:opacity-80 transition group"
         title="Changer la photo"
       >
         {preview ? (
@@ -52,7 +52,7 @@ export default function AvatarUpload({
             className="object-cover"
           />
         ) : (
-          <span className="text-3xl font-bold text-indigo-600">
+          <span className="text-3xl font-bold text-accent">
             {username[0].toUpperCase()}
           </span>
         )}

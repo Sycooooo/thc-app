@@ -63,9 +63,9 @@ export const DIFFICULTY_LABELS: Record<string, string> = {
 }
 
 export const DIFFICULTY_COLORS: Record<string, string> = {
-  easy: 'bg-green-100 text-green-700',
-  medium: 'bg-yellow-100 text-yellow-700',
-  hard: 'bg-red-100 text-red-700',
+  easy: 'bg-green-500/15 text-green-400 dark:bg-green-500/15 dark:text-green-400',
+  medium: 'bg-yellow-500/15 text-yellow-600 dark:bg-yellow-500/15 dark:text-yellow-400',
+  hard: 'bg-red-500/15 text-red-600 dark:bg-red-500/15 dark:text-red-400',
 }
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -100,8 +100,8 @@ export const RARITY_LABELS: Record<string, string> = {
 }
 
 export const RARITY_COLORS: Record<string, string> = {
-  common: 'bg-gray-100 text-gray-700',
-  rare: 'bg-blue-100 text-blue-700',
-  epic: 'bg-purple-100 text-purple-700',
-  legendary: 'bg-amber-100 text-amber-700',
+  common: 'bg-gray-500/15 text-gray-600 dark:text-gray-400',
+  rare: 'bg-blue-500/15 text-blue-600 dark:text-blue-400',
+  epic: 'bg-purple-500/15 text-purple-600 dark:text-purple-400',
+  legendary: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
 }

@@ -30,14 +30,14 @@ export default async function ExpensesPage({
   if (!isMember) redirect('/dashboard')
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="bg-stone-100 border-b border-stone-200 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-bg">
+      <header className="bg-surface border-b border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href={`/coloc/${id}`} className="text-stone-500 hover:text-stone-600">
+          <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←
           </Link>
           <span className="text-xl">💰</span>
-          <h1 className="text-xl font-bold text-stone-800">Dépenses</h1>
+          <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase">Dépenses</h1>
         </div>
         <NotificationBell />
       </header>

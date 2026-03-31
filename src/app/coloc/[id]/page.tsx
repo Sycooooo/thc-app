@@ -5,6 +5,7 @@ import Link from 'next/link'
 import TaskList from '@/components/TaskList'
 import AddTaskForm from '@/components/AddTaskForm'
 import NotificationBell from '@/components/NotificationBell'
+import ThemeToggle from '@/components/ThemeToggle'
 import { autoGenerateQuests } from '@/lib/quest-generator'
 
 export default async function ColocPage({
@@ -50,86 +51,87 @@ export default async function ColocPage({
   }) > 0
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="bg-stone-100 border-b border-stone-200 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-bg">
+      <header className="bg-surface border-b border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-stone-500 hover:text-stone-600">
+          <Link href="/dashboard" className="text-t-muted hover:text-t-primary transition">
             ←
           </Link>
           <span className="text-xl">🏠</span>
-          <h1 className="text-xl font-bold text-stone-800">{coloc.name}</h1>
+          <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase">{coloc.name}</h1>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href={`/coloc/${id}/maison`}
-            className="text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full font-medium hover:bg-amber-100 transition border border-amber-200"
+            className="text-xs bg-accent-secondary/15 text-accent-secondary px-3 py-1.5 rounded-full font-medium hover:bg-accent-secondary/25 transition"
           >
             🏠 Maison
           </Link>
           <Link
             href={`/coloc/${id}/calendar`}
-            className="text-xs bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full font-medium hover:bg-stone-200 transition"
+            className="text-xs bg-surface-hover text-t-muted px-3 py-1.5 rounded-full font-medium hover:text-t-primary transition"
           >
             📅 Calendrier
           </Link>
           <Link
             href={`/coloc/${id}/board`}
-            className="text-xs bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full font-medium hover:bg-stone-200 transition"
+            className="text-xs bg-surface-hover text-t-muted px-3 py-1.5 rounded-full font-medium hover:text-t-primary transition"
           >
             📌 Tableau
           </Link>
           <Link
             href={`/coloc/${id}/chat`}
-            className="text-xs bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full font-medium hover:bg-stone-200 transition"
+            className="text-xs bg-surface-hover text-t-muted px-3 py-1.5 rounded-full font-medium hover:text-t-primary transition"
           >
             💬 Chat
           </Link>
           <Link
             href={`/coloc/${id}/menu`}
-            className="text-xs bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full font-medium hover:bg-stone-200 transition"
+            className="text-xs bg-surface-hover text-t-muted px-3 py-1.5 rounded-full font-medium hover:text-t-primary transition"
           >
             🍽️ Menu
           </Link>
           <Link
             href={`/coloc/${id}/expenses`}
-            className="text-xs bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full font-medium hover:bg-stone-200 transition"
+            className="text-xs bg-surface-hover text-t-muted px-3 py-1.5 rounded-full font-medium hover:text-t-primary transition"
           >
             💰 Dépenses
           </Link>
           {isAdmin && (
             <Link
               href={`/coloc/${id}/admin`}
-              className="text-xs bg-amber-100 text-amber-800 px-3 py-1.5 rounded-full font-medium hover:bg-amber-200 transition"
+              className="text-xs bg-accent/15 text-accent px-3 py-1.5 rounded-full font-medium hover:bg-accent/25 transition"
             >
               ⚙️ Admin
             </Link>
           )}
+          <ThemeToggle />
           <NotificationBell />
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto p-6 space-y-6">
         {/* Code d'invitation */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-accent-secondary/10 border border-accent-secondary/20 rounded-xl p-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-amber-800">Code d&apos;invitation</p>
-            <p className="font-mono text-amber-900 text-sm mt-0.5">{coloc.inviteCode}</p>
+            <p className="text-sm font-medium text-accent-secondary">Code d&apos;invitation</p>
+            <p className="font-mono text-t-primary text-sm mt-0.5">{coloc.inviteCode}</p>
           </div>
-          <p className="text-xs text-amber-600">Partage ce code pour inviter des colocataires</p>
+          <p className="text-xs text-t-muted">Partage ce code pour inviter des colocataires</p>
         </div>
 
         {/* Membres */}
-        <div className="bg-white rounded-2xl border border-stone-200 p-5">
-          <h2 className="font-semibold text-stone-800 mb-3">Colocataires</h2>
+        <div className="bg-surface rounded-2xl border border-b p-5" style={{ boxShadow: 'var(--shadow)' }}>
+          <h2 className="font-semibold text-t-primary mb-3">Colocataires</h2>
           <div className="flex flex-wrap gap-3">
             {coloc.members.map((m) => (
               <div key={m.id} className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm font-medium text-amber-800">
+                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-sm font-medium text-accent">
                   {m.user.username[0].toUpperCase()}
                 </div>
-                <span className="text-sm text-stone-600">{m.user.username}</span>
+                <span className="text-sm text-t-muted">{m.user.username}</span>
                 {coloc.scores.find(s => s.userId === m.userId) && (
-                  <span className="text-xs text-stone-400">
+                  <span className="text-xs text-t-faint">
                     {coloc.scores.find(s => s.userId === m.userId)?.points} pts
                   </span>
                 )}
@@ -142,10 +144,10 @@ export default async function ColocPage({
         {isAdmin && !hasActiveTemplates && (
           <Link
             href={`/coloc/${id}/admin`}
-            className="block bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 hover:border-amber-300 transition"
+            className="block bg-accent/10 border border-accent/20 rounded-xl p-4 hover:border-accent/40 transition"
           >
-            <p className="font-semibold text-amber-900">Configure tes quêtes</p>
-            <p className="text-xs text-amber-600 mt-0.5">
+            <p className="font-semibold text-accent">Configure tes quêtes</p>
+            <p className="text-xs text-t-muted mt-0.5">
               Active les tâches de ta maison dans l&apos;admin pour que les quêtes se génèrent automatiquement chaque jour.
             </p>
           </Link>

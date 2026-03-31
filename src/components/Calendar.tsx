@@ -15,18 +15,18 @@ type CalendarEvent = {
 }
 
 const COLORS: Record<string, string> = {
-  indigo: 'bg-indigo-500',
+  indigo: 'bg-accent',
   red: 'bg-red-500',
   green: 'bg-green-500',
-  amber: 'bg-amber-500',
+  amber: 'bg-accent-secondary',
   purple: 'bg-purple-500',
 }
 
 const COLOR_DOTS: Record<string, string> = {
-  indigo: 'bg-indigo-400',
+  indigo: 'bg-accent/70',
   red: 'bg-red-400',
   green: 'bg-green-400',
-  amber: 'bg-amber-400',
+  amber: 'bg-accent-secondary/70',
   purple: 'bg-purple-400',
 }
 
@@ -172,17 +172,17 @@ export default function Calendar({ colocId }: { colocId: string }) {
           <button
             type="button"
             onClick={() => setYear(year - 1)}
-            className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg text-lg font-bold text-gray-700 hover:bg-gray-100 transition"
+            className="w-10 h-10 flex items-center justify-center bg-surface border border-b rounded-lg text-lg font-bold text-t-muted hover:bg-surface-hover transition"
           >
             &larr;
           </button>
-          <h2 className="text-2xl font-bold text-gray-900 min-w-[100px] text-center">
+          <h2 className="font-display text-2xl tracking-wide text-t-primary min-w-[100px] text-center uppercase">
             {year}
           </h2>
           <button
             type="button"
             onClick={() => setYear(year + 1)}
-            className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg text-lg font-bold text-gray-700 hover:bg-gray-100 transition"
+            className="w-10 h-10 flex items-center justify-center bg-surface border border-b rounded-lg text-lg font-bold text-t-muted hover:bg-surface-hover transition"
           >
             &rarr;
           </button>
@@ -201,16 +201,17 @@ export default function Calendar({ colocId }: { colocId: string }) {
               <div
                 key={m}
                 onClick={() => openMonth(m)}
-                className={`bg-white rounded-xl border p-3 cursor-pointer hover:border-indigo-300 hover:shadow-sm transition ${
-                  isCurrentMonth ? 'border-indigo-400 shadow-sm' : 'border-gray-200'
+                className={`bg-surface rounded-xl border p-3 cursor-pointer hover:border-accent/50 transition ${
+                  isCurrentMonth ? 'border-accent' : 'border-b'
                 }`}
+                style={{ boxShadow: isCurrentMonth ? 'var(--shadow)' : undefined }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className={`text-sm font-semibold ${isCurrentMonth ? 'text-indigo-600' : 'text-gray-900'}`}>
+                  <span className={`text-sm font-semibold ${isCurrentMonth ? 'text-accent' : 'text-t-primary'}`}>
                     {MONTH_SHORT[m]}
                   </span>
                   {monthEvents.length > 0 && (
-                    <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-medium">
+                    <span className="text-[10px] bg-accent/15 text-accent px-1.5 py-0.5 rounded-full font-medium">
                       {monthEvents.length}
                     </span>
                   )}
@@ -219,7 +220,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
                 {/* Mini grille jours */}
                 <div className="grid grid-cols-7 gap-px">
                   {DAY_SHORT.map((d, i) => (
-                    <div key={i} className="text-[9px] text-gray-400 text-center">{d}</div>
+                    <div key={i} className="text-[9px] text-t-faint text-center">{d}</div>
                   ))}
                   {Array.from({ length: startOffset }).map((_, i) => (
                     <div key={`e-${i}`} className="h-4" />
@@ -234,10 +235,10 @@ export default function Calendar({ colocId }: { colocId: string }) {
                         key={day}
                         className={`h-4 flex items-center justify-center text-[9px] rounded-full ${
                           isToday
-                            ? 'bg-indigo-600 text-white font-bold'
+                            ? 'bg-accent text-white font-bold'
                             : hasEvent
-                              ? 'bg-indigo-100 text-indigo-700 font-medium'
-                              : 'text-gray-600'
+                              ? 'bg-accent/15 text-accent font-medium'
+                              : 'text-t-faint'
                         }`}
                       >
                         {day}
@@ -270,14 +271,14 @@ export default function Calendar({ colocId }: { colocId: string }) {
             if (month === 0) { setMonth(11); setYear(year - 1) }
             else setMonth(month - 1)
           }}
-          className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg text-lg font-bold text-gray-700 hover:bg-gray-100 transition"
+          className="w-10 h-10 flex items-center justify-center bg-surface border border-b rounded-lg text-lg font-bold text-t-muted hover:bg-surface-hover transition"
         >
           &larr;
         </button>
         <button
           type="button"
           onClick={backToYear}
-          className="text-lg font-bold text-gray-900 min-w-[200px] text-center hover:text-indigo-600 transition"
+          className="font-display text-lg tracking-wide text-t-primary min-w-[200px] text-center uppercase hover:text-accent transition"
         >
           {MONTH_NAMES[month]} {year}
         </button>
@@ -287,23 +288,23 @@ export default function Calendar({ colocId }: { colocId: string }) {
             if (month === 11) { setMonth(0); setYear(year + 1) }
             else setMonth(month + 1)
           }}
-          className="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg text-lg font-bold text-gray-700 hover:bg-gray-100 transition"
+          className="w-10 h-10 flex items-center justify-center bg-surface border border-b rounded-lg text-lg font-bold text-t-muted hover:bg-surface-hover transition"
         >
           &rarr;
         </button>
       </div>
 
       {/* Grille calendrier */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
+      <div className="bg-surface rounded-xl border border-b overflow-hidden" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="grid grid-cols-7 bg-surface-hover border-b border-b">
           {DAY_NAMES.map((d) => (
-            <div key={d} className="text-center text-xs font-medium text-gray-500 py-2">{d}</div>
+            <div key={d} className="text-center text-xs font-medium text-t-muted py-2">{d}</div>
           ))}
         </div>
 
         <div className="grid grid-cols-7">
           {Array.from({ length: startOffset }).map((_, i) => (
-            <div key={`empty-${i}`} className="h-20 border-b border-r border-gray-100 bg-gray-50/50" />
+            <div key={`empty-${i}`} className="h-20 border-b border-r border-b/50 bg-surface/50" />
           ))}
 
           {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -316,13 +317,13 @@ export default function Calendar({ colocId }: { colocId: string }) {
               <div
                 key={day}
                 onClick={() => { setSelectedDay(day); setShowForm(true) }}
-                className={`h-20 border-b border-r border-gray-100 p-1 cursor-pointer hover:bg-indigo-50/50 transition ${
-                  isSelected ? 'bg-indigo-50' : ''
+                className={`h-20 border-b border-r border-b/50 p-1 cursor-pointer hover:bg-accent/5 transition ${
+                  isSelected ? 'bg-accent/10' : ''
                 }`}
               >
                 <span
                   className={`text-xs font-medium inline-flex w-6 h-6 items-center justify-center rounded-full ${
-                    isToday ? 'bg-indigo-600 text-white' : 'text-gray-700'
+                    isToday ? 'bg-accent text-white' : 'text-t-muted'
                   }`}
                 >
                   {day}
@@ -337,7 +338,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
                     </div>
                   ))}
                   {dayEvents.length > 2 && (
-                    <span className="text-[10px] text-gray-400">+{dayEvents.length - 2}</span>
+                    <span className="text-[10px] text-t-faint">+{dayEvents.length - 2}</span>
                   )}
                 </div>
               </div>
@@ -348,12 +349,12 @@ export default function Calendar({ colocId }: { colocId: string }) {
 
       {/* Formulaire d'ajout */}
       {showForm && selectedDay !== null && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+        <div className="bg-surface rounded-xl border border-b p-4 space-y-3" style={{ boxShadow: 'var(--shadow)' }}>
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-t-primary">
               Nouvel événement — {selectedDay} {MONTH_NAMES[month]}
             </h3>
-            <button onClick={() => { setShowForm(false); setSelectedDay(null) }} className="text-gray-400 hover:text-gray-600">
+            <button onClick={() => { setShowForm(false); setSelectedDay(null) }} className="text-t-faint hover:text-t-muted">
               ✕
             </button>
           </div>
@@ -362,17 +363,17 @@ export default function Calendar({ colocId }: { colocId: string }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Titre de l'événement"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
           />
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description (optionnel)"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
           />
           <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 text-sm text-gray-700">
+            <label className="flex items-center gap-2 text-sm text-t-muted">
               <input
                 type="checkbox"
                 checked={allDay}
@@ -386,25 +387,25 @@ export default function Calendar({ colocId }: { colocId: string }) {
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded-lg text-sm"
+                className="px-2 py-1 border border-b rounded-lg text-sm text-t-primary bg-input-bg"
               />
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Couleur :</span>
+            <span className="text-sm text-t-muted">Couleur :</span>
             {Object.keys(COLORS).map((c) => (
               <button
                 key={c}
                 onClick={() => setColor(c)}
                 className={`w-6 h-6 rounded-full ${COLOR_DOTS[c]} ${
-                  color === c ? 'ring-2 ring-offset-1 ring-gray-400' : ''
+                  color === c ? 'ring-2 ring-offset-1 ring-accent/50' : ''
                 }`}
               />
             ))}
           </div>
           <button
             onClick={createEvent}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition"
+            className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
           >
             Créer
           </button>
@@ -413,18 +414,18 @@ export default function Calendar({ colocId }: { colocId: string }) {
 
       {/* Liste des événements du jour sélectionné */}
       {selectedDay !== null && getEventsForDay(month, selectedDay).length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
-          <h3 className="font-semibold text-gray-900 text-sm">
+        <div className="bg-surface rounded-xl border border-b p-4 space-y-2" style={{ boxShadow: 'var(--shadow)' }}>
+          <h3 className="font-semibold text-t-primary text-sm">
             {selectedDay} {MONTH_NAMES[month]}
           </h3>
           {getEventsForDay(month, selectedDay).map((e) => (
-            <div key={e.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+            <div key={e.id} className="flex items-center justify-between p-2 bg-surface-hover rounded-lg">
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 rounded-full ${COLORS[e.color]}`} />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{e.title}</p>
-                  {e.description && <p className="text-xs text-gray-500">{e.description}</p>}
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm font-medium text-t-primary">{e.title}</p>
+                  {e.description && <p className="text-xs text-t-muted">{e.description}</p>}
+                  <p className="text-xs text-t-faint">
                     {e.allDay ? 'Toute la journée' : new Date(e.startDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                     {' · '}{e.createdBy.username}
                   </p>
@@ -432,7 +433,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
               </div>
               <button
                 onClick={() => deleteEvent(e.id)}
-                className="text-red-400 hover:text-red-600 text-xs"
+                className="text-danger hover:text-red-600 text-xs"
               >
                 Supprimer
               </button>

@@ -100,16 +100,16 @@ export default function Menu({
     <div className="space-y-6">
       {/* Formulaire de génération */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
-          <h2 className="font-semibold text-gray-900">Paramètres du menu</h2>
+        <div className="bg-surface rounded-2xl border border-b p-5 space-y-4" style={{ boxShadow: 'var(--shadow)' }}>
+          <h2 className="font-semibold text-t-primary">Paramètres du menu</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Nombre de personnes</label>
+              <label className="block text-xs text-t-muted mb-1">Nombre de personnes</label>
               <select
                 value={nbPersons}
                 onChange={(e) => setNbPersons(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 text-sm border border-b rounded-lg text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                   <option key={n} value={n}>{n} personne{n > 1 ? 's' : ''}</option>
@@ -118,11 +118,11 @@ export default function Menu({
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Budget</label>
+              <label className="block text-xs text-t-muted mb-1">Budget</label>
               <select
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 text-sm border border-b rounded-lg text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 <option value="economique">Economique</option>
                 <option value="moyen">Moyen</option>
@@ -131,24 +131,24 @@ export default function Menu({
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Restrictions alimentaires</label>
+              <label className="block text-xs text-t-muted mb-1">Restrictions alimentaires</label>
               <input
                 type="text"
                 value={restrictions}
                 onChange={(e) => setRestrictions(e.target.value)}
                 placeholder="végétarien, sans gluten, halal..."
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 text-sm border border-b rounded-lg text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Objectif sportif</label>
+              <label className="block text-xs text-t-muted mb-1">Objectif sportif</label>
               <select
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 text-sm border border-b rounded-lg text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 <option value="">Aucun</option>
                 <option value="prise_masse">Prise de masse</option>
@@ -160,24 +160,24 @@ export default function Menu({
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Calories / jour (optionnel)</label>
+              <label className="block text-xs text-t-muted mb-1">Calories / jour (optionnel)</label>
               <input
                 type="number"
                 value={calories}
                 onChange={(e) => setCalories(e.target.value)}
                 placeholder="ex: 2200"
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 text-sm border border-b rounded-lg text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
 
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Préférences culinaires</label>
+              <label className="block text-xs text-t-muted mb-1">Préférences culinaires</label>
               <input
                 type="text"
                 value={preferences}
                 onChange={(e) => setPreferences(e.target.value)}
                 placeholder="cuisine asiatique, italien, rapide..."
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+                className="w-full px-3 py-2 text-sm border border-b rounded-lg text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function Menu({
           <button
             onClick={generate}
             disabled={generating}
-            className="w-full py-2.5 bg-indigo-500 text-white rounded-xl font-medium hover:bg-indigo-600 transition disabled:opacity-50"
+            className="w-full py-2.5 bg-accent text-white rounded-xl font-medium hover:bg-accent-hover transition disabled:opacity-50"
           >
             {generating ? 'Génération en cours... (10-20s)' : 'Générer le menu de la semaine'}
           </button>
@@ -197,8 +197,8 @@ export default function Menu({
         <>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-semibold text-gray-900">Menu de la semaine</h2>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <h2 className="font-semibold text-t-primary">Menu de la semaine</h2>
+              <p className="text-xs text-t-faint mt-0.5">
                 {menu.nbPersons} pers. | Budget {menu.budget}{menu.restrictions ? ` | ${menu.restrictions}` : ''}
               </p>
             </div>
@@ -206,14 +206,14 @@ export default function Menu({
               <button
                 onClick={() => setShowShopping(!showShopping)}
                 className={`text-xs px-3 py-1.5 rounded-full font-medium transition ${
-                  showShopping ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  showShopping ? 'bg-green-500/15 text-green-600 dark:text-green-400' : 'bg-surface-hover text-t-muted hover:text-t-primary'
                 }`}
               >
                 🛒 Courses {totalPrice > 0 && `(~${totalPrice.toFixed(0)}€)`}
               </button>
               <button
                 onClick={() => setShowForm(true)}
-                className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full font-medium hover:bg-gray-200 transition"
+                className="text-xs bg-surface-hover text-t-muted px-3 py-1.5 rounded-full font-medium hover:text-t-primary transition"
               >
                 Regénérer
               </button>
@@ -222,23 +222,23 @@ export default function Menu({
 
           {/* Vue liste de courses */}
           {showShopping && menu.shoppingList && (
-            <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
+            <div className="bg-surface rounded-2xl border border-b p-5 space-y-4" style={{ boxShadow: 'var(--shadow)' }}>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-gray-900">Liste de courses</h3>
-                <p className="text-sm font-medium text-green-600">Total estimé : ~{totalPrice.toFixed(2)}€</p>
+                <h3 className="font-semibold text-t-primary">Liste de courses</h3>
+                <p className="text-sm font-medium text-green-600 dark:text-green-400">Total estimé : ~{totalPrice.toFixed(2)}€</p>
               </div>
 
               {CATEGORIES_ORDER.filter((cat) => shoppingByCategory[cat]).map((cat) => (
                 <div key={cat}>
-                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{cat}</h4>
+                  <h4 className="text-xs font-semibold text-t-muted uppercase tracking-wide mb-2">{cat}</h4>
                   <div className="space-y-1">
                     {shoppingByCategory[cat].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between py-1.5 px-3 bg-gray-50 rounded-lg">
+                      <div key={i} className="flex items-center justify-between py-1.5 px-3 bg-surface-hover rounded-lg">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-900">{item.nom}</span>
-                          <span className="text-xs text-gray-400">{item.quantite}</span>
+                          <span className="text-sm text-t-primary">{item.nom}</span>
+                          <span className="text-xs text-t-faint">{item.quantite}</span>
                         </div>
-                        <span className="text-xs font-medium text-gray-600">{item.prixEstime.toFixed(2)}€</span>
+                        <span className="text-xs font-medium text-t-muted">{item.prixEstime.toFixed(2)}€</span>
                       </div>
                     ))}
                   </div>
@@ -254,14 +254,14 @@ export default function Menu({
                 const meal = menu.meals[day]
                 if (!meal) return null
                 return (
-                  <div key={day} className="bg-white rounded-2xl border border-gray-200 p-4">
-                    <p className="font-semibold text-gray-900 mb-3">
+                  <div key={day} className="bg-surface rounded-2xl border border-b p-4" style={{ boxShadow: 'var(--shadow)' }}>
+                    <p className="font-semibold text-t-primary mb-3">
                       {DAY_EMOJIS[day]} {day}
                     </p>
 
                     <div className="space-y-3">
                       <PlatCard label="Déjeuner" plat={meal.dejeuner} />
-                      <div className="border-t border-gray-100 pt-3">
+                      <div className="border-t border-b pt-3">
                         <PlatCard label="Dîner" plat={meal.diner} />
                       </div>
                     </div>
@@ -283,15 +283,15 @@ function PlatCard({ label, plat }: { label: string; plat: Plat }) {
 
   return (
     <div>
-      <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">{label}</p>
-      <p className="text-sm font-medium text-gray-900">{plat.nom}</p>
-      <p className="text-xs text-gray-500 mt-0.5">{plat.ingredients.join(', ')}</p>
+      <p className="text-xs text-t-faint uppercase tracking-wide mb-1">{label}</p>
+      <p className="text-sm font-medium text-t-primary">{plat.nom}</p>
+      <p className="text-xs text-t-muted mt-0.5">{plat.ingredients.join(', ')}</p>
 
       {plat.etapes && plat.etapes.length > 0 && (
         <div className="mt-2">
           <button
             onClick={() => setOpen(!open)}
-            className="text-xs text-indigo-500 hover:text-indigo-700 font-medium flex items-center gap-1 transition"
+            className="text-xs text-accent hover:text-accent-hover font-medium flex items-center gap-1 transition"
           >
             <span className={`transition-transform ${open ? 'rotate-90' : ''}`}>▶</span>
             {open ? 'Masquer la préparation' : `Préparation (${plat.etapes.length} étapes)`}
@@ -359,33 +359,33 @@ function EtapeRow({ index, etape }: { index: number; etape: Etape }) {
   }
 
   return (
-    <div className={`flex items-start gap-2 px-2.5 py-2 rounded-lg text-xs ${done ? 'bg-green-50' : 'bg-gray-50'}`}>
-      <span className="text-gray-400 font-mono w-4 flex-shrink-0">{index}.</span>
-      <p className="flex-1 text-gray-700">{etape.description}</p>
+    <div className={`flex items-start gap-2 px-2.5 py-2 rounded-lg text-xs ${done ? 'bg-green-500/10' : 'bg-surface-hover'}`}>
+      <span className="text-t-faint font-mono w-4 flex-shrink-0">{index}.</span>
+      <p className="flex-1 text-t-muted">{etape.description}</p>
 
       {etape.duree && (
         <div className="flex items-center gap-1.5 flex-shrink-0">
           {!timerRunning && !done && (
             <button
               onClick={startTimer}
-              className="flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full hover:bg-indigo-200 transition"
+              className="flex items-center gap-1 px-2 py-0.5 bg-accent-secondary/15 text-accent-secondary rounded-full hover:bg-accent-secondary/25 transition"
             >
               <span>⏱</span> {etape.duree}min
             </button>
           )}
           {timerRunning && (
             <div className="flex items-center gap-1.5">
-              <span className="font-mono font-medium text-indigo-600">{formatTimer(secondsLeft)}</span>
+              <span className="font-mono font-medium text-accent-secondary">{formatTimer(secondsLeft)}</span>
               <button
                 onClick={stopTimer}
-                className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition"
+                className="px-1.5 py-0.5 bg-red-500/15 text-danger rounded-full hover:bg-red-500/25 transition"
               >
                 Stop
               </button>
             </div>
           )}
           {done && (
-            <span className="text-green-600 font-medium">Terminé !</span>
+            <span className="text-green-600 dark:text-green-400 font-medium">Terminé !</span>
           )}
         </div>
       )}

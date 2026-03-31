@@ -187,7 +187,7 @@ export default function Chat({
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="text-xs text-indigo-500 hover:text-indigo-700 transition"
+              className="text-xs text-accent hover:text-accent-hover transition"
             >
               {loadingMore ? 'Chargement...' : 'Charger les anciens messages'}
             </button>
@@ -195,7 +195,7 @@ export default function Chat({
         )}
 
         {messages.length === 0 && (
-          <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+          <div className="flex items-center justify-center h-full text-t-faint text-sm">
             Aucun message. Commence la conversation !
           </div>
         )}
@@ -213,7 +213,7 @@ export default function Chat({
               <div className="w-7 h-7 flex-shrink-0">
                 {showAvatar ? (
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
-                    isMe ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-200 text-gray-600'
+                    isMe ? 'bg-accent/20 text-accent' : 'bg-surface-hover text-t-muted'
                   }`}>
                     {msg.user.username[0].toUpperCase()}
                   </div>
@@ -223,14 +223,15 @@ export default function Chat({
               {/* Bulle */}
               <div className={`max-w-[70%] ${isMe ? 'items-end' : 'items-start'}`}>
                 {showAvatar && !isMe && (
-                  <p className="text-xs text-gray-400 mb-0.5 ml-1">{msg.user.username}</p>
+                  <p className="text-xs text-t-faint mb-0.5 ml-1">{msg.user.username}</p>
                 )}
                 <div
                   className={`rounded-2xl px-3 py-2 ${
                     isMe
-                      ? 'bg-indigo-500 text-white rounded-br-sm'
-                      : 'bg-gray-100 text-gray-900 rounded-bl-sm'
+                      ? 'bg-accent text-white rounded-br-sm'
+                      : 'bg-surface text-t-primary rounded-bl-sm'
                   }`}
+                  style={!isMe ? { boxShadow: 'var(--shadow)' } : undefined}
                 >
                   {msg.type === 'gif' && msg.imageUrl ? (
                     <img
@@ -242,7 +243,7 @@ export default function Chat({
                     <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
                   )}
                 </div>
-                <p className={`text-[10px] text-gray-400 mt-0.5 ${isMe ? 'text-right mr-1' : 'ml-1'}`}>
+                <p className={`text-[10px] text-t-faint mt-0.5 ${isMe ? 'text-right mr-1' : 'ml-1'}`}>
                   {formatTime(msg.createdAt)}
                 </p>
               </div>
@@ -255,13 +256,13 @@ export default function Chat({
 
       {/* Picker GIF */}
       {showGif && (
-        <div className="border-t border-gray-200 bg-white p-3 max-h-72 overflow-y-auto">
+        <div className="border-t border-b bg-surface p-3 max-h-72 overflow-y-auto">
           <input
             type="text"
             value={gifSearch}
             onChange={(e) => setGifSearch(e.target.value)}
             placeholder="Rechercher un GIF..."
-            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            className="w-full px-3 py-2 text-sm border border-b rounded-lg mb-2 text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
           />
           <div className="grid grid-cols-3 gap-2">
             {gifs.map((gif) => (
@@ -279,17 +280,17 @@ export default function Chat({
             ))}
           </div>
           {gifs.length === 0 && (
-            <p className="text-center text-gray-400 text-xs py-4">Aucun GIF trouvé</p>
+            <p className="text-center text-t-faint text-xs py-4">Aucun GIF trouvé</p>
           )}
         </div>
       )}
 
       {/* Input */}
-      <form onSubmit={sendMessage} className="border-t border-gray-200 bg-white p-3 flex items-center gap-2">
+      <form onSubmit={sendMessage} className="border-t border-b bg-surface p-3 flex items-center gap-2">
         <button
           type="button"
           onClick={() => setShowGif(!showGif)}
-          className={`p-2 rounded-lg transition text-lg ${showGif ? 'bg-indigo-100' : 'hover:bg-gray-100'}`}
+          className={`p-2 rounded-lg transition text-lg ${showGif ? 'bg-accent/15 text-accent' : 'text-t-muted hover:bg-surface-hover'}`}
           title="Envoyer un GIF"
         >
           GIF
@@ -299,12 +300,12 @@ export default function Chat({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ton message..."
-          className="flex-1 px-4 py-2 text-sm bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          className="flex-1 px-4 py-2 text-sm bg-input-bg text-t-primary rounded-full focus:outline-none focus:ring-2 focus:ring-accent"
         />
         <button
           type="submit"
           disabled={!input.trim() || sending}
-          className="p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 bg-accent text-white rounded-full hover:bg-accent-hover transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
