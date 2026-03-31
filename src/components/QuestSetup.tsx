@@ -107,7 +107,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+          className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
         >
           + Quête custom
         </button>
@@ -115,7 +115,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
 
       {/* Formulaire quête custom */}
       {showForm && (
-        <div className="bg-surface rounded-xl border border-b p-5 space-y-4" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-5 space-y-4">
           <h3 className="font-semibold text-t-primary">Nouvelle quête personnalisée</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
@@ -213,8 +213,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
             {customTemplates.map((t) => (
               <div
                 key={t.id}
-                className="bg-surface rounded-xl border border-accent/30 p-4 flex items-center justify-between"
-                style={{ boxShadow: 'var(--shadow)' }}
+                className="card card-glow border-accent/30 p-4 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-lg">{CATEGORY_ICONS[t.category] ?? '📌'}</span>

@@ -41,7 +41,7 @@ export default function GenerateQuests({ colocId }: { colocId: string }) {
           <button
             onClick={handleGenerate}
             disabled={loading}
-            className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover disabled:opacity-50 transition"
+            className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover disabled:opacity-50 transition"
           >
             {loading ? 'Génération...' : '⚔️ Générer'}
           </button>

@@ -81,7 +81,7 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
         <p className="text-sm text-t-muted">{items.length} note{items.length !== 1 ? 's' : ''}</p>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+          className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
         >
           + Ajouter une note
         </button>
@@ -89,7 +89,7 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
 
       {/* Formulaire */}
       {showForm && (
-        <div className="bg-surface rounded-xl border border-b p-4 space-y-3" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-4 space-y-3">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -135,7 +135,7 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
 
       {/* Grille de post-its */}
       {items.length === 0 ? (
-        <div className="bg-surface rounded-xl border border-b p-8 text-center text-t-faint">
+        <div className="card p-8 text-center text-t-faint">
           Aucune note pour l&apos;instant. Ajoute la première !
         </div>
       ) : (

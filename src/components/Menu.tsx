@@ -100,7 +100,7 @@ export default function Menu({
     <div className="space-y-6">
       {/* Formulaire de génération */}
       {showForm && (
-        <div className="bg-surface rounded-2xl border border-b p-5 space-y-4" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-5 space-y-4">
           <h2 className="font-semibold text-t-primary">Paramètres du menu</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -185,7 +185,7 @@ export default function Menu({
           <button
             onClick={generate}
             disabled={generating}
-            className="w-full py-2.5 bg-accent text-white rounded-xl font-medium hover:bg-accent-hover transition disabled:opacity-50"
+            className="btn-glow w-full py-2.5 bg-accent text-white rounded-xl font-medium hover:bg-accent-hover transition disabled:opacity-50"
           >
             {generating ? 'Génération en cours... (10-20s)' : 'Générer le menu de la semaine'}
           </button>
@@ -222,7 +222,7 @@ export default function Menu({
 
           {/* Vue liste de courses */}
           {showShopping && menu.shoppingList && (
-            <div className="bg-surface rounded-2xl border border-b p-5 space-y-4" style={{ boxShadow: 'var(--shadow)' }}>
+            <div className="card card-glow p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-t-primary">Liste de courses</h3>
                 <p className="text-sm font-medium text-green-600 dark:text-green-400">Total estimé : ~{totalPrice.toFixed(2)}€</p>
@@ -254,7 +254,7 @@ export default function Menu({
                 const meal = menu.meals[day]
                 if (!meal) return null
                 return (
-                  <div key={day} className="bg-surface rounded-2xl border border-b p-4" style={{ boxShadow: 'var(--shadow)' }}>
+                  <div key={day} className="card card-glow p-4">
                     <p className="font-semibold text-t-primary mb-3">
                       {DAY_EMOJIS[day]} {day}
                     </p>

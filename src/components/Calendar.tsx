@@ -295,7 +295,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
       </div>
 
       {/* Grille calendrier */}
-      <div className="bg-surface rounded-xl border border-b overflow-hidden" style={{ boxShadow: 'var(--shadow)' }}>
+      <div className="card overflow-hidden">
         <div className="grid grid-cols-7 bg-surface-hover border-b border-b">
           {DAY_NAMES.map((d) => (
             <div key={d} className="text-center text-xs font-medium text-t-muted py-2">{d}</div>
@@ -349,7 +349,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
 
       {/* Formulaire d'ajout */}
       {showForm && selectedDay !== null && (
-        <div className="bg-surface rounded-xl border border-b p-4 space-y-3" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-t-primary">
               Nouvel événement — {selectedDay} {MONTH_NAMES[month]}
@@ -405,7 +405,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
           </div>
           <button
             onClick={createEvent}
-            className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+            className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
           >
             Créer
           </button>
@@ -414,7 +414,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
 
       {/* Liste des événements du jour sélectionné */}
       {selectedDay !== null && getEventsForDay(month, selectedDay).length > 0 && (
-        <div className="bg-surface rounded-xl border border-b p-4 space-y-2" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card p-4 space-y-2">
           <h3 className="font-semibold text-t-primary text-sm">
             {selectedDay} {MONTH_NAMES[month]}
           </h3>

@@ -70,7 +70,7 @@ export default function AffinitySetup({
         </p>
       </div>
 
-      <div className="bg-surface rounded-xl border border-b overflow-hidden" style={{ boxShadow: 'var(--shadow)' }}>
+      <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-surface-hover border-b border-b">

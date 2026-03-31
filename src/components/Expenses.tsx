@@ -319,7 +319,7 @@ export default function Expenses({
       </div>
 
       {/* Soldes */}
-      <div className="bg-surface rounded-2xl border border-b p-5" style={{ boxShadow: 'var(--shadow)' }}>
+      <div className="card card-glow p-5">
         <h3 className="font-semibold text-t-primary mb-3">Soldes</h3>
         <div className="space-y-2">
           {members.map((m) => {
@@ -386,7 +386,7 @@ export default function Expenses({
 
       {/* Détail des dettes par paire */}
       {showDebts && (
-        <div className="bg-surface rounded-2xl border border-b p-5" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-5">
           <h3 className="font-semibold text-t-primary mb-4">Détail des dettes</h3>
           {getDetailedDebts().length === 0 ? (
             <p className="text-sm text-t-faint text-center py-2">Aucune dette</p>
@@ -421,7 +421,7 @@ export default function Expenses({
       {!showForm && (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition"
+          className="btn-glow w-full bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition"
         >
           + Ajouter une dépense
         </button>
@@ -429,7 +429,7 @@ export default function Expenses({
 
       {/* Formulaire */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-surface rounded-2xl border border-b p-5 space-y-4" style={{ boxShadow: 'var(--shadow)' }}>
+        <form onSubmit={handleSubmit} className="card card-glow p-5 space-y-4">
           <h3 className="font-semibold text-t-primary">Nouvelle dépense</h3>
 
           {error && (
@@ -446,7 +446,7 @@ export default function Expenses({
               min="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full border border-b rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full border border-b rounded-lg px-3 py-2 text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               placeholder="12.50"
               required
             />
@@ -458,7 +458,7 @@ export default function Expenses({
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border border-b rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full border border-b rounded-lg px-3 py-2 text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               placeholder="Courses Carrefour"
               required
             />
@@ -469,7 +469,7 @@ export default function Expenses({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full border border-b rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full border border-b rounded-lg px-3 py-2 text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
             >
               {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -558,7 +558,7 @@ export default function Expenses({
                     min="0"
                     value={customValues[userId] || ''}
                     onChange={(e) => setCustomValues((prev) => ({ ...prev, [userId]: e.target.value }))}
-                    className="flex-1 border border-b rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="flex-1 border border-b rounded-lg px-3 py-1.5 text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
                     placeholder={splitMethod === 'shares' ? '1' : '0'}
                   />
                   {splitMethod !== 'shares' && (
@@ -606,7 +606,7 @@ export default function Expenses({
       )}
 
       {/* Historique */}
-      <div className="bg-surface rounded-2xl border border-b p-5" style={{ boxShadow: 'var(--shadow)' }}>
+      <div className="card card-glow p-5">
         <h3 className="font-semibold text-t-primary mb-3">Historique</h3>
         {expenses.length === 0 ? (
           <p className="text-sm text-t-faint text-center py-4">Aucune dépense pour le moment</p>
