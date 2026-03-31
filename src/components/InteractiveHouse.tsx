@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { useRouter } from 'next/navigation'
@@ -33,29 +33,11 @@ type Room3D = {
 }
 
 // ============ PLAN DE L'APPARTEMENT (72.71m²) ============
-// Coordonnées en mètres depuis le coin haut-gauche du plan
-// Puis centrées à l'origine pour Three.js
-//
-// Layout du plan :
-//
-//  Loggia | Salle d'eau | WC |  Chambre 2   | B |
-//  -------|-------------|    |              | a |
-//         |   Couloir   |    |              | l |
-//  Ch 1   |   (étroit)  |    |--------------| c |
-//         |             |    |  Chambre 3   | o |
-//  -------|             |    |              | n |
-//  Buand. |             |    |              |   |
-//  -------|-------------|----|--------------| f |
-//     Entrée / Cuisine  |     Séjour       | u |
-//                       |                  | l |
-//                       |                  | l |
-//  --------------------------------------------|
 
-const OX = 5.05 // demi-largeur totale (avec balcon)
-const OZ = 4.18 // demi-profondeur
+const OX = 5.05
+const OZ = 4.18
 
-// Plan coords → centered coords
-function pc(x: number, z: number, w: number, d: number): { cx: number; cz: number; w: number; d: number } {
+function pc(x: number, z: number, w: number, d: number) {
   return { cx: x + w / 2 - OX, cz: z + d / 2 - OZ, w, d }
 }
 
@@ -73,45 +55,38 @@ const ROOMS_3D: Room3D[] = [
   { id: 'sejour',    name: 'Séjour',       icon: '🛋️', ...pc(5.50, 5.10, 3.60, 3.25), color: '#bae6fd', mapFrom: ['salon'] },
 ]
 
+const CHAMBRE_IDS = ['chambre1', 'chambre2', 'chambre3']
+
 // ============ MURS ============
-// wp() convertit les coordonnées plan → centrées
 
 function wp(x1: number, z1: number, x2: number, z2: number): [number, number, number, number] {
   return [x1 - OX, z1 - OZ, x2 - OX, z2 - OZ]
 }
 
 const EXT_WALLS: { pts: [number, number, number, number]; h: number }[] = [
-  // Murs extérieurs principaux (h=2.5)
-  { pts: wp(0, 0, 9.10, 0), h: 2.5 },         // haut
-  { pts: wp(9.10, 0, 9.10, 8.35), h: 2.5 },   // droite bâtiment (façade balcon)
-  { pts: wp(9.10, 8.35, 0, 8.35), h: 2.5 },   // bas
-  { pts: wp(0, 8.35, 0, 0), h: 2.5 },          // gauche
-
-  // Garde-corps balcon (h=1.0)
-  { pts: wp(9.10, 0, 10.10, 0), h: 1.0 },      // haut balcon
-  { pts: wp(10.10, 0, 10.10, 8.35), h: 1.0 },  // droite balcon
-  { pts: wp(10.10, 8.35, 9.10, 8.35), h: 1.0 },// bas balcon
+  { pts: wp(0, 0, 9.10, 0), h: 2.5 },
+  { pts: wp(9.10, 0, 9.10, 8.35), h: 2.5 },
+  { pts: wp(9.10, 8.35, 0, 8.35), h: 2.5 },
+  { pts: wp(0, 8.35, 0, 0), h: 2.5 },
+  { pts: wp(9.10, 0, 10.10, 0), h: 1.0 },
+  { pts: wp(10.10, 0, 10.10, 8.35), h: 1.0 },
+  { pts: wp(10.10, 8.35, 9.10, 8.35), h: 1.0 },
 ]
 
 const INT_WALLS: [number, number, number, number][] = [
-  // Verticaux
-  wp(2.22, 0, 2.22, 1.80),       // Loggia | Salle d'eau
-  wp(4.42, 0, 4.42, 1.80),       // Salle d'eau | WC
-  wp(5.50, 0, 5.50, 5.40),       // Séparation principale (Ch2/Ch3 | reste) — s'arrête avant cuisine/séjour
-  wp(3.40, 1.13, 3.40, 4.00),    // Ch1 droite | Couloir gauche
-  wp(2.86, 4.00, 2.86, 5.10),    // Buanderie droite (ferme la buanderie)
-
-  // Horizontaux
-  wp(0, 1.13, 2.22, 1.13),       // Bas Loggia
-  wp(2.22, 1.80, 5.50, 1.80),    // Bas SdB/WC (haut couloir)
-  wp(5.50, 2.76, 9.10, 2.76),    // Ch2 | Ch3
-  wp(0, 4.00, 3.40, 4.00),       // Bas Ch1
-  wp(0, 5.10, 2.86, 5.10),       // Bas Buanderie
-  // PAS de mur entre cuisine et séjour (open plan)
-  // PAS de mur en bas du couloir (ouvert sur l'entrée cuisine)
+  wp(2.22, 0, 2.22, 1.80),
+  wp(4.42, 0, 4.42, 1.80),
+  wp(5.50, 0, 5.50, 5.40),
+  wp(3.40, 1.13, 3.40, 4.00),
+  wp(2.86, 4.00, 2.86, 5.10),
+  wp(0, 1.13, 2.22, 1.13),
+  wp(2.22, 1.80, 5.50, 1.80),
+  wp(5.50, 2.76, 9.10, 2.76),
+  wp(0, 4.00, 3.40, 4.00),
+  wp(0, 5.10, 2.86, 5.10),
 ]
 
-// ============ MAPPING TÂCHES → PIÈCES ============
+// ============ MAPPING ============
 
 function getRoomIdForTask(taskRoom: string | null): string | null {
   if (!taskRoom) return null
@@ -128,40 +103,37 @@ function WallMesh({
   height = 2.0,
   thickness = 0.10,
   color = '#ece4d8',
+  viewCenter,
 }: {
   x1: number; z1: number; x2: number; z2: number
   height?: number; thickness?: number; color?: string
+  viewCenter?: [number, number]
 }) {
   const materialRef = useRef<THREE.MeshStandardMaterial>(null)
   const wallCx = (x1 + x2) / 2
   const wallCz = (z1 + z2) / 2
+  const vcx = viewCenter?.[0] ?? 0
+  const vcz = viewCenter?.[1] ?? 0
 
-  // Transparence dynamique : murs entre la caméra et le centre deviennent transparents
   useFrame(({ camera }) => {
     if (!materialRef.current) return
-
-    // Produit scalaire : si mur et caméra du même côté du centre → mur bloque la vue
-    const dot = wallCx * camera.position.x + wallCz * camera.position.z
-
-    // Facteur hauteur : quand la caméra est haute (vue de dessus), tout est visible
+    const relWx = wallCx - vcx
+    const relWz = wallCz - vcz
+    const relCx = camera.position.x - vcx
+    const relCz = camera.position.z - vcz
+    const dot = relWx * relCx + relWz * relCz
     const heightRatio = Math.min(camera.position.y / 14, 1)
-
-    const targetOpacity = dot > 0
-      ? 0.06 + heightRatio * 0.84 // mur devant → transparent quand angle bas
-      : 0.92                       // mur derrière → opaque
-
-    materialRef.current.opacity += (targetOpacity - materialRef.current.opacity) * 0.08
+    const target = dot > 0 ? 0.06 + heightRatio * 0.84 : 0.92
+    materialRef.current.opacity += (target - materialRef.current.opacity) * 0.08
   })
 
   const dx = x2 - x1
   const dz = z2 - z1
   const length = Math.sqrt(dx * dx + dz * dz) + thickness
-  const cx = (x1 + x2) / 2
-  const cz = (z1 + z2) / 2
   const angle = Math.atan2(dx, dz)
 
   return (
-    <mesh position={[cx, height / 2, cz]} rotation={[0, angle, 0]} castShadow receiveShadow>
+    <mesh position={[wallCx, height / 2, wallCz]} rotation={[0, angle, 0]} castShadow receiveShadow>
       <boxGeometry args={[thickness, height, length]} />
       <meshStandardMaterial
         ref={materialRef}
@@ -176,7 +148,7 @@ function WallMesh({
 }
 
 function RoomFloor({
-  room, isSelected, isHovered, pending, onSelect, onHover,
+  room, isSelected, isHovered, pending, onSelect, onHover, showLabel = true,
 }: {
   room: Room3D
   isSelected: boolean
@@ -184,6 +156,7 @@ function RoomFloor({
   pending: number
   onSelect: (id: string) => void
   onHover: (id: string | null) => void
+  showLabel?: boolean
 }) {
   const baseY = room.floorY ?? 0.05
   const y = isSelected ? baseY + 0.12 : baseY
@@ -199,127 +172,174 @@ function RoomFloor({
         receiveShadow
       >
         <boxGeometry args={[room.w - 0.06, 0.1, room.d - 0.06]} />
-        <meshStandardMaterial
-          color={room.color}
-          emissive={room.color}
-          emissiveIntensity={emissiveIntensity}
-          roughness={0.5}
-        />
+        <meshStandardMaterial color={room.color} emissive={room.color} emissiveIntensity={emissiveIntensity} roughness={0.5} />
       </mesh>
 
-      <Html
-        position={[room.cx, 3.2, room.cz]}
-        center
-        distanceFactor={14}
-        style={{ pointerEvents: 'none', userSelect: 'none' }}
-      >
-        <div
-          style={{
+      {showLabel && (
+        <Html position={[room.cx, 3.2, room.cz]} center distanceFactor={14} style={{ pointerEvents: 'none', userSelect: 'none' }}>
+          <div style={{
             background: isSelected ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.92)',
             color: isSelected ? '#fff' : '#1c1917',
-            padding: '3px 8px',
-            borderRadius: 8,
-            fontSize: 11,
-            fontWeight: 700,
-            whiteSpace: 'nowrap',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
+            padding: '3px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700,
+            whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4,
             backdropFilter: 'blur(8px)',
-            boxShadow: isSelected
-              ? '0 4px 16px rgba(0,0,0,0.35)'
-              : '0 2px 8px rgba(0,0,0,0.1)',
+            boxShadow: isSelected ? '0 4px 16px rgba(0,0,0,0.35)' : '0 2px 8px rgba(0,0,0,0.1)',
             border: isSelected ? 'none' : '1px solid rgba(0,0,0,0.06)',
-          }}
-        >
-          <span>{room.icon}</span>
-          <span>{room.name}</span>
-          {pending > 0 && (
-            <span
-              style={{
-                background: '#ef4444',
-                color: '#fff',
-                borderRadius: 10,
-                padding: '0 5px',
-                fontSize: 10,
-                fontWeight: 800,
-                minWidth: 16,
-                textAlign: 'center',
-              }}
-            >
-              {pending}
-            </span>
-          )}
-        </div>
-      </Html>
+          }}>
+            <span>{room.icon}</span>
+            <span>{room.name}</span>
+            {pending > 0 && (
+              <span style={{ background: '#ef4444', color: '#fff', borderRadius: 10, padding: '0 5px', fontSize: 10, fontWeight: 800, minWidth: 16, textAlign: 'center' }}>
+                {pending}
+              </span>
+            )}
+          </div>
+        </Html>
+      )}
     </group>
   )
 }
 
+// Murs isolés autour d'une chambre
+function ChambreWalls({ room }: { room: Room3D }) {
+  const vc: [number, number] = [room.cx, room.cz]
+  const h = 2.5
+  const t = 0.12
+  const halfW = room.w / 2
+  const halfD = room.d / 2
+
+  return (
+    <group>
+      <WallMesh x1={room.cx - halfW} z1={room.cz - halfD} x2={room.cx + halfW} z2={room.cz - halfD} height={h} thickness={t} color="#d4ccc0" viewCenter={vc} />
+      <WallMesh x1={room.cx - halfW} z1={room.cz + halfD} x2={room.cx + halfW} z2={room.cz + halfD} height={h} thickness={t} color="#d4ccc0" viewCenter={vc} />
+      <WallMesh x1={room.cx - halfW} z1={room.cz - halfD} x2={room.cx - halfW} z2={room.cz + halfD} height={h} thickness={t} color="#d4ccc0" viewCenter={vc} />
+      <WallMesh x1={room.cx + halfW} z1={room.cz - halfD} x2={room.cx + halfW} z2={room.cz + halfD} height={h} thickness={t} color="#d4ccc0" viewCenter={vc} />
+    </group>
+  )
+}
+
+// Caméra animée avec transition douce
+function AnimatedControls({
+  targetPosition,
+  targetLookAt,
+  minDist,
+  maxDist,
+}: {
+  targetPosition: THREE.Vector3
+  targetLookAt: THREE.Vector3
+  minDist: number
+  maxDist: number
+}) {
+  const controlsRef = useRef<any>(null) // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  useFrame(({ camera }) => {
+    camera.position.lerp(targetPosition, 0.04)
+    if (controlsRef.current) {
+      controlsRef.current.target.lerp(targetLookAt, 0.04)
+      controlsRef.current.update()
+    }
+  })
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      minPolarAngle={0.2}
+      maxPolarAngle={Math.PI / 2.1}
+      minDistance={minDist}
+      maxDistance={maxDist}
+      enablePan={true}
+      panSpeed={0.5}
+    />
+  )
+}
+
+// ============ SCÈNE ============
+
 function Scene({
-  selectedRoom, hoveredRoom, pendingByRoom, onSelect, onHover,
+  selectedRoom, hoveredRoom, pendingByRoom, focusedChambre,
+  onSelect, onHover,
 }: {
   selectedRoom: string | null
   hoveredRoom: string | null
   pendingByRoom: Record<string, number>
+  focusedChambre: string | null
   onSelect: (id: string) => void
   onHover: (id: string | null) => void
 }) {
+  const focusedRoom = focusedChambre ? ROOMS_3D.find((r) => r.id === focusedChambre) : null
+  const isFocused = focusedRoom !== null
+
+  const cameraPos = useMemo(
+    () =>
+      focusedRoom
+        ? new THREE.Vector3(focusedRoom.cx + 3, 5, focusedRoom.cz + 3)
+        : new THREE.Vector3(0, 14, 10),
+    [focusedRoom]
+  )
+  const lookAt = useMemo(
+    () =>
+      focusedRoom
+        ? new THREE.Vector3(focusedRoom.cx, 0, focusedRoom.cz)
+        : new THREE.Vector3(0, 0, 0),
+    [focusedRoom]
+  )
+
   return (
     <>
       <ambientLight intensity={0.6} />
       <directionalLight position={[10, 20, 8]} intensity={0.8} castShadow />
       <directionalLight position={[-6, 12, -6]} intensity={0.25} />
 
-      {/* Sol global */}
+      {/* Sol */}
       <mesh position={[0, -0.06, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[25, 25]} />
         <meshStandardMaterial color="#c8c0b4" roughness={1} />
       </mesh>
 
-      {/* Sols des pièces */}
-      {ROOMS_3D.map((room) => (
-        <RoomFloor
-          key={room.id}
-          room={room}
-          isSelected={selectedRoom === room.id}
-          isHovered={hoveredRoom === room.id}
-          pending={pendingByRoom[room.id] || 0}
-          onSelect={onSelect}
-          onHover={onHover}
-        />
-      ))}
+      {/* === VUE APPARTEMENT === */}
+      {!isFocused && (
+        <>
+          {ROOMS_3D.map((room) => (
+            <RoomFloor
+              key={room.id}
+              room={room}
+              isSelected={selectedRoom === room.id}
+              isHovered={hoveredRoom === room.id}
+              pending={pendingByRoom[room.id] || 0}
+              onSelect={onSelect}
+              onHover={onHover}
+            />
+          ))}
+          {EXT_WALLS.map((wall, i) => (
+            <WallMesh key={`e${i}`} x1={wall.pts[0]} z1={wall.pts[1]} x2={wall.pts[2]} z2={wall.pts[3]} height={wall.h} thickness={0.15} color="#d4ccc0" />
+          ))}
+          {INT_WALLS.map((pts, i) => (
+            <WallMesh key={`i${i}`} x1={pts[0]} z1={pts[1]} x2={pts[2]} z2={pts[3]} height={2.0} thickness={0.10} color="#ece4d8" />
+          ))}
+        </>
+      )}
 
-      {/* Murs extérieurs */}
-      {EXT_WALLS.map((wall, i) => (
-        <WallMesh
-          key={`e${i}`}
-          x1={wall.pts[0]} z1={wall.pts[1]} x2={wall.pts[2]} z2={wall.pts[3]}
-          height={wall.h}
-          thickness={0.15}
-          color="#d4ccc0"
-        />
-      ))}
+      {/* === VUE CHAMBRE ISOLÉE === */}
+      {isFocused && focusedRoom && (
+        <>
+          <RoomFloor
+            room={focusedRoom}
+            isSelected={true}
+            isHovered={false}
+            pending={pendingByRoom[focusedRoom.id] || 0}
+            onSelect={() => {}}
+            onHover={() => {}}
+            showLabel={true}
+          />
+          <ChambreWalls room={focusedRoom} />
+        </>
+      )}
 
-      {/* Murs intérieurs */}
-      {INT_WALLS.map((pts, i) => (
-        <WallMesh
-          key={`i${i}`}
-          x1={pts[0]} z1={pts[1]} x2={pts[2]} z2={pts[3]}
-          height={2.0}
-          thickness={0.10}
-          color="#ece4d8"
-        />
-      ))}
-
-      {/* Contrôles caméra */}
-      <OrbitControls
-        minPolarAngle={0.2}
-        maxPolarAngle={Math.PI / 2.1}
-        minDistance={4}
-        maxDistance={22}
-        enablePan={true}
-        panSpeed={0.5}
+      <AnimatedControls
+        targetPosition={cameraPos}
+        targetLookAt={lookAt}
+        minDist={isFocused ? 2 : 4}
+        maxDist={isFocused ? 10 : 22}
       />
     </>
   )
@@ -336,6 +356,7 @@ export default function InteractiveHouse({
 }) {
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
   const [hoveredRoom, setHoveredRoom] = useState<string | null>(null)
+  const [focusedChambre, setFocusedChambre] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
@@ -356,14 +377,16 @@ export default function InteractiveHouse({
     pendingByRoom[roomId] = roomTasks.filter((t) => t.status === 'pending').length
   }
 
-  const selectedRoomConfig = ROOMS_3D.find((r) => r.id === selectedRoom)
-  const selectedRoomTasks = selectedRoom
-    ? (tasksByRoom[selectedRoom] || []).sort(
+  const totalPending = tasks.filter((t) => t.status === 'pending').length
+
+  // Pièce affichée dans le panel (chambre focusée ou room sélectionnée)
+  const activeRoomId = focusedChambre || selectedRoom
+  const activeRoomConfig = ROOMS_3D.find((r) => r.id === activeRoomId)
+  const activeRoomTasks = activeRoomId
+    ? (tasksByRoom[activeRoomId] || []).sort(
         (a, b) => (a.status === 'done' ? 1 : 0) - (b.status === 'done' ? 1 : 0)
       )
     : []
-
-  const totalPending = tasks.filter((t) => t.status === 'pending').length
 
   async function completeTask(taskId: string) {
     await api.patch(`/api/tasks/${taskId}`, { status: 'done' })
@@ -371,19 +394,40 @@ export default function InteractiveHouse({
   }
 
   function handleSelect(id: string) {
-    setSelectedRoom(selectedRoom === id ? null : id)
+    if (CHAMBRE_IDS.includes(id)) {
+      // Clic chambre → zoom isolé
+      setFocusedChambre(focusedChambre === id ? null : id)
+      setSelectedRoom(null)
+    } else {
+      // Autre pièce → panel de tâches
+      setSelectedRoom(selectedRoom === id ? null : id)
+    }
+  }
+
+  function handleBack() {
+    setFocusedChambre(null)
   }
 
   return (
     <div className="flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
-      {/* Instructions */}
-      <div className="text-center py-2 flex-shrink-0">
+      {/* Bar d'info */}
+      <div className="text-center py-2 flex-shrink-0 relative">
+        {focusedChambre ? (
+          <button
+            onClick={handleBack}
+            className="absolute left-6 top-1/2 -translate-y-1/2 text-sm text-accent font-medium hover:text-accent-hover transition flex items-center gap-1"
+          >
+            ← Appartement
+          </button>
+        ) : null}
         <p className="text-t-faint text-xs">
-          Tourne la vue avec la souris · Clique sur une pièce ({totalPending} quête{totalPending !== 1 ? 's' : ''} en attente)
+          {focusedChambre
+            ? `Vue ${ROOMS_3D.find((r) => r.id === focusedChambre)?.name} · Tourne avec la souris`
+            : `Tourne la vue · Clique sur une chambre pour entrer · ${totalPending} quête${totalPending !== 1 ? 's' : ''} en attente`}
         </p>
       </div>
 
-      {/* Canvas 3D — prend tout l'espace */}
+      {/* Canvas 3D */}
       <div className="flex-1 min-h-0 rounded-2xl overflow-hidden border border-b mx-4" style={{ background: '#c8c0b4' }}>
         {mounted && (
           <Canvas camera={{ position: [0, 14, 10], fov: 45 }} shadows>
@@ -391,6 +435,7 @@ export default function InteractiveHouse({
               selectedRoom={selectedRoom}
               hoveredRoom={hoveredRoom}
               pendingByRoom={pendingByRoom}
+              focusedChambre={focusedChambre}
               onSelect={handleSelect}
               onHover={setHoveredRoom}
             />
@@ -398,32 +443,29 @@ export default function InteractiveHouse({
         )}
       </div>
 
-      {/* Panel des tâches (scroll si nécessaire) */}
-      {selectedRoomConfig && (
+      {/* Panel des tâches */}
+      {activeRoomConfig && (
         <div
           className="flex-shrink-0 mx-4 mt-4 mb-4 bg-surface rounded-2xl border border-b p-4 space-y-3 max-h-64 overflow-y-auto"
           style={{ boxShadow: 'var(--shadow)' }}
         >
           <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-              style={{ backgroundColor: selectedRoomConfig.color }}
-            >
-              {selectedRoomConfig.icon}
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ backgroundColor: activeRoomConfig.color }}>
+              {activeRoomConfig.icon}
             </div>
             <div>
-              <h3 className="font-semibold text-t-primary">{selectedRoomConfig.name}</h3>
+              <h3 className="font-semibold text-t-primary">{activeRoomConfig.name}</h3>
               <p className="text-xs text-t-faint">
-                {selectedRoomTasks.filter((t) => t.status === 'pending').length} quête(s) en attente
+                {activeRoomTasks.filter((t) => t.status === 'pending').length} quête(s) en attente
               </p>
             </div>
           </div>
 
-          {selectedRoomTasks.length === 0 ? (
+          {activeRoomTasks.length === 0 ? (
             <p className="text-sm text-t-faint text-center py-4">Aucune quête dans cette pièce</p>
           ) : (
             <div className="space-y-2">
-              {selectedRoomTasks.map((task) => (
+              {activeRoomTasks.map((task) => (
                 <div
                   key={task.id}
                   className={`flex items-center justify-between p-3 rounded-xl border transition ${
@@ -440,27 +482,17 @@ export default function InteractiveHouse({
                         title="Marquer comme fait"
                       />
                     ) : (
-                      <span className="w-6 h-6 rounded-full bg-success flex items-center justify-center text-white text-xs flex-shrink-0">
-                        ✓
-                      </span>
+                      <span className="w-6 h-6 rounded-full bg-success flex items-center justify-center text-white text-xs flex-shrink-0">✓</span>
                     )}
                     <div className="min-w-0">
-                      <p className={`text-sm font-medium truncate ${
-                        task.status === 'done' ? 'line-through text-t-faint' : 'text-t-primary'
-                      }`}>
+                      <p className={`text-sm font-medium truncate ${task.status === 'done' ? 'line-through text-t-faint' : 'text-t-primary'}`}>
                         {task.title}
                       </p>
-                      {task.assignedTo && (
-                        <p className="text-xs text-t-faint truncate">→ {task.assignedTo.username}</p>
-                      )}
+                      {task.assignedTo && <p className="text-xs text-t-faint truncate">→ {task.assignedTo.username}</p>}
                     </div>
                   </div>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ml-2 ${
-                    task.difficulty === 'easy'
-                      ? 'bg-green-100 text-green-700'
-                      : task.difficulty === 'hard'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-yellow-100 text-yellow-700'
+                    task.difficulty === 'easy' ? 'bg-green-100 text-green-700' : task.difficulty === 'hard' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
                   }`}>
                     {task.difficulty === 'easy' ? '+20' : task.difficulty === 'hard' ? '+100' : '+50'} XP
                   </span>
