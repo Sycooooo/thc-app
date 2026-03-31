@@ -20,6 +20,7 @@ export default function AddTaskForm({
   const [dueDate, setDueDate] = useState('')
   const [recurrence, setRecurrence] = useState('')
   const [difficulty, setDifficulty] = useState('medium')
+  const [room, setRoom] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -34,6 +35,7 @@ export default function AddTaskForm({
       dueDate: dueDate || null,
       recurrence: recurrence || null,
       difficulty,
+      room: room || null,
     })
 
     setTitle('')
@@ -42,6 +44,7 @@ export default function AddTaskForm({
     setDueDate('')
     setRecurrence('')
     setDifficulty('medium')
+    setRoom('')
     setOpen(false)
     setLoading(false)
     router.refresh()
@@ -51,7 +54,7 @@ export default function AddTaskForm({
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition font-medium"
+        className="w-full py-3 border-2 border-dashed border-stone-300 rounded-xl text-stone-500 hover:border-amber-400 hover:text-amber-700 transition font-medium"
       >
         + Ajouter une tâche
       </button>
@@ -59,8 +62,8 @@ export default function AddTaskForm({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-indigo-200 p-5 shadow-sm">
-      <h3 className="font-semibold text-gray-900 mb-4">Nouvelle tâche</h3>
+    <div className="bg-white rounded-2xl border border-amber-200 p-5 shadow-sm">
+      <h3 className="font-semibold text-stone-800 mb-4">Nouvelle tâche</h3>
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           type="text"
@@ -68,7 +71,7 @@ export default function AddTaskForm({
           onChange={(e) => setTitle(e.target.value)}
           required
           placeholder="Titre de la tâche"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 bg-white"
+          className="w-full px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 bg-stone-50"
         />
 
         <input
@@ -76,12 +79,12 @@ export default function AddTaskForm({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description (optionnel)"
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 bg-white"
+          className="w-full px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 bg-stone-50"
         />
 
         {/* Difficulté / XP */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Difficulté</label>
+          <label className="block text-sm font-medium text-stone-600 mb-2">Difficulté</label>
           <div className="grid grid-cols-3 gap-2">
             {[
               { value: 'easy', label: 'Facile', xp: '+20 XP', color: 'border-green-400 bg-green-50 text-green-700' },
@@ -93,7 +96,7 @@ export default function AddTaskForm({
                 type="button"
                 onClick={() => setDifficulty(d.value)}
                 className={`py-2 rounded-lg border-2 text-sm font-medium transition ${
-                  difficulty === d.value ? d.color + ' border-2' : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                  difficulty === d.value ? d.color + ' border-2' : 'border-stone-200 text-stone-500 hover:border-stone-300'
                 }`}
               >
                 {d.label}<br />
@@ -103,11 +106,11 @@ export default function AddTaskForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <select
             value={assignedToId}
             onChange={(e) => setAssignedToId(e.target.value)}
-            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 bg-white"
+            className="px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 bg-stone-50"
           >
             <option value="">Assigner à...</option>
             {members.map((m) => (
@@ -118,9 +121,28 @@ export default function AddTaskForm({
           </select>
 
           <select
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            className="px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 bg-stone-50"
+          >
+            <option value="">Pièce...</option>
+            <option value="sejour">🛋️ Séjour</option>
+            <option value="cuisine">🍳 Cuisine</option>
+            <option value="sdb">🚿 Salle d&apos;eau</option>
+            <option value="wc">🚽 WC</option>
+            <option value="chambre1">🛏️ Chambre 1</option>
+            <option value="chambre2">🛏️ Chambre 2</option>
+            <option value="chambre3">🛏️ Chambre 3</option>
+            <option value="couloir">🚪 Couloir</option>
+            <option value="buanderie">🧺 Buanderie</option>
+            <option value="balcon">☀️ Balcon</option>
+            <option value="loggia">🌿 Loggia</option>
+          </select>
+
+          <select
             value={recurrence}
             onChange={(e) => setRecurrence(e.target.value)}
-            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 bg-white"
+            className="px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 bg-stone-50"
           >
             <option value="">Pas de récurrence</option>
             <option value="daily">Quotidien</option>
@@ -133,21 +155,21 @@ export default function AddTaskForm({
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 bg-white"
+          className="w-full px-4 py-2.5 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-stone-800 bg-stone-50"
         />
 
         <div className="flex gap-3 pt-1">
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 transition"
+            className="flex-1 py-2.5 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-800 disabled:opacity-50 transition"
           >
             {loading ? 'Ajout...' : 'Ajouter'}
           </button>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+            className="px-4 py-2.5 border border-stone-300 text-stone-600 rounded-lg hover:bg-stone-50 transition"
           >
             Annuler
           </button>

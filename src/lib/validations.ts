@@ -39,7 +39,12 @@ export const createTaskSchema = z.object({
   description: z.string().max(1000, 'Description trop longue').optional().nullable(),
   difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
   category: z.enum(['cleaning', 'cooking', 'sport', 'maintenance', 'admin']).optional().nullable(),
-  room: z.enum(['salon', 'cuisine', 'sdb', 'chambre', 'exterieur']).optional().nullable(),
+  room: z.enum([
+    'sejour', 'cuisine', 'sdb', 'wc', 'chambre1', 'chambre2', 'chambre3',
+    'couloir', 'buanderie', 'balcon', 'loggia',
+    // legacy values (backward compat)
+    'salon', 'chambre', 'exterieur',
+  ]).optional().nullable(),
   colocId: z.string({ error: 'Colocation requise' }).min(1, 'Colocation requise'),
   assignedToId: z.string().optional().nullable(),
   dueDate: z.string().optional().nullable(),

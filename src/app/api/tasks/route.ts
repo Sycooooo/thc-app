@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   if (!result.success) {
     return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
   }
-  const { title, description, colocId, assignedToId, dueDate, recurrence, difficulty } = result.data
+  const { title, description, colocId, assignedToId, dueDate, recurrence, difficulty, room } = result.data
 
   // Vérifier que l'user est membre de la coloc
   const membership = await prisma.userColoc.findUnique({
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       title,
       description,
       difficulty,
+      room,
       colocId,
       assignedToId,
       dueDate: dueDate ? new Date(dueDate) : null,

@@ -61,6 +61,12 @@ export default async function ColocPage({
         </div>
         <div className="flex items-center gap-2">
           <Link
+            href={`/coloc/${id}/maison`}
+            className="text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full font-medium hover:bg-amber-100 transition border border-amber-200"
+          >
+            🏠 Maison
+          </Link>
+          <Link
             href={`/coloc/${id}/calendar`}
             className="text-xs bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full font-medium hover:bg-stone-200 transition"
           >
