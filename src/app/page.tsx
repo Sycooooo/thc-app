@@ -13,7 +13,7 @@ export default async function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center bg-bg p-8">
       <div className="text-center max-w-md">
         <div className="text-6xl mb-6">🏠</div>
-        <h1 className="font-display text-6xl tracking-wide text-t-primary uppercase mb-4">
+        <h1 className="font-display text-6xl tracking-wide text-t-primary uppercase mb-4 neon-title">
           THC App
         </h1>
         <p className="text-t-muted mb-8 text-lg">
@@ -22,7 +22,7 @@ export default async function Home() {
         <div className="flex gap-4 justify-center">
           <Link
             href="/login"
-            className="px-6 py-3 bg-accent text-white rounded-xl font-medium hover:bg-accent-hover transition"
+            className="btn-glow px-6 py-3 bg-accent text-white rounded-xl font-medium hover:bg-accent-hover transition"
           >
             Se connecter
           </Link>

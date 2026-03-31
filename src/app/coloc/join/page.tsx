@@ -27,11 +27,11 @@ export default function JoinColocPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-bg p-4">
-      <div className="bg-surface rounded-2xl border border-b p-8 w-full max-w-sm" style={{ boxShadow: 'var(--shadow-lg)' }}>
+      <div className="card card-glow gradient-border p-8 w-full max-w-sm">
         <Link href="/dashboard" className="text-sm text-t-muted hover:text-t-primary mb-6 block transition">
           ← Retour
         </Link>
-        <h1 className="font-display text-3xl tracking-wide text-t-primary uppercase mb-2">Rejoindre une colocation</h1>
+        <h1 className="font-display text-3xl tracking-wide text-t-primary uppercase mb-2 neon-title">Rejoindre une colocation</h1>
         <p className="text-t-muted text-sm mb-6">
           Demande le code d&apos;invitation à un membre de la coloc.
         </p>
@@ -46,7 +46,7 @@ export default function JoinColocPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               required
-              className="w-full px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent font-mono text-t-primary bg-input-bg"
+              className="w-full px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent code-text text-t-primary bg-input-bg"
               placeholder="Colle le code ici"
             />
           </div>
@@ -56,7 +56,7 @@ export default function JoinColocPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition"
+            className="btn-glow w-full py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition"
           >
             {loading ? 'Vérification...' : 'Rejoindre'}
           </button>

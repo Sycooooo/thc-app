@@ -33,13 +33,13 @@ export default async function AdminPage({
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="bg-surface border-b border-b px-6 py-4 flex items-center justify-between">
+      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←
           </Link>
           <span className="text-xl">⚙️</span>
-          <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase">Admin — {coloc.name}</h1>
+          <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Admin — {coloc.name}</h1>
         </div>
       </header>
 

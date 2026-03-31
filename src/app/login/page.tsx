@@ -33,10 +33,10 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-bg p-4">
-      <div className="bg-surface rounded-2xl border border-b p-8 w-full max-w-sm" style={{ boxShadow: 'var(--shadow-lg)' }}>
+      <div className="card card-glow gradient-border p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="text-4xl mb-3">🏠</div>
-          <h1 className="font-display text-3xl tracking-wide text-t-primary uppercase">Connexion</h1>
+          <h1 className="font-display text-3xl tracking-wide text-t-primary uppercase neon-title">Connexion</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition"
+            className="btn-glow w-full py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition"
           >
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>

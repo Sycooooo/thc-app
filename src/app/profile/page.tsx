@@ -32,15 +32,15 @@ export default async function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="bg-surface border-b border-b px-6 py-4 flex items-center gap-3">
+      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center gap-3">
         <Link href="/dashboard" className="text-t-muted hover:text-t-primary transition">←</Link>
-        <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase">Mon profil</h1>
+        <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Mon profil</h1>
       </header>
 
       <main className="max-w-lg mx-auto p-6 space-y-5">
 
         {/* Carte profil */}
-        <div className="bg-surface rounded-2xl border border-b p-6 flex flex-col items-center gap-4" style={{ boxShadow: 'var(--shadow-lg)' }}>
+        <div className="card card-glow gradient-border p-6 flex flex-col items-center gap-4">
           {user.avatarConfig ? (
             <PixelAvatar
               config={{
@@ -62,7 +62,7 @@ export default async function ProfilePage() {
               username={user.username}
             />
           )}
-          <h2 className="font-display text-3xl tracking-wide text-t-primary uppercase">{user.username}</h2>
+          <h2 className="font-display text-3xl tracking-wide text-t-primary uppercase neon-title">{user.username}</h2>
 
           {/* Bouton personnaliser */}
           <Link
@@ -73,55 +73,55 @@ export default async function ProfilePage() {
           </Link>
 
           {/* Badge niveau */}
-          <div className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-full text-lg font-bold">
-            ⭐ Niveau {level}
+          <div className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-full text-lg font-bold badge-neon">
+            ⭐ Niveau <span className="stat-number ml-1">{level}</span>
           </div>
         </div>
 
         {/* Barre XP */}
-        <div className="bg-surface rounded-2xl border border-b p-5" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-5">
           <div className="flex justify-between items-center mb-2">
             <span className="font-semibold text-t-primary">Expérience</span>
-            <span className="text-sm text-t-muted">{user.xp} XP total</span>
+            <span className="text-sm text-t-muted stat-number">{user.xp} XP total</span>
           </div>
           <div className="w-full bg-surface-hover rounded-full h-4 overflow-hidden">
             <div
               className="h-4 bg-accent rounded-full transition-all"
-              style={{ width: `${xpInfo.percent}%` }}
+              style={{ width: `${xpInfo.percent}%`, boxShadow: '0 0 12px var(--glow-accent)' }}
             />
           </div>
-          <div className="flex justify-between text-xs text-t-faint mt-1">
+          <div className="flex justify-between text-xs text-t-faint mt-1 stat-number">
             <span>{xpInfo.current} XP</span>
             <span>{xpInfo.needed} XP pour le niveau {level + 1}</span>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="bg-surface rounded-2xl border border-b p-5" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-5">
           <h3 className="font-semibold text-t-primary mb-4">Statistiques</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-accent/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent">{totalCompleted}</p>
+              <p className="text-3xl font-bold text-accent stat-number">{totalCompleted}</p>
               <p className="text-sm text-t-muted mt-1">Tâches accomplies</p>
             </div>
             <div className="bg-accent-secondary/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent-secondary">{user.xp}</p>
+              <p className="text-3xl font-bold text-accent-secondary stat-number">{user.xp}</p>
               <p className="text-sm text-t-muted mt-1">XP totaux</p>
             </div>
             <div className="bg-accent/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent">{user.currency}</p>
+              <p className="text-3xl font-bold text-accent stat-number">{user.currency}</p>
               <p className="text-sm text-t-muted mt-1">🪙 Coins</p>
             </div>
             <div className="bg-accent-secondary/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent-secondary">{user.currentStreak}</p>
+              <p className="text-3xl font-bold text-accent-secondary stat-number">{user.currentStreak}</p>
               <p className="text-sm text-t-muted mt-1">🔥 Streak (jours)</p>
               {streakMultiplier > 1 && (
-                <p className="text-xs text-accent-secondary mt-1 font-medium">Bonus x{streakMultiplier}</p>
+                <p className="text-xs text-accent-secondary mt-1 font-medium stat-number">Bonus x{streakMultiplier}</p>
               )}
             </div>
           </div>
           {user.longestStreak > 0 && (
-            <p className="text-xs text-t-faint text-center mt-3">
+            <p className="text-xs text-t-faint text-center mt-3 stat-number">
               Record : {user.longestStreak} jours de suite
             </p>
           )}

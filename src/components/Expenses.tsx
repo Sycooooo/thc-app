@@ -308,13 +308,13 @@ export default function Expenses({
     <div className="space-y-6">
       {/* Résumé */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-surface rounded-2xl border border-b p-5 text-center" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-5 text-center">
           <p className="text-sm text-t-muted">Total dépenses</p>
-          <p className="text-2xl font-bold text-t-primary mt-1">{totalExpenses.toFixed(2)}€</p>
+          <p className="text-2xl font-bold text-t-primary mt-1 stat-number">{totalExpenses.toFixed(2)}€</p>
         </div>
-        <div className="bg-surface rounded-2xl border border-b p-5 text-center" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="card card-glow p-5 text-center">
           <p className="text-sm text-t-muted">Nombre</p>
-          <p className="text-2xl font-bold text-t-primary mt-1">{expenses.length}</p>
+          <p className="text-2xl font-bold text-t-primary mt-1 stat-number">{expenses.length}</p>
         </div>
       </div>
 

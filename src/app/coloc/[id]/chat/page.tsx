@@ -35,12 +35,12 @@ export default async function ChatPage({
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
-      <header className="bg-surface border-b border-b px-6 py-4 flex items-center gap-3">
+      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center gap-3">
         <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
           ←
         </Link>
         <span className="text-xl">💬</span>
-        <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase">{coloc.name} — Chat</h1>
+        <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">{coloc.name} — Chat</h1>
       </header>
 
       <Chat

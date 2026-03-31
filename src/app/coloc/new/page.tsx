@@ -27,11 +27,11 @@ export default function NewColocPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-bg p-4">
-      <div className="bg-surface rounded-2xl border border-b p-8 w-full max-w-sm" style={{ boxShadow: 'var(--shadow-lg)' }}>
+      <div className="card card-glow gradient-border p-8 w-full max-w-sm">
         <Link href="/dashboard" className="text-sm text-t-muted hover:text-t-primary mb-6 block transition">
           ← Retour
         </Link>
-        <h1 className="font-display text-3xl tracking-wide text-t-primary uppercase mb-6">Nouvelle colocation</h1>
+        <h1 className="font-display text-3xl tracking-wide text-t-primary uppercase mb-6 neon-title">Nouvelle colocation</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -53,7 +53,7 @@ export default function NewColocPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition"
+            className="btn-glow w-full py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition"
           >
             {loading ? 'Création...' : 'Créer la colocation'}
           </button>
