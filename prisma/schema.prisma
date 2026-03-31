@@ -48,6 +48,7 @@ model Colocation {
   boardItems      BoardItem[]
   notifications   Notification[]
   messages        Message[]
+  menus           WeeklyMenu[]
 }
 
 model UserColoc {
@@ -270,6 +271,22 @@ model MemberAffinity {
   category  String // "cleaning", "cooking", "sport", "maintenance", "admin"
 
   @@unique([userId, colocId, category])
+}
+
+// === Menus & Courses IA ===
+
+model WeeklyMenu {
+  id            String   @id @default(cuid())
+  weekStart     DateTime // Lundi de la semaine
+  nbPersons     Int      @default(2)
+  restrictions  String?  // "vegetarien", "sans gluten", etc.
+  budget        String   @default("moyen") // "economique", "moyen", "genereux"
+  meals         String   // JSON string des 7 jours de repas
+  shoppingList  String?  // JSON string de la liste de courses
+  createdAt     DateTime @default(now())
+
+  colocId       String
+  coloc         Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
 }
 
 // === Chat ===

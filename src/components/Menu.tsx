@@ -1,0 +1,394 @@
+'use client'
+
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { api } from '@/lib/api'
+
+type Etape = {
+  description: string
+  duree: number | null // minutes, null si pas de minuteur
+}
+
+type Plat = {
+  nom: string
+  ingredients: string[]
+  etapes?: Etape[]
+}
+
+type Meal = {
+  dejeuner: Plat
+  diner: Plat
+}
+
+type ShoppingItem = {
+  nom: string
+  quantite: string
+  categorie: string
+  prixEstime: number
+}
+
+type WeeklyMenuData = {
+  id: string
+  meals: Record<string, Meal>
+  shoppingList: ShoppingItem[] | null
+  nbPersons: number
+  restrictions: string | null
+  budget: string
+}
+
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+const DAY_EMOJIS: Record<string, string> = {
+  Lundi: '1️⃣', Mardi: '2️⃣', Mercredi: '3️⃣', Jeudi: '4️⃣',
+  Vendredi: '5️⃣', Samedi: '6️⃣', Dimanche: '7️⃣',
+}
+
+const CATEGORIES_ORDER = [
+  'Fruits & Légumes', 'Viandes & Poissons', 'Produits laitiers',
+  'Épicerie', 'Boulangerie', 'Surgelés', 'Boissons', 'Autre',
+]
+
+export default function Menu({
+  colocId,
+  initialMenu,
+}: {
+  colocId: string
+  initialMenu: WeeklyMenuData | null
+}) {
+  const [menu, setMenu] = useState<WeeklyMenuData | null>(initialMenu)
+  const [generating, setGenerating] = useState(false)
+  const [showShopping, setShowShopping] = useState(false)
+  const [nbPersons, setNbPersons] = useState(menu?.nbPersons || 2)
+  const [restrictions, setRestrictions] = useState(menu?.restrictions || '')
+  const [budget, setBudget] = useState(menu?.budget || 'moyen')
+  const [goal, setGoal] = useState('')
+  const [preferences, setPreferences] = useState('')
+  const [calories, setCalories] = useState('')
+  const [showForm, setShowForm] = useState(!initialMenu)
+
+  async function generate() {
+    setGenerating(true)
+    try {
+      const data = await api.post(`/api/coloc/${colocId}/menu`, {
+        nbPersons,
+        restrictions: restrictions.trim() || null,
+        budget,
+        goal: goal.trim() || null,
+        preferences: preferences.trim() || null,
+        calories: calories ? Number(calories) : null,
+      })
+      setMenu(data)
+      setShowForm(false)
+    } catch {
+      alert('Erreur lors de la génération. Réessaie.')
+    }
+    setGenerating(false)
+  }
+
+  const totalPrice = menu?.shoppingList?.reduce((sum, item) => sum + item.prixEstime, 0) || 0
+
+  // Grouper la liste de courses par catégorie
+  const shoppingByCategory: Record<string, ShoppingItem[]> = {}
+  if (menu?.shoppingList) {
+    for (const item of menu.shoppingList) {
+      if (!shoppingByCategory[item.categorie]) {
+        shoppingByCategory[item.categorie] = []
+      }
+      shoppingByCategory[item.categorie].push(item)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Formulaire de génération */}
+      {showForm && (
+        <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
+          <h2 className="font-semibold text-gray-900">Paramètres du menu</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Nombre de personnes</label>
+              <select
+                value={nbPersons}
+                onChange={(e) => setNbPersons(Number(e.target.value))}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                  <option key={n} value={n}>{n} personne{n > 1 ? 's' : ''}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Budget</label>
+              <select
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+              >
+                <option value="economique">Economique</option>
+                <option value="moyen">Moyen</option>
+                <option value="genereux">Généreux</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Restrictions alimentaires</label>
+              <input
+                type="text"
+                value={restrictions}
+                onChange={(e) => setRestrictions(e.target.value)}
+                placeholder="végétarien, sans gluten, halal..."
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Objectif sportif</label>
+              <select
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+              >
+                <option value="">Aucun</option>
+                <option value="prise_masse">Prise de masse</option>
+                <option value="seche">Sèche / Perte de poids</option>
+                <option value="maintien">Maintien</option>
+                <option value="performance">Performance sportive</option>
+                <option value="endurance">Endurance</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Calories / jour (optionnel)</label>
+              <input
+                type="number"
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+                placeholder="ex: 2200"
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Préférences culinaires</label>
+              <input
+                type="text"
+                value={preferences}
+                onChange={(e) => setPreferences(e.target.value)}
+                placeholder="cuisine asiatique, italien, rapide..."
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={generate}
+            disabled={generating}
+            className="w-full py-2.5 bg-indigo-500 text-white rounded-xl font-medium hover:bg-indigo-600 transition disabled:opacity-50"
+          >
+            {generating ? 'Génération en cours... (10-20s)' : 'Générer le menu de la semaine'}
+          </button>
+        </div>
+      )}
+
+      {/* Menu de la semaine */}
+      {menu && !showForm && (
+        <>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-gray-900">Menu de la semaine</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {menu.nbPersons} pers. | Budget {menu.budget}{menu.restrictions ? ` | ${menu.restrictions}` : ''}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowShopping(!showShopping)}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition ${
+                  showShopping ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                🛒 Courses {totalPrice > 0 && `(~${totalPrice.toFixed(0)}€)`}
+              </button>
+              <button
+                onClick={() => setShowForm(true)}
+                className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full font-medium hover:bg-gray-200 transition"
+              >
+                Regénérer
+              </button>
+            </div>
+          </div>
+
+          {/* Vue liste de courses */}
+          {showShopping && menu.shoppingList && (
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900">Liste de courses</h3>
+                <p className="text-sm font-medium text-green-600">Total estimé : ~{totalPrice.toFixed(2)}€</p>
+              </div>
+
+              {CATEGORIES_ORDER.filter((cat) => shoppingByCategory[cat]).map((cat) => (
+                <div key={cat}>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{cat}</h4>
+                  <div className="space-y-1">
+                    {shoppingByCategory[cat].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between py-1.5 px-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-900">{item.nom}</span>
+                          <span className="text-xs text-gray-400">{item.quantite}</span>
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">{item.prixEstime.toFixed(2)}€</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Vue menu par jour */}
+          {!showShopping && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {DAYS.map((day) => {
+                const meal = menu.meals[day]
+                if (!meal) return null
+                return (
+                  <div key={day} className="bg-white rounded-2xl border border-gray-200 p-4">
+                    <p className="font-semibold text-gray-900 mb-3">
+                      {DAY_EMOJIS[day]} {day}
+                    </p>
+
+                    <div className="space-y-3">
+                      <PlatCard label="Déjeuner" plat={meal.dejeuner} />
+                      <div className="border-t border-gray-100 pt-3">
+                        <PlatCard label="Dîner" plat={meal.diner} />
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+// === Composant Plat avec dropdown étapes + minuteurs ===
+
+function PlatCard({ label, plat }: { label: string; plat: Plat }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div>
+      <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">{label}</p>
+      <p className="text-sm font-medium text-gray-900">{plat.nom}</p>
+      <p className="text-xs text-gray-500 mt-0.5">{plat.ingredients.join(', ')}</p>
+
+      {plat.etapes && plat.etapes.length > 0 && (
+        <div className="mt-2">
+          <button
+            onClick={() => setOpen(!open)}
+            className="text-xs text-indigo-500 hover:text-indigo-700 font-medium flex items-center gap-1 transition"
+          >
+            <span className={`transition-transform ${open ? 'rotate-90' : ''}`}>▶</span>
+            {open ? 'Masquer la préparation' : `Préparation (${plat.etapes.length} étapes)`}
+          </button>
+
+          {open && (
+            <div className="mt-2 space-y-1.5">
+              {plat.etapes.map((etape, i) => (
+                <EtapeRow key={i} index={i + 1} etape={etape} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// === Composant Etape avec minuteur ===
+
+function EtapeRow({ index, etape }: { index: number; etape: Etape }) {
+  const [timerRunning, setTimerRunning] = useState(false)
+  const [secondsLeft, setSecondsLeft] = useState(etape.duree ? etape.duree * 60 : 0)
+  const [done, setDone] = useState(false)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const stopTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    setTimerRunning(false)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [])
+
+  function startTimer() {
+    if (!etape.duree) return
+    setSecondsLeft(etape.duree * 60)
+    setTimerRunning(true)
+    setDone(false)
+
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          stopTimer()
+          setDone(true)
+          // Notification sonore
+          try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbsGczHjqIuc/LdUMvPX2xysp3QS09f7PIwXRALj6CssS5cD0tQISzwbVtOy1Bh7S+sGo6LkOKtbqsZzgrRIy2uKlkNypEjre2pGE1KUWQuLOdXTQoRpK7sZlaNChHk7uwnFk0KEiVvK+YVjImSZa9rZVTMSVLmL6rlFAvJE2awKiQTC0iTprCoYtIKiBQnMKfjUcnHlKew5yIRCQcVKDEmoVBIRpWosWYgj4fGFikx5V+Oh0VW6bIknk3GhNdqMmPdjQYEF+qyox0MRYOYazLiXEvFA1jrsyGbi0SDmWwzYNrKhAMZ7LOgGgnDgpps8+AZyQMCWu1z4FnJAoGbbfQgGgjCAVwudGCaSIFBHK60oRqIgMDdL3ThWshAQF2v9SGbCAAAXfB1YdvIAABecPWiHAg').play() } catch {}
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  function formatTimer(secs: number) {
+    const m = Math.floor(secs / 60)
+    const s = secs % 60
+    return `${m}:${s.toString().padStart(2, '0')}`
+  }
+
+  return (
+    <div className={`flex items-start gap-2 px-2.5 py-2 rounded-lg text-xs ${done ? 'bg-green-50' : 'bg-gray-50'}`}>
+      <span className="text-gray-400 font-mono w-4 flex-shrink-0">{index}.</span>
+      <p className="flex-1 text-gray-700">{etape.description}</p>
+
+      {etape.duree && (
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {!timerRunning && !done && (
+            <button
+              onClick={startTimer}
+              className="flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full hover:bg-indigo-200 transition"
+            >
+              <span>⏱</span> {etape.duree}min
+            </button>
+          )}
+          {timerRunning && (
+            <div className="flex items-center gap-1.5">
+              <span className="font-mono font-medium text-indigo-600">{formatTimer(secondsLeft)}</span>
+              <button
+                onClick={stopTimer}
+                className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition"
+              >
+                Stop
+              </button>
+            </div>
+          )}
+          {done && (
+            <span className="text-green-600 font-medium">Terminé !</span>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
