@@ -9,14 +9,16 @@ export default function CameraController() {
   return (
     <OrbitControls
       target={[centerX, 0, centerZ]}
-      minPolarAngle={Math.PI / 8}     // ~22° (nearly top-down)
-      maxPolarAngle={Math.PI / 2.8}   // ~64° (max tilt)
-      minDistance={5}
-      maxDistance={20}
+      minPolarAngle={0}               // full top-down allowed
+      maxPolarAngle={Math.PI / 2.5}   // ~72° max tilt
+      minDistance={4}
+      maxDistance={22}
       enablePan={true}
       panSpeed={0.8}
       rotateSpeed={0.5}
       zoomSpeed={0.8}
+      enableDamping
+      dampingFactor={0.1}
       makeDefault
     />
   )
