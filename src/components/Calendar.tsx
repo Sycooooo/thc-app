@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '@/lib/api'
 
 type CalendarEvent = {
@@ -198,10 +199,13 @@ export default function Calendar({ colocId }: { colocId: string }) {
             const isCurrentMonth = today.getFullYear() === year && today.getMonth() === m
 
             return (
-              <div
+              <motion.div
                 key={m}
                 onClick={() => openMonth(m)}
-                className={`bg-surface rounded-xl border p-3 cursor-pointer hover:border-accent/50 transition ${
+                whileHover={{ y: -3, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                className={`bg-surface rounded-xl border p-3 cursor-pointer hover:border-accent/50 transition-colors ${
                   isCurrentMonth ? 'border-accent' : 'border-b'
                 }`}
                 style={{ boxShadow: isCurrentMonth ? 'var(--shadow)' : undefined }}
@@ -246,7 +250,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
                     )
                   })}
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>
@@ -348,8 +352,15 @@ export default function Calendar({ colocId }: { colocId: string }) {
       </div>
 
       {/* Formulaire d'ajout */}
+      <AnimatePresence>
       {showForm && selectedDay !== null && (
-        <div className="card card-glow p-4 space-y-3">
+        <motion.div
+          initial={{ opacity: 0, height: 0, y: -8 }}
+          animate={{ opacity: 1, height: 'auto', y: 0 }}
+          exit={{ opacity: 0, height: 0, y: -8 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          className="card card-glow p-4 space-y-3 overflow-hidden"
+        >
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-t-primary">
               Nouvel événement — {selectedDay} {MONTH_NAMES[month]}
@@ -403,18 +414,28 @@ export default function Calendar({ colocId }: { colocId: string }) {
               />
             ))}
           </div>
-          <button
+          <motion.button
             onClick={createEvent}
-            className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition-colors"
           >
             Créer
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Liste des événements du jour sélectionné */}
+      <AnimatePresence>
       {selectedDay !== null && getEventsForDay(month, selectedDay).length > 0 && (
-        <div className="card p-4 space-y-2">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          className="card p-4 space-y-2"
+        >
           <h3 className="font-semibold text-t-primary text-sm">
             {selectedDay} {MONTH_NAMES[month]}
           </h3>
@@ -439,8 +460,9 @@ export default function Calendar({ colocId }: { colocId: string }) {
               </button>
             </div>
           ))}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   )
 }

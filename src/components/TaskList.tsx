@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { XP_REWARDS, DIFFICULTY_LABELS, DIFFICULTY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS, ROOM_LABELS } from '@/lib/xp'
 import { api } from '@/lib/api'
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerList'
+import Button from '@/components/ui/Button'
 import type { Task } from '@/types'
 
 function Confetti() {
@@ -42,6 +43,54 @@ function Confetti() {
         />
       ))}
     </div>
+  )
+}
+
+function AnimatedCheckbox({
+  onClick,
+  disabled,
+}: {
+  onClick: () => void
+  disabled: boolean
+}) {
+  const [checked, setChecked] = useState(false)
+
+  return (
+    <motion.button
+      onClick={() => {
+        setChecked(true)
+        onClick()
+      }}
+      disabled={disabled}
+      whileHover={{ scale: 1.15, borderColor: 'var(--accent)' }}
+      whileTap={{ scale: 0.9 }}
+      className="w-7 h-7 rounded-full border-2 border-b-hover hover:border-accent hover:bg-accent/10 transition-colors flex-shrink-0 disabled:opacity-50 flex items-center justify-center"
+      title="Marquer comme fait"
+    >
+      <AnimatePresence>
+        {checked && (
+          <motion.svg
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+            className="w-3.5 h-3.5 text-accent"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <motion.path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={3}
+              d="M5 13l4 4L19 7"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            />
+          </motion.svg>
+        )}
+      </AnimatePresence>
+    </motion.button>
   )
 }
 
@@ -117,14 +166,21 @@ export default function TaskList({
         </h2>
 
         {pending.length === 0 ? (
-          <div className="bg-surface rounded-2xl border border-b p-8 text-center text-t-faint">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-surface rounded-2xl border border-b p-8 text-center text-t-faint"
+          >
             Toutes les tâches sont faites ! 🎉
-          </div>
+          </motion.div>
         ) : (
           <StaggerContainer className="space-y-2">
             {pending.map((task) => (
               <StaggerItem key={task.id}>
-              <div
+              <motion.div
+                layout
+                whileHover={{ y: -2, boxShadow: 'var(--shadow-lg)' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 className="bg-surface rounded-xl border border-b p-4 flex items-center gap-4 relative overflow-hidden"
               >
                 {/* Popup récompenses animé */}
@@ -183,11 +239,9 @@ export default function TaskList({
                   )}
                 </AnimatePresence>
 
-                <button
+                <AnimatedCheckbox
                   onClick={() => completeTask(task.id)}
                   disabled={completing === task.id}
-                  className="w-7 h-7 rounded-full border-2 border-b-hover hover:border-accent hover:bg-accent/10 transition flex-shrink-0 disabled:opacity-50"
-                  title="Marquer comme fait"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-t-primary">{task.title}</p>
@@ -228,23 +282,29 @@ export default function TaskList({
                 </div>
                 {/* Bouton réserver / libérer */}
                 {!task.assignedTo ? (
-                  <button
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => toggleReserve(task.id)}
                     disabled={reserving === task.id}
-                    className="px-3 py-1.5 text-xs font-medium bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition disabled:opacity-50 flex-shrink-0"
+                    loading={reserving === task.id}
+                    className="flex-shrink-0"
                   >
-                    {reserving === task.id ? '...' : 'Réserver'}
-                  </button>
+                    Réserver
+                  </Button>
                 ) : task.assignedTo.id === currentUserId ? (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => toggleReserve(task.id)}
                     disabled={reserving === task.id}
-                    className="px-3 py-1.5 text-xs font-medium bg-surface-hover text-t-muted rounded-lg hover:bg-b transition disabled:opacity-50 flex-shrink-0"
+                    loading={reserving === task.id}
+                    className="flex-shrink-0"
                   >
-                    {reserving === task.id ? '...' : 'Libérer'}
-                  </button>
+                    Libérer
+                  </Button>
                 ) : null}
-              </div>
+              </motion.div>
               </StaggerItem>
             ))}
           </StaggerContainer>
@@ -258,18 +318,26 @@ export default function TaskList({
             Terminées ({done.length})
           </h2>
           <div className="space-y-2">
-            {done.slice(0, 5).map((task) => (
-              <div
+            {done.slice(0, 5).map((task, i) => (
+              <motion.div
                 key={task.id}
-                className="bg-surface rounded-xl border border-b p-4 flex items-center gap-4 opacity-50"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 0.5, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="bg-surface rounded-xl border border-b p-4 flex items-center gap-4"
               >
-                <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center flex-shrink-0">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 15, delay: i * 0.05 + 0.1 }}
+                  className="w-6 h-6 rounded-full bg-success flex items-center justify-center flex-shrink-0"
+                >
                   <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
-                </div>
+                </motion.div>
                 <p className="font-medium text-t-muted line-through">{task.title}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '@/lib/api'
+import Button from '@/components/ui/Button'
 
 type UserSummary = { id: string; username: string; avatar: string | null }
 type Split = { id: string; amount: number; userId: string; user: UserSummary }
@@ -385,8 +387,15 @@ export default function Expenses({
       )}
 
       {/* Détail des dettes par paire */}
+      <AnimatePresence>
       {showDebts && (
-        <div className="card card-glow p-5">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          className="card card-glow p-5 overflow-hidden"
+        >
           <h3 className="font-semibold text-t-primary mb-4">Détail des dettes</h3>
           {getDetailedDebts().length === 0 ? (
             <p className="text-sm text-t-faint text-center py-2">Aucune dette</p>
@@ -414,22 +423,40 @@ export default function Expenses({
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Bouton ajouter */}
+      <AnimatePresence mode="wait">
       {!showForm && (
-        <button
-          onClick={() => setShowForm(true)}
-          className="btn-glow w-full bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition"
+        <motion.div
+          key="add-btn"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
         >
-          + Ajouter une dépense
-        </button>
+          <Button
+            onClick={() => setShowForm(true)}
+            fullWidth
+            size="lg"
+          >
+            + Ajouter une dépense
+          </Button>
+        </motion.div>
       )}
 
       {/* Formulaire */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="card card-glow p-5 space-y-4">
+        <motion.form
+          key="expense-form"
+          onSubmit={handleSubmit}
+          initial={{ opacity: 0, height: 0, y: -8 }}
+          animate={{ opacity: 1, height: 'auto', y: 0 }}
+          exit={{ opacity: 0, height: 0, y: -8 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          className="card card-glow p-5 space-y-4 overflow-hidden"
+        >
           <h3 className="font-semibold text-t-primary">Nouvelle dépense</h3>
 
           {error && (
@@ -483,18 +510,22 @@ export default function Expenses({
             <label className="text-sm text-t-muted block mb-1">Partagé entre</label>
             <div className="flex flex-wrap gap-2">
               {members.map((m) => (
-                <button
+                <motion.button
                   key={m.userId}
                   type="button"
                   onClick={() => toggleMember(m.userId)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={selectedMembers.includes(m.userId) ? { scale: [1, 1.1, 1] } : {}}
+                  transition={{ duration: 0.2 }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     selectedMembers.includes(m.userId)
                       ? 'bg-accent text-white'
                       : 'bg-surface-hover text-t-muted'
                   }`}
                 >
                   {m.user.username}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -505,11 +536,13 @@ export default function Expenses({
               <label className="text-sm text-t-muted block mb-2">Méthode de partage</label>
               <div className="grid grid-cols-2 gap-2">
                 {(Object.keys(SPLIT_METHOD_LABELS) as SplitMethod[]).map((method) => (
-                  <button
+                  <motion.button
                     key={method}
                     type="button"
                     onClick={() => setSplitMethod(method)}
-                    className={`p-3 rounded-xl text-left transition border ${
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    className={`p-3 rounded-xl text-left transition-colors border ${
                       splitMethod === method
                         ? 'border-accent bg-accent-secondary/10'
                         : 'border-b bg-surface hover:border-b-hover'
@@ -520,7 +553,7 @@ export default function Expenses({
                       <span className="text-xs font-semibold text-t-primary">{SPLIT_METHOD_LABELS[method]}</span>
                     </div>
                     <p className="text-[10px] text-t-faint mt-1">{SPLIT_METHOD_DESC[method]}</p>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -587,23 +620,26 @@ export default function Expenses({
           )}
 
           <div className="flex gap-2">
-            <button
+            <Button
               type="submit"
               disabled={submitting || !isSplitValid() || !description}
-              className="flex-1 bg-accent text-white py-2.5 rounded-xl font-semibold hover:bg-accent-hover transition disabled:opacity-50"
+              loading={submitting}
+              fullWidth
+              className="flex-1"
             >
-              {submitting ? 'Ajout...' : 'Ajouter'}
-            </button>
-            <button
+              Ajouter
+            </Button>
+            <Button
               type="button"
+              variant="secondary"
               onClick={() => { setShowForm(false); setError('') }}
-              className="px-4 py-2.5 rounded-xl text-t-muted hover:bg-surface-hover transition"
             >
               Annuler
-            </button>
+            </Button>
           </div>
-        </form>
+        </motion.form>
       )}
+      </AnimatePresence>
 
       {/* Historique */}
       <div className="card card-glow p-5">

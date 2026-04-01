@@ -16,13 +16,17 @@ export default async function ChatPage({
 
   const coloc = await prisma.colocation.findUnique({
     where: { id },
-    select: { id: true, name: true },
+    select: {
+      id: true,
+      name: true,
+      members: {
+        include: { user: { select: { id: true, username: true } } },
+      },
+    },
   })
   if (!coloc) notFound()
 
-  const membership = await prisma.userColoc.findUnique({
-    where: { userId_colocId: { userId: session.user.id, colocId: id } },
-  })
+  const membership = coloc.members.find((m) => m.userId === session.user!.id)
   if (!membership) redirect('/dashboard')
 
   // Charger les 50 derniers messages
@@ -32,6 +36,11 @@ export default async function ChatPage({
     orderBy: { createdAt: 'desc' },
     take: 50,
   })
+
+  const members = coloc.members.map((m) => ({
+    id: m.user.id,
+    username: m.user.username,
+  }))
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
@@ -46,6 +55,7 @@ export default async function ChatPage({
       <Chat
         colocId={id}
         currentUserId={session.user.id}
+        members={members}
         initialMessages={messages.reverse().map((m) => ({
           ...m,
           createdAt: m.createdAt.toISOString(),

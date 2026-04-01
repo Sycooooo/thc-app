@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { signOut } from '@/lib/auth'
 import ThemeToggle from '@/components/ThemeToggle'
 import PageTransition from '@/components/PageTransition'
+import { NewColocButton, EmptyStateButtons } from './DashboardButtons'
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -48,12 +49,7 @@ export default async function DashboardPage() {
         <PageTransition>
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-display text-3xl tracking-wide text-t-primary uppercase neon-title">Mes colocations</h2>
-          <Link
-            href="/coloc/new"
-            className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
-          >
-            + Nouvelle coloc
-          </Link>
+          <NewColocButton />
         </div>
 
         {colocs.length === 0 ? (
@@ -65,20 +61,7 @@ export default async function DashboardPage() {
             <p className="text-t-faint mb-6">
               Crée une colocation ou rejoins-en une avec un code d&apos;invitation.
             </p>
-            <div className="flex gap-3 justify-center">
-              <Link
-                href="/coloc/new"
-                className="btn-glow px-5 py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover transition"
-              >
-                Créer une coloc
-              </Link>
-              <Link
-                href="/coloc/join"
-                className="px-5 py-2.5 border border-b text-t-muted rounded-lg font-medium hover:bg-surface-hover transition"
-              >
-                Rejoindre avec un code
-              </Link>
-            </div>
+            <EmptyStateButtons />
           </div>
         ) : (
           <div className="grid gap-4">

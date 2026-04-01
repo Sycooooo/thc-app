@@ -15,7 +15,7 @@ import {
   rectSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { api } from '@/lib/api'
 import BoardNote, { NOTE_COLORS } from './BoardNote'
 
@@ -292,18 +292,26 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-t-muted">{items.length} note{items.length !== 1 ? 's' : ''}</p>
-        <button
+        <motion.button
           onClick={() => setShowForm(!showForm)}
-          className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition-colors"
         >
           + Ajouter une note
-        </button>
+        </motion.button>
       </div>
 
       {/* Formulaire */}
       <AnimatePresence>
         {showForm && (
-          <div className="card card-glow p-4 space-y-3">
+          <motion.div
+            initial={{ opacity: 0, height: 0, y: -8 }}
+            animate={{ opacity: 1, height: 'auto', y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -8 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="card card-glow p-4 space-y-3 overflow-hidden"
+          >
             {/* Toolbar de formatage */}
             <div className="flex items-center gap-1 border-b border-b pb-2">
               <button
@@ -430,7 +438,7 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
                 Annuler
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

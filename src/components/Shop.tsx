@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { api } from '@/lib/api'
 import { RARITY_LABELS, RARITY_COLORS } from '@/lib/xp'
 import { motion, AnimatePresence } from 'framer-motion'
+import Button, { ToggleButton } from '@/components/ui/Button'
 
 type ShopItem = {
   id: string
@@ -79,19 +80,17 @@ export default function Shop({ initialItems, initialCurrency }: Props) {
       </div>
 
       {/* Filtres */}
-      <div className="flex gap-1 overflow-x-auto pb-1 -mx-2 px-2">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-2 px-2">
         {LAYER_TABS.map((tab) => (
-          <button
+          <ToggleButton
             key={tab.id}
+            active={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition ${
-              activeTab === tab.id
-                ? 'bg-accent text-white'
-                : 'bg-surface text-t-muted hover:bg-surface-hover'
-            }`}
+            pill={false}
+            className="flex-shrink-0"
           >
             {tab.icon} {tab.label}
-          </button>
+          </ToggleButton>
         ))}
       </div>
 
@@ -105,6 +104,8 @@ export default function Shop({ initialItems, initialCurrency }: Props) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
+              whileHover={!item.owned ? { y: -4, scale: 1.02 } : {}}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               className={`card p-4 flex flex-col items-center gap-3 ${
                 item.owned ? 'opacity-60' : ''
               }`}
@@ -145,20 +146,17 @@ export default function Shop({ initialItems, initialCurrency }: Props) {
                   )}
                 </div>
               ) : (
-                <button
+                <Button
+                  variant={currency < item.price ? 'ghost' : 'primary'}
+                  size="sm"
+                  fullWidth
                   onClick={() => handleBuy(item.id)}
                   disabled={buying === item.id || currency < item.price}
-                  className={`w-full py-2 rounded-lg text-sm font-bold transition ${
-                    currency < item.price
-                      ? 'bg-surface-hover text-t-faint cursor-not-allowed'
-                      : 'bg-accent hover:bg-accent-hover text-white'
-                  } disabled:opacity-50`}
+                  loading={buying === item.id}
+                  className="font-bold"
                 >
-                  {buying === item.id
-                    ? '...'
-                    : `${item.price} 🪙`
-                  }
-                </button>
+                  {`${item.price} 🪙`}
+                </Button>
               )}
             </motion.div>
           ))}

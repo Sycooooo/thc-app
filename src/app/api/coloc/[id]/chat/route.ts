@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { pusher } from '@/lib/pusher'
+import { notify, notifyColoc } from '@/lib/notifications'
 
 // GET — Charger l'historique des messages (50 derniers, pagination avec ?before=)
 export async function GET(
@@ -74,6 +75,56 @@ export async function POST(
 
   // Envoyer en temps réel via Pusher
   await pusher.trigger(`coloc-${colocId}`, 'new-message', message)
+
+  // Détecter les mentions dans le message (seulement pour les messages texte)
+  if (message.type === 'text' && message.content) {
+    const content = message.content
+    const senderName = message.user.username
+    const chatLink = `/coloc/${colocId}/chat`
+
+    // Détecter @everyone
+    if (/@everyone\b/i.test(content)) {
+      await notifyColoc(
+        colocId,
+        session.user.id,
+        'mention',
+        `${senderName} a mentionné @everyone dans le chat`,
+        chatLink
+      )
+    } else {
+      // Détecter les @username individuels
+      const mentionRegex = /@(\w+)/g
+      let match
+      const mentionedUsernames = new Set<string>()
+
+      while ((match = mentionRegex.exec(content)) !== null) {
+        mentionedUsernames.add(match[1].toLowerCase())
+      }
+
+      if (mentionedUsernames.size > 0) {
+        // Trouver les membres de la coloc qui correspondent aux mentions
+        const members = await prisma.userColoc.findMany({
+          where: { colocId },
+          include: { user: { select: { id: true, username: true } } },
+        })
+
+        for (const member of members) {
+          if (
+            member.userId !== session.user.id &&
+            mentionedUsernames.has(member.user.username.toLowerCase())
+          ) {
+            await notify(
+              member.userId,
+              colocId,
+              'mention',
+              `${senderName} t'a mentionné dans le chat`,
+              chatLink
+            )
+          }
+        }
+      }
+    }
+  }
 
   return NextResponse.json(message, { status: 201 })
 }

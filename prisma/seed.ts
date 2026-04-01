@@ -88,30 +88,6 @@ const paidAvatarItems = [
   { name: 'Cagoule noire', layer: 'accessory', spriteName: 'balaclava-black', rarity: 'legendary', price: 80 },
 ]
 
-// === Meubles gratuits (Maison 3D) ===
-const freeFurnitureItems = [
-  { name: 'Lit simple', furnitureCategory: 'bed', modelKey: 'bed-single', rarity: 'common', widthCm: 90, depthCm: 200, heightCm: 45, colorHex: '#d4a574' },
-  { name: 'Canapé 2 places', furnitureCategory: 'sofa', modelKey: 'sofa-2seat', rarity: 'common', widthCm: 160, depthCm: 85, heightCm: 80, colorHex: '#8B7355', roomConstraint: 'sejour' },
-  { name: 'Table basse', furnitureCategory: 'table', modelKey: 'table-coffee', rarity: 'common', widthCm: 100, depthCm: 60, heightCm: 40, colorHex: '#A0522D' },
-  { name: 'Chaise', furnitureCategory: 'chair', modelKey: 'chair-basic', rarity: 'common', widthCm: 45, depthCm: 45, heightCm: 85, colorHex: '#8B6F47' },
-  { name: 'Petite plante', furnitureCategory: 'plant', modelKey: 'plant-small', rarity: 'common', widthCm: 25, depthCm: 25, heightCm: 40, colorHex: '#4A7C59' },
-  { name: 'Machine à laver', furnitureCategory: 'appliance', modelKey: 'washer', rarity: 'common', widthCm: 60, depthCm: 60, heightCm: 85, colorHex: '#E8E4DE', roomConstraint: 'buanderie' },
-  { name: 'Douche', furnitureCategory: 'appliance', modelKey: 'shower', rarity: 'common', widthCm: 90, depthCm: 90, heightCm: 200, colorHex: '#C0C0C0', roomConstraint: 'sdb' },
-]
-
-// === Meubles payants (Boutique Maison 3D) ===
-const paidFurnitureItems = [
-  { name: 'Lit double', furnitureCategory: 'bed', modelKey: 'bed-double', rarity: 'rare', price: 30, widthCm: 140, depthCm: 200, heightCm: 45, colorHex: '#d4a574' },
-  { name: 'Canapé L', furnitureCategory: 'sofa', modelKey: 'sofa-l-shape', rarity: 'epic', price: 50, widthCm: 250, depthCm: 160, heightCm: 80, colorHex: '#4A4A4A', roomConstraint: 'sejour' },
-  { name: 'Table à manger', furnitureCategory: 'table', modelKey: 'table-dining', rarity: 'rare', price: 25, widthCm: 150, depthCm: 90, heightCm: 75, colorHex: '#8B6F47' },
-  { name: 'Bureau', furnitureCategory: 'table', modelKey: 'desk', rarity: 'rare', price: 20, widthCm: 120, depthCm: 60, heightCm: 75, colorHex: '#A0522D' },
-  { name: 'Plante verte', furnitureCategory: 'plant', modelKey: 'plant-tall', rarity: 'rare', price: 15, widthCm: 40, depthCm: 40, heightCm: 120, colorHex: '#2E8B57' },
-  { name: 'Lampadaire', furnitureCategory: 'lamp', modelKey: 'lamp-floor', rarity: 'rare', price: 20, widthCm: 30, depthCm: 30, heightCm: 160, colorHex: '#F5E6CA' },
-  { name: 'Lampe de chevet', furnitureCategory: 'lamp', modelKey: 'lamp-bedside', rarity: 'common', price: 10, widthCm: 20, depthCm: 20, heightCm: 35, colorHex: '#F5E6CA' },
-  { name: 'Étagère murale', furnitureCategory: 'shelf', modelKey: 'shelf-wall', rarity: 'rare', price: 15, widthCm: 80, depthCm: 25, heightCm: 30, colorHex: '#8B6F47' },
-  { name: 'Tapis rond', furnitureCategory: 'rug', modelKey: 'rug-round', rarity: 'rare', price: 20, widthCm: 150, depthCm: 150, heightCm: 1, colorHex: '#8B4513' },
-]
-
 async function main() {
   console.log('Seeding achievements...')
 
@@ -170,62 +146,6 @@ async function main() {
   }
 
   console.log(`${paidAvatarItems.length} items payants vérifiés/créés`)
-
-  // Seed des meubles gratuits
-  console.log('Seeding furniture items...')
-
-  for (const item of freeFurnitureItems) {
-    const existing = await prisma.shopItem.findFirst({
-      where: { modelKey: item.modelKey, type: 'decoration' },
-    })
-    if (!existing) {
-      await prisma.shopItem.create({
-        data: {
-          name: item.name,
-          type: 'decoration',
-          rarity: item.rarity,
-          price: 0,
-          isFree: true,
-          furnitureCategory: item.furnitureCategory,
-          modelKey: item.modelKey,
-          widthCm: item.widthCm,
-          depthCm: item.depthCm,
-          heightCm: item.heightCm,
-          colorHex: item.colorHex,
-          roomConstraint: item.roomConstraint ?? null,
-        },
-      })
-    }
-  }
-
-  console.log(`${freeFurnitureItems.length} meubles gratuits vérifiés/créés`)
-
-  // Seed des meubles payants
-  for (const item of paidFurnitureItems) {
-    const existing = await prisma.shopItem.findFirst({
-      where: { modelKey: item.modelKey, type: 'decoration' },
-    })
-    if (!existing) {
-      await prisma.shopItem.create({
-        data: {
-          name: item.name,
-          type: 'decoration',
-          rarity: item.rarity,
-          price: item.price,
-          isFree: false,
-          furnitureCategory: item.furnitureCategory,
-          modelKey: item.modelKey,
-          widthCm: item.widthCm,
-          depthCm: item.depthCm,
-          heightCm: item.heightCm,
-          colorHex: item.colorHex,
-          roomConstraint: item.roomConstraint ?? null,
-        },
-      })
-    }
-  }
-
-  console.log(`${paidFurnitureItems.length} meubles payants vérifiés/créés`)
 }
 
 main()

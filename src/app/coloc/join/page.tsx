@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import Button from '@/components/ui/Button'
 
 export default function JoinColocPage() {
   const router = useRouter()
@@ -53,13 +54,14 @@ export default function JoinColocPage() {
 
           {error && <p className="text-danger text-sm">{error}</p>}
 
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="btn-glow w-full py-2.5 bg-accent text-white rounded-lg font-medium hover:bg-accent-hover disabled:opacity-50 transition"
+            loading={loading}
+            fullWidth
           >
-            {loading ? 'Vérification...' : 'Rejoindre'}
-          </button>
+            Rejoindre
+          </Button>
         </form>
       </div>
     </main>

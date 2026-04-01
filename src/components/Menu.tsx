@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { api } from '@/lib/api'
+import Button, { ToggleButton } from '@/components/ui/Button'
 
 type Etape = {
   description: string
@@ -182,13 +183,14 @@ export default function Menu({
             </div>
           </div>
 
-          <button
+          <Button
             onClick={generate}
             disabled={generating}
-            className="btn-glow w-full py-2.5 bg-accent text-white rounded-xl font-medium hover:bg-accent-hover transition disabled:opacity-50"
+            loading={generating}
+            fullWidth
           >
             {generating ? 'Génération en cours... (10-20s)' : 'Générer le menu de la semaine'}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -203,20 +205,20 @@ export default function Menu({
               </p>
             </div>
             <div className="flex gap-2">
-              <button
+              <ToggleButton
+                active={showShopping}
                 onClick={() => setShowShopping(!showShopping)}
-                className={`text-xs px-3 py-1.5 rounded-full font-medium transition ${
-                  showShopping ? 'bg-green-500/15 text-green-600 dark:text-green-400' : 'bg-surface-hover text-t-muted hover:text-t-primary'
-                }`}
               >
                 🛒 Courses {totalPrice > 0 && `(~${totalPrice.toFixed(0)}€)`}
-              </button>
-              <button
+              </ToggleButton>
+              <Button
+                variant="ghost"
+                size="sm"
+                pill
                 onClick={() => setShowForm(true)}
-                className="text-xs bg-surface-hover text-t-muted px-3 py-1.5 rounded-full font-medium hover:text-t-primary transition"
               >
                 Regénérer
-              </button>
+              </Button>
             </div>
           </div>
 

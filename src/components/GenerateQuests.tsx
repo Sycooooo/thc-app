@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
+import Button from '@/components/ui/Button'
 
 export default function GenerateQuests({ colocId }: { colocId: string }) {
   const router = useRouter()
@@ -38,13 +39,14 @@ export default function GenerateQuests({ colocId }: { colocId: string }) {
           {result && (
             <span className="text-sm text-accent-secondary font-medium">{result}</span>
           )}
-          <button
+          <Button
             onClick={handleGenerate}
             disabled={loading}
-            className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover disabled:opacity-50 transition"
+            loading={loading}
+            size="sm"
           >
-            {loading ? 'Génération...' : '⚔️ Générer'}
-          </button>
+            ⚔️ Générer
+          </Button>
         </div>
       </div>
     </div>
