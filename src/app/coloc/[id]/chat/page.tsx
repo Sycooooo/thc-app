@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import Chat from '@/components/Chat'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 
 export default async function ChatPage({
   params,
@@ -27,7 +28,7 @@ export default async function ChatPage({
   if (!coloc) notFound()
 
   const membership = coloc.members.find((m) => m.userId === session.user!.id)
-  if (!membership) redirect('/dashboard')
+  if (!membership) redirect('/')
 
   // Charger les 50 derniers messages
   const messages = await prisma.message.findMany({
@@ -43,8 +44,9 @@ export default async function ChatPage({
   }))
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col">
-      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center gap-3">
+    <div className="h-dvh flex flex-col relative z-10 overflow-hidden">
+      <PageAmbiance theme="chambre" />
+      <header className="glass-header-lofi sticky top-0 z-40 px-6 py-4 flex items-center gap-3">
         <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
           ←
         </Link>

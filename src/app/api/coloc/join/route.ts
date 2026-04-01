@@ -15,17 +15,17 @@ export async function POST(request: Request) {
   }
   const { inviteCode } = result.data
 
+  // Contrainte single coloc : vérifier que l'utilisateur n'est membre d'aucune colocation
+  const existingMembership = await prisma.userColoc.findFirst({
+    where: { userId: session.user.id },
+  })
+  if (existingMembership) {
+    return NextResponse.json({ error: 'Tu fais déjà partie d\'une colocation' }, { status: 403 })
+  }
+
   const coloc = await prisma.colocation.findUnique({ where: { inviteCode } })
   if (!coloc) {
     return NextResponse.json({ error: 'Code invalide' }, { status: 404 })
-  }
-
-  const existing = await prisma.userColoc.findUnique({
-    where: { userId_colocId: { userId: session.user.id, colocId: coloc.id } },
-  })
-
-  if (existing) {
-    return NextResponse.json({ error: 'Déjà membre' }, { status: 400 })
   }
 
   await prisma.userColoc.create({

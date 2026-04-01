@@ -193,16 +193,16 @@ export default function SettingsPage() {
   const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null)
 
   useEffect(() => {
-    api.get('/api/coloc').then((data: ColocRaw[]) => {
-      // On doit trouver le rôle de l'utilisateur courant dans chaque coloc
-      // On utilise l'API session pour récupérer l'userId
+    api.get('/api/coloc').then((data: ColocRaw | null) => {
+      if (!data) { setColocs([]); return }
+      // On doit trouver le rôle de l'utilisateur courant dans la coloc
       fetch('/api/auth/session').then(r => r.json()).then(session => {
         const userId = session?.user?.id
-        setColocs(data.map(c => ({
-          id: c.id,
-          name: c.name,
-          role: c.members.find(m => m.user.id === userId)?.role || 'member',
-        })))
+        setColocs([{
+          id: data.id,
+          name: data.name,
+          role: data.members.find(m => m.user.id === userId)?.role || 'member',
+        }])
       })
     }).catch(() => {})
   }, [])

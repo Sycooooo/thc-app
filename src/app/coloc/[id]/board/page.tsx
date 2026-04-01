@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import Board from '@/components/Board'
 import PageTransition from '@/components/PageTransition'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 
 export default async function BoardPage({
   params,
@@ -24,11 +25,12 @@ export default async function BoardPage({
   const membership = await prisma.userColoc.findUnique({
     where: { userId_colocId: { userId: session.user.id, colocId: id } },
   })
-  if (!membership) redirect('/dashboard')
+  if (!membership) redirect('/')
 
   return (
-    <div className="min-h-screen bg-bg">
-      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center gap-3">
+    <div className="min-h-screen relative z-10">
+      <PageAmbiance theme="bureau" />
+      <header className="glass-header-lofi sticky top-0 z-40 px-6 py-4 flex items-center gap-3">
         <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
           ←
         </Link>

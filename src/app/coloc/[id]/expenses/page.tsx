@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Expenses from '@/components/Expenses'
 import NotificationBell from '@/components/NotificationBell'
 import PageTransition from '@/components/PageTransition'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 
 export default async function ExpensesPage({
   params,
@@ -28,11 +29,12 @@ export default async function ExpensesPage({
   if (!coloc) notFound()
 
   const isMember = coloc.members.some((m) => m.userId === session.user!.id)
-  if (!isMember) redirect('/dashboard')
+  if (!isMember) redirect('/')
 
   return (
-    <div className="min-h-screen bg-bg">
-      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen relative z-10">
+      <PageAmbiance theme="cuisine" />
+      <header className="glass-header-lofi sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←

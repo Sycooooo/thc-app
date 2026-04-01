@@ -10,6 +10,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
+  // Contrainte single coloc : vérifier que l'utilisateur n'est membre d'aucune colocation
+  const existingMembership = await prisma.userColoc.findFirst({
+    where: { userId: session.user.id },
+  })
+  if (existingMembership) {
+    return NextResponse.json({ error: 'Tu fais déjà partie d\'une colocation' }, { status: 403 })
+  }
+
   const result = createColocSchema.safeParse(await request.json())
   if (!result.success) {
     return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 })
@@ -32,14 +40,14 @@ export async function POST(request: Request) {
   return NextResponse.json(coloc, { status: 201 })
 }
 
-// Lister les colocations de l'utilisateur
+// Récupérer la colocation unique de l'utilisateur (ou null)
 export async function GET() {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
-  const colocs = await prisma.colocation.findMany({
+  const coloc = await prisma.colocation.findFirst({
     where: {
       members: { some: { userId: session.user.id } },
     },
@@ -48,5 +56,5 @@ export async function GET() {
     },
   })
 
-  return NextResponse.json(colocs)
+  return NextResponse.json(coloc)
 }

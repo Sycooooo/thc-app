@@ -292,7 +292,7 @@ export default function Chat({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px-56px)]">
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Liste des messages */}
       <div
         ref={listRef}
@@ -346,8 +346,8 @@ export default function Chat({
                 <div
                   className={`rounded-2xl px-3 py-2 ${
                     isMe
-                      ? 'bg-accent text-white rounded-br-sm'
-                      : 'bg-surface text-t-primary rounded-bl-sm'
+                      ? 'bg-[#7c3aed] text-white rounded-br-sm'
+                      : 'bg-[#2a2a4a] text-t-primary rounded-bl-sm'
                   }`}
                   style={!isMe ? { boxShadow: 'var(--shadow)' } : undefined}
                 >

@@ -1,17 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 
 export default function JoinColocPage() {
   const router = useRouter()
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Bloquer l'accès si l'utilisateur a déjà une coloc
+  useEffect(() => {
+    api.get('/api/coloc').then((coloc) => {
+      if (coloc) {
+        router.replace(`/coloc/${coloc.id}`)
+      }
+    }).catch(() => {})
+  }, [router])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -30,9 +40,10 @@ export default function JoinColocPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-bg p-4">
+    <main className="min-h-screen flex items-center justify-center p-4 relative z-10">
+      <PageAmbiance theme="accueil" />
       <div className="card card-glow gradient-border p-8 w-full max-w-sm">
-        <Link href="/dashboard" className="text-sm text-t-muted hover:text-t-primary mb-6 block transition">
+        <Link href="/" className="text-sm text-t-muted hover:text-t-primary mb-6 block transition">
           ← Retour
         </Link>
         <h1 className="font-display text-3xl tracking-wide text-t-primary uppercase mb-2 neon-title">Rejoindre une colocation</h1>

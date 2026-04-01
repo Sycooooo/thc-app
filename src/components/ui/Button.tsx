@@ -5,7 +5,7 @@ import { motion, type HTMLMotionProps } from 'framer-motion'
 import Link from 'next/link'
 
 // ─── Variant & Size types ────────────────────────────────────────────
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline'
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'pixel'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 type BaseProps = {
@@ -55,6 +55,14 @@ const variantClasses: Record<ButtonVariant, string> = {
     'hover:bg-danger/25 hover:border-danger/40',
     'btn-danger-glow',
   ].join(' '),
+
+  pixel: [
+    'bg-accent-secondary text-[#0a0a14] font-bold',
+    'border-2 border-accent-secondary/60',
+    'hover:bg-accent-secondary-hover',
+    'shadow-[0_4px_0_0_rgba(0,0,0,0.3)]',
+    'active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[3px]',
+  ].join(' '),
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -79,6 +87,7 @@ const hoverVariants: Record<ButtonVariant, { scale?: number; y?: number }> = {
   ghost: { scale: 1.02 },
   outline: { scale: 1.02, y: -1 },
   danger: { scale: 1.02, y: -1 },
+  pixel: { scale: 1.05 },
 }
 
 const springTransition = {
@@ -116,7 +125,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'select-none cursor-pointer',
       'overflow-hidden',
       // Shape
-      pill ? 'rounded-full' : 'rounded-xl',
+      pill ? 'rounded-full' : 'rounded-lg',
       // Size
       sizeClasses[size],
       // Variant

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import AvatarUpload from '@/components/AvatarUpload'
 import PixelAvatar from '@/components/PixelAvatar'
 import RankCard from '@/components/RankCard'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -34,9 +35,10 @@ export default async function ProfilePage() {
   const unlockedIds = new Set(user.achievements.map((a) => a.achievementId))
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen relative z-10">
+      <PageAmbiance theme="profil" />
       <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center gap-3">
-        <Link href="/dashboard" className="text-t-muted hover:text-t-primary transition">←</Link>
+        <Link href="/" className="text-t-muted hover:text-t-primary transition">←</Link>
         <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Mon profil</h1>
       </header>
 

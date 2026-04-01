@@ -10,6 +10,7 @@ import { autoGenerateQuests } from '@/lib/quest-generator'
 import { getRankFromPoints } from '@/lib/ranking'
 import PageTransition from '@/components/PageTransition'
 import InviteCode from '@/components/InviteCode'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 
 export default async function ColocPage({
   params,
@@ -45,7 +46,7 @@ export default async function ColocPage({
 
   const userId = session.user!.id
   const isMember = coloc.members.some((m) => m.userId === userId)
-  if (!isMember) redirect('/dashboard')
+  if (!isMember) redirect('/')
 
   const isAdmin = coloc.members.find((m) => m.userId === userId)?.role === 'admin'
 
@@ -54,12 +55,10 @@ export default async function ColocPage({
   }) > 0
 
   return (
-    <div className="min-h-screen bg-bg">
-      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen relative z-10">
+      <PageAmbiance theme="salon" />
+      <header className="glass-header-lofi sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-t-muted hover:text-t-primary transition">
-            ←
-          </Link>
           <span className="text-xl">🏠</span>
           <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">{coloc.name}</h1>
         </div>

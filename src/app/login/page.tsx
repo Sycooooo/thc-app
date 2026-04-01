@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -29,12 +30,13 @@ export default function LoginPage() {
       setError('Email ou mot de passe incorrect')
       setLoading(false)
     } else {
-      router.push('/dashboard')
+      router.push('/')
     }
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-bg p-4">
+    <main className="min-h-screen flex items-center justify-center p-4 relative z-10">
+      <PageAmbiance theme="accueil" />
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import PageTransition from '@/components/PageTransition'
+import PageAmbiance from '@/components/ui/PageAmbiance'
 import MusicStories from '@/components/music/MusicStories'
 import NowPlaying from '@/components/music/NowPlaying'
 import TopArtists from '@/components/music/TopArtists'
@@ -41,7 +42,7 @@ export default async function MusicPage({
 
   const userId = session.user.id
   const member = coloc.members.find((m) => m.userId === userId)
-  if (!member) redirect('/dashboard')
+  if (!member) redirect('/')
 
   const hasSpotify = !!member.user.spotifyAccount
 
@@ -52,8 +53,9 @@ export default async function MusicPage({
   }))
 
   return (
-    <div className="min-h-screen bg-bg pb-20">
-      <header className="glass-header sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen pb-20 relative z-10">
+      <PageAmbiance theme="studio" />
+      <header className="glass-header-lofi sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←
