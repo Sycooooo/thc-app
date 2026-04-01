@@ -64,13 +64,21 @@ export default async function ProfilePage() {
           )}
           <h2 className="font-display text-3xl tracking-wide text-t-primary uppercase neon-title">{user.username}</h2>
 
-          {/* Bouton personnaliser */}
-          <Link
-            href="/profile/character"
-            className="px-4 py-2 bg-accent-secondary hover:bg-accent-secondary-hover text-white rounded-full text-sm font-bold transition"
-          >
-            Personnaliser mon avatar
-          </Link>
+          {/* Boutons avatar */}
+          <div className="flex gap-2">
+            <Link
+              href="/profile/character"
+              className="px-4 py-2 bg-accent-secondary hover:bg-accent-secondary-hover text-white rounded-full text-sm font-bold transition"
+            >
+              Personnaliser
+            </Link>
+            <Link
+              href="/shop"
+              className="px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-full text-sm font-bold transition"
+            >
+              Boutique 🛒
+            </Link>
+          </div>
 
           {/* Badge niveau */}
           <div className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-full text-lg font-bold badge-neon">

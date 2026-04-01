@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { api } from '@/lib/api'
 import PixelAvatar, { type AvatarConfigData } from './PixelAvatar'
 import { RARITY_LABELS, RARITY_COLORS } from '@/lib/xp'
@@ -201,11 +202,12 @@ export default function CharacterCreator({ initialConfig, availableItems, locked
                 </button>
               ))}
 
-              {/* Items verrouillés */}
+              {/* Items verrouillés (lien vers la boutique) */}
               {layerLocked.map((item) => (
-                <div
+                <Link
+                  href="/shop"
                   key={item.id}
-                  className="rounded-xl border border-b p-3 flex flex-col items-center gap-2 opacity-50 relative"
+                  className="rounded-xl border border-b p-3 flex flex-col items-center gap-2 opacity-50 relative hover:opacity-70 transition"
                 >
                   <div className="absolute top-1 right-1 text-sm">🔒</div>
                   <div className="w-16 h-16 bg-bg-secondary rounded-lg flex items-center justify-center overflow-hidden grayscale">
@@ -220,7 +222,7 @@ export default function CharacterCreator({ initialConfig, availableItems, locked
                     {item.name}
                   </span>
                   <span className="text-[10px] text-accent font-bold">{item.price} 🪙</span>
-                </div>
+                </Link>
               ))}
             </div>
 

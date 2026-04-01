@@ -65,3 +65,8 @@ export const createExpenseSchema = z.object({
   // Pour exact: { userId: montant }, pour percentage: { userId: % }, pour shares: { userId: nbParts }
   customSplits: z.record(z.string(), z.number()).optional(),
 })
+
+// --- Achat boutique ---
+export const buyItemSchema = z.object({
+  itemId: z.string({ error: 'Item requis' }).min(1, 'Item requis'),
+})
