@@ -57,34 +57,38 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
 
   // Drop zone state
   const [dragOver, setDragOver] = useState(false)
-  const dropRef = useRef<HTMLDivElement>(null)
+  const dragCounterRef = useRef(0)
 
   useEffect(() => {
     loadItems()
   }, [])
 
-  // Global drag-and-drop d'image sur la page
+  // Global drag-and-drop d'image sur toute la page (document-level)
   useEffect(() => {
-    const el = dropRef.current
-    if (!el) return
-
     function handleDragEnter(e: DragEvent) {
       e.preventDefault()
       if (e.dataTransfer?.types.includes('Files')) {
+        dragCounterRef.current++
         setDragOver(true)
       }
     }
     function handleDragOver(e: DragEvent) {
       e.preventDefault()
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'copy'
+      }
     }
     function handleDragLeave(e: DragEvent) {
-      // Only hide if we actually left the container
-      if (el && !el.contains(e.relatedTarget as Node)) {
+      e.preventDefault()
+      dragCounterRef.current--
+      if (dragCounterRef.current <= 0) {
+        dragCounterRef.current = 0
         setDragOver(false)
       }
     }
     async function handleDrop(e: DragEvent) {
       e.preventDefault()
+      dragCounterRef.current = 0
       setDragOver(false)
       const file = e.dataTransfer?.files?.[0]
       if (!file || !file.type.startsWith('image/')) return
@@ -92,7 +96,6 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
         alert('Image trop grande (max 5Mo)')
         return
       }
-      // Upload directement
       setUploading(true)
       try {
         const formData = new FormData()
@@ -108,15 +111,15 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
       setUploading(false)
     }
 
-    el.addEventListener('dragenter', handleDragEnter)
-    el.addEventListener('dragover', handleDragOver)
-    el.addEventListener('dragleave', handleDragLeave)
-    el.addEventListener('drop', handleDrop)
+    document.addEventListener('dragenter', handleDragEnter)
+    document.addEventListener('dragover', handleDragOver)
+    document.addEventListener('dragleave', handleDragLeave)
+    document.addEventListener('drop', handleDrop)
     return () => {
-      el.removeEventListener('dragenter', handleDragEnter)
-      el.removeEventListener('dragover', handleDragOver)
-      el.removeEventListener('dragleave', handleDragLeave)
-      el.removeEventListener('drop', handleDrop)
+      document.removeEventListener('dragenter', handleDragEnter)
+      document.removeEventListener('dragover', handleDragOver)
+      document.removeEventListener('dragleave', handleDragLeave)
+      document.removeEventListener('drop', handleDrop)
     }
   }, [colocId])
 
@@ -269,11 +272,11 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
   }
 
   return (
-    <div ref={dropRef} className="space-y-4 relative">
+    <div className="space-y-4 relative">
       {/* Drop overlay */}
       {dragOver && (
-        <div className="fixed inset-0 z-50 bg-accent/10 backdrop-blur-sm flex items-center justify-center pointer-events-none">
-          <div className="bg-surface border-2 border-dashed border-accent rounded-2xl p-12 text-center">
+        <div className="fixed inset-0 z-50 bg-accent/10 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-surface border-2 border-dashed border-accent rounded-2xl p-12 text-center pointer-events-none">
             <p className="text-4xl mb-3">📷</p>
             <p className="text-lg font-semibold text-accent">Dépose ton image ici</p>
             <p className="text-sm text-t-muted mt-1">Elle sera ajoutée comme post-it</p>
