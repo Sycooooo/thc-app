@@ -74,3 +74,49 @@ export type Score = {
   colocId: string
   user: UserSummary
 }
+
+// --- Meubles (Maison 3D) ---
+export type FurnitureItemData = {
+  id: string
+  name: string
+  furnitureCategory: string | null
+  modelKey: string | null
+  widthCm: number | null
+  depthCm: number | null
+  heightCm: number | null
+  colorHex: string | null
+  rarity: string
+}
+
+export type PlacedFurnitureWithItem = {
+  id: string
+  posX: number
+  posZ: number
+  rotation: number
+  roomId: string
+  colocId: string
+  placedById: string
+  itemId: string
+  item: FurnitureItemData
+  placedBy: { id: string; username: string }
+}
+
+export type FurnitureShopItem = {
+  id: string
+  name: string
+  price: number
+  rarity: string
+  isFree: boolean
+  furnitureCategory: string | null
+  modelKey: string | null
+  widthCm: number | null
+  depthCm: number | null
+  heightCm: number | null
+  colorHex: string | null
+  roomConstraint: string | null
+}
+
+export type InventoryItem = FurnitureShopItem & {
+  isPlaced: boolean
+  canPlaceMore: boolean
+}

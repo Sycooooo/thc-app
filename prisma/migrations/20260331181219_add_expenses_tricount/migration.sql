@@ -1,8 +1,8 @@
 -- DropIndex
-DROP INDEX "Message_colocId_createdAt_idx";
+DROP INDEX IF EXISTS "Message_colocId_createdAt_idx";
 
 -- DropIndex
-DROP INDEX "WeeklyMenu_colocId_weekStart_idx";
+DROP INDEX IF EXISTS "WeeklyMenu_colocId_weekStart_idx";
 
 -- CreateTable
 CREATE TABLE "Expense" (
