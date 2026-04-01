@@ -13,6 +13,7 @@ type BoardItem = {
   color: string
   size: string
   linkUrl: string | null
+  imageUrl: string | null
   position: number
   createdAt: string
   createdBy: { id: string; username: string }
@@ -30,6 +31,73 @@ const NOTE_COLORS: Record<string, { bg: string; border: string; text: string }> 
 }
 
 export { NOTE_COLORS }
+
+function FormatToolbar({
+  textareaRef,
+  onContentChange,
+}: {
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>
+  onContentChange: (value: string) => void
+}) {
+  function wrapSelection(before: string, after: string) {
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const text = ta.value
+    const selected = text.substring(start, end)
+    const newText = text.substring(0, start) + before + selected + after + text.substring(end)
+    onContentChange(newText)
+    setTimeout(() => {
+      ta.focus()
+      ta.selectionStart = start + before.length
+      ta.selectionEnd = end + before.length
+    }, 0)
+  }
+
+  function insertPrefix(prefix: string) {
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const text = ta.value
+    const lineStart = text.lastIndexOf('\n', start - 1) + 1
+    const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart)
+    onContentChange(newText)
+    setTimeout(() => {
+      ta.focus()
+      ta.selectionStart = ta.selectionEnd = start + prefix.length
+    }, 0)
+  }
+
+  return (
+    <div className="flex items-center gap-1 border-b border-current/10 pb-1.5 mb-1">
+      <button
+        type="button"
+        onClick={() => wrapSelection('**', '**')}
+        className="px-2 py-0.5 text-xs font-bold rounded hover:bg-white/10 transition"
+        title="Gras"
+      >
+        B
+      </button>
+      <button
+        type="button"
+        onClick={() => wrapSelection('*', '*')}
+        className="px-2 py-0.5 text-xs italic rounded hover:bg-white/10 transition"
+        title="Italique"
+      >
+        I
+      </button>
+      <button
+        type="button"
+        onClick={() => insertPrefix('- ')}
+        className="px-2 py-0.5 text-xs rounded hover:bg-white/10 transition"
+        title="Liste"
+      >
+        ☰
+      </button>
+    </div>
+  )
+}
 
 export default function BoardNote({
   item,
@@ -139,6 +207,7 @@ export default function BoardNote({
 
       {editing ? (
         <div className="space-y-2 pt-4" onKeyDown={handleKeyDown}>
+          <FormatToolbar textareaRef={textareaRef} onContentChange={setEditContent} />
           <textarea
             ref={textareaRef}
             value={editContent}
@@ -167,7 +236,7 @@ export default function BoardNote({
             ))}
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-[10px] text-t-faint">**gras** · *italique* · - liste | Ctrl+Enter pour sauver</p>
+            <p className="text-[10px] text-t-faint">Ctrl+Enter pour sauver · Echap pour annuler</p>
             <div className="flex gap-1">
               <button
                 onClick={() => { setEditing(false); setEditContent(item.content); setEditColor(item.color); setEditLink(item.linkUrl || '') }}
@@ -186,9 +255,19 @@ export default function BoardNote({
         </div>
       ) : (
         <>
+          {/* Image */}
+          {item.type === 'image' && item.imageUrl && (
+            <img
+              src={item.imageUrl}
+              alt={item.content}
+              className="w-full rounded-lg mt-3 cursor-pointer"
+              onClick={() => setEditing(true)}
+            />
+          )}
+
           {/* Rendered content */}
           <div
-            className={`text-sm whitespace-pre-wrap break-words pt-3 ${colors.text} cursor-pointer`}
+            className={`text-sm whitespace-pre-wrap break-words ${item.type === 'image' ? 'mt-2' : 'pt-3'} ${colors.text} cursor-pointer`}
             onClick={() => setEditing(true)}
             dangerouslySetInnerHTML={{ __html: renderMiniMarkdown(item.content) }}
           />

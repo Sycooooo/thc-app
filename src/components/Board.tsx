@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -26,6 +26,7 @@ type BoardItem = {
   color: string
   size: string
   linkUrl: string | null
+  imageUrl: string | null
   position: number
   createdAt: string
   createdBy: { id: string; username: string }
@@ -42,6 +43,11 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
   const [color, setColor] = useState('yellow')
   const [size, setSize] = useState<'normal' | 'large'>('normal')
   const [linkUrl, setLinkUrl] = useState('')
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // DnD sensors
   const sensors = useSensors(
@@ -63,24 +69,84 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
     setLoading(false)
   }
 
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) return
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image trop grande (max 5Mo)')
+      return
+    }
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
+
+  function clearImage() {
+    setImageFile(null)
+    setImagePreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  function wrapSelection(before: string, after: string) {
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const text = ta.value
+    const selected = text.substring(start, end)
+    const newText = text.substring(0, start) + before + selected + after + text.substring(end)
+    setContent(newText)
+    setTimeout(() => {
+      ta.focus()
+      ta.selectionStart = start + before.length
+      ta.selectionEnd = end + before.length
+    }, 0)
+  }
+
+  function insertPrefix(prefix: string) {
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const text = ta.value
+    const lineStart = text.lastIndexOf('\n', start - 1) + 1
+    const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart)
+    setContent(newText)
+    setTimeout(() => {
+      ta.focus()
+      ta.selectionStart = ta.selectionEnd = start + prefix.length
+    }, 0)
+  }
+
   async function createItem() {
-    if (!content.trim()) return
+    if (!content.trim() && !imageFile) return
+    setUploading(true)
     try {
-      await api.post(`/api/coloc/${colocId}/board`, {
-        content: content.trim(),
-        color,
-        size,
-        linkUrl: linkUrl.trim() || null,
-        type: linkUrl.trim() ? 'link' : 'text',
-      })
+      if (imageFile) {
+        const formData = new FormData()
+        formData.append('image', imageFile)
+        formData.append('color', color)
+        formData.append('size', size)
+        formData.append('content', content.trim())
+        await api.upload(`/api/coloc/${colocId}/board/upload`, formData)
+      } else {
+        await api.post(`/api/coloc/${colocId}/board`, {
+          content: content.trim(),
+          color,
+          size,
+          linkUrl: linkUrl.trim() || null,
+          type: linkUrl.trim() ? 'link' : 'text',
+        })
+      }
       setContent('')
       setLinkUrl('')
       setSize('normal')
+      clearImage()
       setShowForm(false)
       await loadItems()
     } catch (err) {
       console.error('Erreur création:', err)
     }
+    setUploading(false)
   }
 
   async function deleteItem(itemId: string) {
@@ -157,21 +223,81 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
       <AnimatePresence>
         {showForm && (
           <div className="card card-glow p-4 space-y-3">
+            {/* Toolbar de formatage */}
+            <div className="flex items-center gap-1 border-b border-b pb-2">
+              <button
+                type="button"
+                onClick={() => wrapSelection('**', '**')}
+                className="px-2.5 py-1 text-xs font-bold text-t-muted rounded hover:bg-surface-hover transition"
+                title="Gras"
+              >
+                B
+              </button>
+              <button
+                type="button"
+                onClick={() => wrapSelection('*', '*')}
+                className="px-2.5 py-1 text-xs italic text-t-muted rounded hover:bg-surface-hover transition"
+                title="Italique"
+              >
+                I
+              </button>
+              <button
+                type="button"
+                onClick={() => insertPrefix('- ')}
+                className="px-2.5 py-1 text-xs text-t-muted rounded hover:bg-surface-hover transition"
+                title="Liste"
+              >
+                ☰ Liste
+              </button>
+              <div className="w-px h-4 bg-b mx-1" />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-2.5 py-1 text-xs text-t-muted rounded hover:bg-surface-hover transition"
+                title="Ajouter une image"
+              >
+                📷 Image
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+            </div>
+
             <textarea
+              ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Ecris ta note ici..."
               rows={3}
               className="w-full px-3 py-2 border border-b rounded-lg text-sm resize-none text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
             />
-            <input
-              type="url"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              placeholder="Lien (optionnel)"
-              className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
-            />
-            <p className="text-[10px] text-t-faint">Formatage : **gras** · *italique* · - liste</p>
+
+            {/* Image preview */}
+            {imagePreview && (
+              <div className="relative inline-block">
+                <img src={imagePreview} alt="Preview" className="max-h-40 rounded-lg border border-b" />
+                <button
+                  onClick={clearImage}
+                  className="absolute -top-2 -right-2 w-5 h-5 bg-danger text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600 transition"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {!imageFile && (
+              <input
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="Lien (optionnel)"
+                className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+            )}
 
             {/* Couleur */}
             <div className="flex items-center gap-2">
@@ -211,12 +337,13 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
             <div className="flex gap-2">
               <button
                 onClick={createItem}
-                className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+                disabled={uploading}
+                className="btn-glow px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition disabled:opacity-50"
               >
-                Publier
+                {uploading ? 'Upload...' : 'Publier'}
               </button>
               <button
-                onClick={() => setShowForm(false)}
+                onClick={() => { setShowForm(false); clearImage() }}
                 className="px-4 py-2 bg-surface-hover text-t-muted rounded-lg text-sm font-medium hover:text-t-primary transition"
               >
                 Annuler
