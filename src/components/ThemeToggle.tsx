@@ -32,7 +32,7 @@ export default function ThemeToggle() {
       whileTap={{ scale: 0.85 }}
       whileHover={{ scale: 1.1 }}
       className="w-9 h-9 rounded-lg bg-surface hover:bg-surface-hover border border-b flex items-center justify-center transition-colors text-lg overflow-hidden"
-      title={dark ? 'Mode clair' : 'Mode sombre'}
+      aria-label={dark ? 'Activer le mode clair' : 'Activer le mode sombre'}
     >
       <motion.span
         key={animKey}

@@ -43,13 +43,22 @@ export async function POST(
   const membership = await prisma.userColoc.findUnique({
     where: { userId_colocId: { userId: session.user.id, colocId } },
   })
-  if (!membership || membership.role !== 'admin') {
-    return NextResponse.json({ error: 'Seul l\'admin peut gérer les affinités' }, { status: 403 })
+  if (!membership) {
+    return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
   }
 
-  const { userId, category, weight } = await request.json()
+  const body = await request.json()
+  const category = body.category
+  const weight = body.weight
+  // Si pas de userId fourni, on modifie ses propres affinités
+  const userId = body.userId || session.user.id
 
-  if (!userId || !category || weight === undefined) {
+  // Un membre ne peut modifier que ses propres affinités, l'admin peut tout modifier
+  if (membership.role !== 'admin' && userId !== session.user.id) {
+    return NextResponse.json({ error: 'Tu ne peux modifier que tes propres affinités' }, { status: 403 })
+  }
+
+  if (!category || weight === undefined) {
     return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
   }
 

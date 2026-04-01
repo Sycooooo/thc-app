@@ -109,7 +109,7 @@ export default function Chat({
   useEffect(() => {
     const channel = pusherClient.subscribe(`coloc-${colocId}`)
 
-    channel.bind('new-message', (message: Message) => {
+    const handler = (message: Message) => {
       setMessages((prev) => {
         if (prev.some((m) => m.id === message.id)) return prev
         return [...prev, message]
@@ -117,11 +117,12 @@ export default function Chat({
       if (shouldAutoScroll.current) {
         setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
       }
-    })
+    }
+
+    channel.bind('new-message', handler)
 
     return () => {
-      channel.unbind_all()
-      pusherClient.unsubscribe(`coloc-${colocId}`)
+      channel.unbind('new-message', handler)
     }
   }, [colocId])
 
@@ -291,7 +292,7 @@ export default function Chat({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)]">
+    <div className="flex flex-col h-[calc(100vh-80px-56px)]">
       {/* Liste des messages */}
       <div
         ref={listRef}

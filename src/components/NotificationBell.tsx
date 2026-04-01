@@ -56,11 +56,31 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
+  function getBellPrefs(): Record<string, boolean> {
+    try {
+      const stored = localStorage.getItem('bell_prefs')
+      if (stored) return JSON.parse(stored)
+    } catch {}
+    return {}
+  }
+
   async function loadNotifications() {
     try {
       const data = await api.get('/api/notifications')
-      setNotifications(data.notifications)
-      setUnread(data.unreadCount)
+      const bellPrefs = getBellPrefs()
+      const typeToKey: Record<string, string> = {
+        task_assigned: 'bell_task_assigned',
+        task_completed: 'bell_task_completed',
+        new_event: 'bell_new_event',
+        new_board_item: 'bell_new_board_item',
+      }
+      const filtered = data.notifications.filter((n: Notification) => {
+        const prefKey = typeToKey[n.type]
+        if (!prefKey) return true // types non configurables (mention, quest) toujours affichés
+        return bellPrefs[prefKey] !== false
+      })
+      setNotifications(filtered)
+      setUnread(filtered.filter((n: Notification) => !n.read).length)
     } catch {
       // silently fail
     }
@@ -100,6 +120,9 @@ export default function NotificationBell() {
         whileTap={{ scale: 0.9 }}
         whileHover={{ scale: 1.1 }}
         className="relative p-2 text-t-muted hover:text-t-primary transition-colors"
+        aria-label={unread > 0 ? `Notifications (${unread} non lues)` : 'Notifications'}
+        aria-expanded={open}
+        aria-haspopup="true"
       >
         <motion.div
           animate={bellRing ? {
@@ -115,6 +138,8 @@ export default function NotificationBell() {
         <AnimatePresence>
           {unread > 0 && (
             <motion.span
+              role="status"
+              aria-live="polite"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
@@ -130,6 +155,8 @@ export default function NotificationBell() {
       <AnimatePresence>
         {open && (
           <motion.div
+            role="menu"
+            aria-label="Notifications"
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}

@@ -17,9 +17,13 @@ const WEIGHTS = [
 export default function AffinitySetup({
   colocId,
   members,
+  currentUserId,
+  isAdmin,
 }: {
   colocId: string
   members: Member[]
+  currentUserId: string
+  isAdmin: boolean
 }) {
   const [affinities, setAffinities] = useState<Affinity[]>([])
   const [loading, setLoading] = useState(true)
@@ -93,15 +97,22 @@ export default function AffinitySetup({
                     const key = `${member.id}-${cat}`
                     const nextWeight = (w + 1) % 4
                     const style = WEIGHTS[w]
+                    const canEdit = isAdmin || member.id === currentUserId
                     return (
                       <td key={cat} className="text-center px-3 py-3">
-                        <button
-                          onClick={() => setAffinity(member.id, cat, nextWeight)}
-                          disabled={saving === key}
-                          className={`px-3 py-1 rounded-full text-xs font-medium transition disabled:opacity-50 ${style.color}`}
-                        >
-                          {saving === key ? '...' : style.label}
-                        </button>
+                        {canEdit ? (
+                          <button
+                            onClick={() => setAffinity(member.id, cat, nextWeight)}
+                            disabled={saving === key}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer disabled:opacity-50 ${style.color}`}
+                          >
+                            {saving === key ? '...' : style.label}
+                          </button>
+                        ) : (
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium opacity-40 ${style.color}`}>
+                            {style.label}
+                          </span>
+                        )}
                       </td>
                     )
                   })}

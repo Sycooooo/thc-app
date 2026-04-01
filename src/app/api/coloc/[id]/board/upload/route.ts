@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { writeFile } from 'fs/promises'
 import path from 'path'
 import { notifyColoc } from '@/lib/notifications'
+import { pusher } from '@/lib/pusher'
 
 export async function POST(
   request: Request,
@@ -74,6 +75,8 @@ export async function POST(
     },
     include: { createdBy: { select: { id: true, username: true } } },
   })
+
+  await pusher.trigger(`coloc-${colocId}`, 'new-board-item', item)
 
   await notifyColoc(
     colocId,

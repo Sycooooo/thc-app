@@ -2,9 +2,11 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { getLevel, getXpForNextLevel, getStreakMultiplier } from '@/lib/xp'
+import { getRankFromPoints } from '@/lib/ranking'
 import Link from 'next/link'
 import AvatarUpload from '@/components/AvatarUpload'
 import PixelAvatar from '@/components/PixelAvatar'
+import RankCard from '@/components/RankCard'
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -25,6 +27,7 @@ export default async function ProfilePage() {
   const xpInfo = getXpForNextLevel(user.xp)
   const totalCompleted = user.completedTasks.length
   const streakMultiplier = getStreakMultiplier(user.currentStreak)
+  const rank = getRankFromPoints(user.rankPoints)
 
   // Tous les achievements pour afficher ceux non débloqués aussi
   const allAchievements = await prisma.achievement.findMany()
@@ -65,7 +68,7 @@ export default async function ProfilePage() {
           <h2 className="font-display text-3xl tracking-wide text-t-primary uppercase neon-title">{user.username}</h2>
 
           {/* Boutons avatar */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap justify-center">
             <Link
               href="/profile/character"
               className="px-4 py-2 bg-accent-secondary hover:bg-accent-secondary-hover text-white rounded-full text-sm font-bold transition"
@@ -77,6 +80,12 @@ export default async function ProfilePage() {
               className="px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-full text-sm font-bold transition"
             >
               Boutique 🛒
+            </Link>
+            <Link
+              href="/profile/settings"
+              className="px-4 py-2 bg-surface-hover hover:bg-surface border border-b text-t-primary rounded-full text-sm font-bold transition"
+            >
+              Paramètres
             </Link>
           </div>
 
@@ -103,6 +112,9 @@ export default async function ProfilePage() {
             <span>{xpInfo.needed} XP pour le niveau {level + 1}</span>
           </div>
         </div>
+
+        {/* Rang Compétitif */}
+        <RankCard rank={rank} seasonNumber={user.seasonNumber} />
 
         {/* Stats */}
         <div className="card card-glow p-5">

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { XP_REWARDS, COIN_REWARDS, getStreakMultiplier, getLevel } from '@/lib/xp'
+import { detectRankChange } from '@/lib/ranking'
 import { notifyColoc } from '@/lib/notifications'
 
 export async function POST(
@@ -78,6 +79,7 @@ export async function POST(
       where: { id: session.user.id },
       data: {
         xp: { increment: xpGained },
+        rankPoints: { increment: xpGained },
         currency: { increment: coinsGained },
         currentStreak: newStreak,
         longestStreak: newLongestStreak,
@@ -93,6 +95,22 @@ export async function POST(
     console.error('Erreur mise à jour:', err)
     return NextResponse.json({ error: 'Erreur lors de la mise à jour' }, { status: 500 })
   }
+
+  // === Détection rank-up ===
+  const rankChange = detectRankChange(user.rankPoints, user.rankPoints + xpGained)
+  const rankUp = rankChange.type !== 'none' ? {
+    type: rankChange.type,
+    newRank: {
+      tier: rankChange.newRank.tier,
+      name: rankChange.newRank.name,
+      icon: rankChange.newRank.icon,
+      color: rankChange.newRank.color,
+      glow: rankChange.newRank.glow,
+      division: rankChange.newRank.division,
+      label: rankChange.newRank.label,
+      points: rankChange.newRank.points,
+    },
+  } : null
 
   // === Notification aux colocataires ===
   await notifyColoc(
@@ -118,6 +136,7 @@ export async function POST(
     streak: newStreak,
     streakMultiplier,
     newAchievements,
+    rankUp,
   })
 }
 

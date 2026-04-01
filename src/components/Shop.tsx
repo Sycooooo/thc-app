@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import { RARITY_LABELS, RARITY_COLORS } from '@/lib/xp'
 import { motion, AnimatePresence } from 'framer-motion'
 import Button, { ToggleButton } from '@/components/ui/Button'
@@ -60,8 +61,9 @@ export default function Shop({ initialItems, initialCurrency }: Props) {
       )
       setJustBought(itemId)
       setTimeout(() => setJustBought(null), 2000)
+      toast.success('Objet acheté !')
     } catch {
-      // Silencieux
+      toast.error('Achat impossible')
     }
     setBuying(null)
   }

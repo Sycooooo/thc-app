@@ -17,6 +17,10 @@ model User {
   longestStreak   Int       @default(0)
   lastActiveDate  DateTime?
   createdAt       DateTime  @default(now())
+  hideStats       Boolean   @default(false)
+  hideOnline      Boolean   @default(false)
+  rankPoints      Int       @default(0)
+  seasonNumber    Int       @default(1)
 
   memberships     UserColoc[]
   assignedTasks   Task[]    @relation("AssignedTasks")
@@ -31,6 +35,10 @@ model User {
   paidExpenses      Expense[]      @relation("PaidExpenses")
   expenseSplits     ExpenseSplit[] @relation("ExpenseSplits")
   avatarConfig      AvatarConfig?
+  placedFurniture   PlacedFurniture[]
+  seasonRecords     SeasonRecord[]
+  spotifyAccount    SpotifyAccount?
+  musicStories      MusicStory[]
 }
 
 model Colocation {
@@ -53,6 +61,10 @@ model Colocation {
   messages        Message[]
   menus           WeeklyMenu[]
   expenses        Expense[]
+  placedFurniture PlacedFurniture[]
+
+  musicStories    MusicStory[]
+  blindTestRounds BlindTestRound[]
 }
 
 model UserColoc {
@@ -117,19 +129,27 @@ model Score {
 // === Boutique ===
 
 model ShopItem {
-  id          String    @id @default(cuid())
-  name        String
-  description String?
-  price       Int
-  type        String    // "avatar_part", "decoration", "badge_style"
-  rarity      String    @default("common") // "common", "rare", "epic", "legendary"
-  imageUrl    String?
-  layer       String?   // "hair", "eyes", "top", "bottom", "shoes", "accessory"
-  spriteName  String?   // nom du fichier sprite (ex: "hoodie-black")
-  isFree      Boolean   @default(false)
-  createdAt   DateTime  @default(now())
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  price             Int
+  type              String    // "avatar_part", "decoration", "badge_style"
+  rarity            String    @default("common") // "common", "rare", "epic", "legendary"
+  imageUrl          String?
+  layer             String?   // "hair", "eyes", "top", "bottom", "shoes", "accessory"
+  spriteName        String?   // nom du fichier sprite (ex: "hoodie-black")
+  isFree            Boolean   @default(false)
+  colorHex          String?
+  depthCm           Int?
+  furnitureCategory String?
+  heightCm          Int?
+  modelKey          String?
+  roomConstraint    String?
+  widthCm           Int?
+  createdAt         DateTime  @default(now())
 
-  buyers      UserItem[]
+  buyers            UserItem[]
+  placedFurniture   PlacedFurniture[]
 }
 
 model UserItem {
@@ -342,6 +362,89 @@ model ExpenseSplit {
 
   @@unique([userId, expenseId])
 }
+
+// === Saisons Ranking ===
+
+model SeasonRecord {
+  id            String   @id @default(cuid())
+  seasonNumber  Int
+  finalRank     String   // ex: "midnight_1", "neon_3", "ethereal"
+  finalPoints   Int
+  rewardType    String?  // "badge", "border", "title"
+  createdAt     DateTime @default(now())
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, seasonNumber])
+}
+
+// === Meubles placés ===
+
+model PlacedFurniture {
+  id         String   @id @default(cuid())
+  posX       Float
+  posZ       Float
+  rotation   Float    @default(0)
+  roomId     String
+  colocId    String
+  coloc      Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
+  placedById String
+  placedBy   User     @relation(fields: [placedById], references: [id], onDelete: Cascade)
+  itemId     String
+  item       ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([colocId])
+}
+
+// === Spotify ===
+
+model SpotifyAccount {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spotifyUserId String   @unique
+  displayName   String?
+  profileUrl    String?
+  accessToken   String
+  refreshToken  String
+  expiresAt     DateTime
+  scope         String
+  linkedAt      DateTime @default(now())
+}
+
+model MusicStory {
+  id         String   @id @default(cuid())
+  trackId    String
+  trackName  String
+  artistName String
+  albumArt   String
+  spotifyUrl String
+  caption    String?
+  reactions  Json     @default("{}")
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+
+  userId  String
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  colocId String
+  coloc   Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
+}
+
+model BlindTestRound {
+  id         String   @id @default(cuid())
+  trackId    String
+  trackName  String
+  artistName String
+  previewUrl String
+  sharedById String
+  createdAt  DateTime @default(now())
+
+  colocId String
+  coloc   Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
+}
+
 
 // === Chat ===
 

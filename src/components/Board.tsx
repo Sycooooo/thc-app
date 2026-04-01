@@ -17,6 +17,7 @@ import {
 } from '@dnd-kit/sortable'
 import { AnimatePresence, motion } from 'framer-motion'
 import { api } from '@/lib/api'
+import { pusherClient } from '@/lib/pusher-client'
 import BoardNote, { NOTE_COLORS } from './BoardNote'
 
 type BoardItem = {
@@ -62,6 +63,20 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
   useEffect(() => {
     loadItems()
   }, [])
+
+  // Écouter les nouveaux éléments via Pusher
+  useEffect(() => {
+    const channel = pusherClient.subscribe(`coloc-${colocId}`)
+    const handler = (item: BoardItem) => {
+      if (item.createdBy.id !== currentUserId) {
+        loadItems()
+      }
+    }
+    channel.bind('new-board-item', handler)
+    return () => {
+      channel.unbind('new-board-item', handler)
+    }
+  }, [colocId, currentUserId])
 
   // Global drag-and-drop d'image sur toute la page (document-level)
   useEffect(() => {

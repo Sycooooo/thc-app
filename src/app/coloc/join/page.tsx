@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 
 export default function JoinColocPage() {
@@ -19,8 +20,10 @@ export default function JoinColocPage() {
 
     try {
       const coloc = await api.post('/api/coloc/join', { inviteCode: code.trim() })
+      toast.success('Tu as rejoint la colocation !')
       router.push(`/coloc/${coloc.id}`)
     } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Code invalide')
       setError(err instanceof Error ? err.message : 'Code invalide')
       setLoading(false)
     }

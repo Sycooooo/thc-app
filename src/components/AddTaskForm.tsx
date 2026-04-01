@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 import type { Member } from '@/types'
 
@@ -50,6 +51,7 @@ export default function AddTaskForm({
     setOpen(false)
     setLoading(false)
     router.refresh()
+    toast.success('Tâche ajoutée')
   }
 
   return (

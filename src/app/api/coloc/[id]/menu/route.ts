@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateWeeklyMenu } from '@/lib/ai'
+import { notify } from '@/lib/notifications'
 
 // GET — Récupérer le menu de la semaine (le plus récent ou par weekStart)
 export async function GET(
@@ -60,6 +61,22 @@ export async function POST(
   })
   if (!membership) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
+  }
+
+  if (!process.env.MISTRAL_API_KEY) {
+    const admin = await prisma.userColoc.findFirst({
+      where: { colocId, role: 'admin' },
+    })
+    if (admin) {
+      await notify(
+        admin.userId,
+        colocId,
+        'system',
+        'La clé API Mistral est manquante. La génération de menus est désactivée. Configure MISTRAL_API_KEY dans les variables d\'environnement.',
+        `/coloc/${colocId}/menu`
+      )
+    }
+    return NextResponse.json({ error: 'Clé API Mistral non configurée' }, { status: 503 })
   }
 
   const body = await request.json()

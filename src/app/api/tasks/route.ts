@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createTaskSchema } from '@/lib/validations'
 import { notify } from '@/lib/notifications'
+import { pusher } from '@/lib/pusher'
 
 // Créer une tâche
 export async function POST(request: Request) {
@@ -38,6 +39,8 @@ export async function POST(request: Request) {
     },
     include: { assignedTo: { select: { id: true, username: true, avatar: true } } },
   })
+
+  await pusher.trigger(`coloc-${colocId}`, 'new-task', task)
 
   // Notifier la personne assignée (si différente du créateur)
   if (assignedToId && assignedToId !== session.user.id) {

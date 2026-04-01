@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { XP_REWARDS, DIFFICULTY_LABELS, DIFFICULTY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS, ROOM_LABELS } from '@/lib/xp'
 import { api } from '@/lib/api'
+import { pusherClient } from '@/lib/pusher-client'
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerList'
 import Button from '@/components/ui/Button'
+import RankUpModal from '@/components/RankUpModal'
 import type { Task } from '@/types'
+import type { RankInfo } from '@/lib/ranking'
 
 function Confetti() {
   const [particles] = useState(() =>
@@ -97,11 +100,23 @@ function AnimatedCheckbox({
 export default function TaskList({
   tasks,
   currentUserId,
+  colocId,
 }: {
   tasks: Task[]
   currentUserId: string
+  colocId: string
 }) {
   const router = useRouter()
+
+  // Écouter les nouvelles tâches via Pusher
+  useEffect(() => {
+    const channel = pusherClient.subscribe(`coloc-${colocId}`)
+    const handler = () => { router.refresh() }
+    channel.bind('new-task', handler)
+    return () => {
+      channel.unbind('new-task', handler)
+    }
+  }, [colocId, router])
   const [completing, setCompleting] = useState<string | null>(null)
   const [reserving, setReserving] = useState<string | null>(null)
   const [popup, setPopup] = useState<{
@@ -111,6 +126,10 @@ export default function TaskList({
     streak: number
     multiplier: number
     achievements: { name: string; icon: string }[]
+  } | null>(null)
+  const [rankUp, setRankUp] = useState<{
+    type: 'division_up' | 'tier_up'
+    newRank: RankInfo
   } | null>(null)
 
   const pending = tasks.filter((t) => t.status === 'pending')
@@ -128,6 +147,12 @@ export default function TaskList({
         multiplier: data.streakMultiplier,
         achievements: data.newAchievements || [],
       })
+      // Rank up ?
+      if (data.rankUp) {
+        setTimeout(() => {
+          setRankUp(data.rankUp)
+        }, 2600)
+      }
       setTimeout(() => {
         setPopup(null)
         router.refresh()
@@ -158,6 +183,16 @@ export default function TaskList({
 
   return (
     <div className="space-y-6">
+      {/* Rank up modal */}
+      {rankUp && (
+        <RankUpModal
+          show={!!rankUp}
+          type={rankUp.type}
+          newRank={rankUp.newRank}
+          onClose={() => setRankUp(null)}
+        />
+      )}
+
       {/* Tâches en attente */}
       <div>
         <h2 className="font-semibold text-t-primary mb-3">

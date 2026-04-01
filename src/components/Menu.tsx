@@ -97,6 +97,35 @@ export default function Menu({
     }
   }
 
+  function downloadShoppingList() {
+    if (!menu?.shoppingList) return
+
+    const lines: string[] = []
+    lines.push('LISTE DE COURSES')
+    lines.push(`${menu.nbPersons} personne${menu.nbPersons > 1 ? 's' : ''} | Budget ${menu.budget}`)
+    lines.push('')
+
+    for (const cat of CATEGORIES_ORDER) {
+      const items = shoppingByCategory[cat]
+      if (!items) continue
+      lines.push(`── ${cat.toUpperCase()} ──`)
+      for (const item of items) {
+        lines.push(`☐  ${item.nom} — ${item.quantite} (${item.prixEstime.toFixed(2)}€)`)
+      }
+      lines.push('')
+    }
+
+    lines.push(`TOTAL ESTIMÉ : ~${totalPrice.toFixed(2)}€`)
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'liste-de-courses.txt'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="space-y-6">
       {/* Formulaire de génération */}
@@ -227,7 +256,15 @@ export default function Menu({
             <div className="card card-glow p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-t-primary">Liste de courses</h3>
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Total estimé : ~{totalPrice.toFixed(2)}€</p>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm font-medium text-green-600 dark:text-green-400">~{totalPrice.toFixed(2)}€</p>
+                  <button
+                    onClick={downloadShoppingList}
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-accent/15 text-accent hover:bg-accent/25 transition cursor-pointer"
+                  >
+                    Télécharger
+                  </button>
+                </div>
               </div>
 
               {CATEGORIES_ORDER.filter((cat) => shoppingByCategory[cat]).map((cat) => (

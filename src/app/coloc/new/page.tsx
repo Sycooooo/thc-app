@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 
 export default function NewColocPage() {
@@ -19,8 +20,10 @@ export default function NewColocPage() {
 
     try {
       const coloc = await api.post('/api/coloc', { name })
+      toast.success('Colocation créée !')
       router.push(`/coloc/${coloc.id}`)
     } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erreur')
       setError(err instanceof Error ? err.message : 'Erreur')
       setLoading(false)
     }

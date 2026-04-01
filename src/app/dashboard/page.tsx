@@ -29,9 +29,6 @@ export default async function DashboardPage() {
         </div>
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Link href="/profile" className="text-sm text-accent font-medium hover:text-accent-hover transition">
-            👤 {session.user.name}
-          </Link>
           <form
             action={async () => {
               'use server'

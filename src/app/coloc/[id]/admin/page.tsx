@@ -49,10 +49,12 @@ export default async function AdminPage({
           {/* Section 1 : Configuration des quêtes */}
           <QuestSetup colocId={id} />
 
-          {/* Section 2 : Affinités des membres */}
+          {/* Section 2 : Affinités de tous les membres */}
           <AffinitySetup
             colocId={id}
             members={coloc.members.map((m) => ({ id: m.user.id, name: m.user.username }))}
+            currentUserId={userId}
+            isAdmin={true}
           />
         </PageTransition>
       </main>
