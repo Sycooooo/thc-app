@@ -241,8 +241,8 @@ export default function MaisonView({
       <Canvas
         shadows
         camera={{
-          position: [centerX, 16, centerZ + 2],
-          fov: 35,
+          position: [centerX, 9, centerZ + 1],
+          fov: 55,
           near: 0.1,
           far: 100,
         }}
