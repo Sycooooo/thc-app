@@ -7,7 +7,6 @@ import PageAmbiance from '@/components/ui/PageAmbiance'
 import MusicStories from '@/components/music/MusicStories'
 import NowPlaying from '@/components/music/NowPlaying'
 import TopArtists from '@/components/music/TopArtists'
-import BlindTest from '@/components/music/BlindTest'
 import StoryHistory from '@/components/music/StoryHistory'
 
 export default async function MusicPage({
@@ -86,9 +85,6 @@ export default async function MusicPage({
 
           {/* Top Artistes */}
           <TopArtists colocId={id} />
-
-          {/* Blind Test */}
-          <BlindTest colocId={id} hasSpotify={hasSpotify} />
         </PageTransition>
       </main>
     </div>
