@@ -1,6 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
+import { smooth, bouncy } from '@/lib/animations'
 import { type RankInfo } from '@/lib/ranking'
 import RankEmblem from './RankEmblem'
 
@@ -31,7 +32,7 @@ export default function RankUpModal({
             initial={{ scale: 0.5, opacity: 0, y: 40 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={smooth}
             onClick={(e) => e.stopPropagation()}
             className="relative bg-surface rounded-2xl p-8 max-w-sm w-full mx-4 text-center overflow-hidden"
             style={{
@@ -82,7 +83,7 @@ export default function RankUpModal({
               <motion.div
                 initial={{ scale: 0, rotate: -30 }}
                 animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 12, delay: 0.3 }}
+                transition={{ ...bouncy, delay: 0.3 }}
                 className="mb-4"
               >
                 <RankEmblem tier={newRank.tier} size={120} />

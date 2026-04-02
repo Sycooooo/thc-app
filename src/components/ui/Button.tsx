@@ -3,6 +3,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { motion, type HTMLMotionProps } from 'framer-motion'
 import Link from 'next/link'
+import { snappy } from '@/lib/animations'
 
 // ─── Variant & Size types ────────────────────────────────────────────
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'pixel'
@@ -90,11 +91,7 @@ const hoverVariants: Record<ButtonVariant, { scale?: number; y?: number }> = {
   pixel: { scale: 1.05 },
 }
 
-const springTransition = {
-  type: 'spring' as const,
-  stiffness: 400,
-  damping: 17,
-}
+const springTransition = snappy
 
 // ─── Component ───────────────────────────────────────────────────────
 

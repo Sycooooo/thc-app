@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { snappy, bouncy } from '@/lib/animations'
 import { api } from '@/lib/api'
 
 type Notification = {
@@ -143,7 +144,7 @@ export default function NotificationBell() {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+              transition={bouncy}
               className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-danger text-white text-[10px] font-bold rounded-full flex items-center justify-center"
             >
               {unread > 9 ? '9+' : unread}
@@ -160,7 +161,7 @@ export default function NotificationBell() {
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            transition={snappy}
             className="absolute right-0 top-full mt-2 w-80 bg-surface rounded-xl border border-b z-50 max-h-96 overflow-y-auto"
             style={{ boxShadow: 'var(--shadow-lg)' }}
           >
@@ -195,7 +196,7 @@ export default function NotificationBell() {
                         <motion.span
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                          transition={bouncy}
                           className="w-2 h-2 bg-accent rounded-full mt-1.5 flex-shrink-0"
                         />
                       )}

@@ -1,37 +1,46 @@
-# Review Feedback — Step 5a: Restyle TaskList, AddTaskForm, ColocNav
+# Review Feedback — Step 6: Fluidification des Animations
 
-## Verdict: APPROVED
+Date: 2026-04-02
+Reviewer: Senior Code Reviewer
+Ready for Builder: YES
 
-All four files pass every check. No blocking or non-blocking issues.
-
----
-
-## Checklist
-
-| Check | Status |
-|---|---|
-| Only CSS classes changed, no logic modifications | PASS |
-| Border radii reduced consistently | PASS |
-| Difficulty colors use lofi palette | PASS |
-| ColocNav darker bg | PASS |
-| ColocNav violet border | PASS |
-| ColocNav glow on active icon | PASS |
-| No Framer Motion changes | PASS |
-| Confetti untouched in TaskList | PASS |
-| xp.ts changes are color-only | PASS |
+## Verdict: PASS WITH NOTES
 
 ---
 
-## Detail
+## Must Fix
 
-**Border radii** — `rounded-2xl` to `rounded-xl` (empty state, form container), `rounded-xl` to `rounded-lg` (task cards pending/done, confetti overlay, add-task button). Consistent one-step reduction throughout.
+Aucun.
 
-**Difficulty colors** — `xp.ts` and `AddTaskForm.tsx` both use `#4ade80` (green/easy), `accent-secondary` (amber/medium), `accent-tertiary` (rose/hard). Old hardcoded Tailwind green/yellow/red classes fully replaced. Added `border` utility to `DIFFICULTY_COLORS` in xp.ts which previously had none — minor addition but CSS-only.
+---
 
-**ColocNav** — `bg-surface/80` replaced with `bg-[#0a0a14]/80`, `backdrop-blur-lg` upgraded to `backdrop-blur-xl`, border changed to violet `rgba(192,132,252,0.08)`, inline `box-shadow` for depth. Active icon gets `drop-shadow-[0_0_6px_rgba(192,132,252,0.4)]` conditional on `isActive`. Unread badge (`bg-danger`, `animate-pulse`) untouched. Pusher logic, sound prefs, labels all identical.
+## Should Fix
 
-**TaskList** — `border-b` replaced with `border-[var(--border)]` on both pending and done cards. `backdrop-blur-sm` added to both. Confetti particle colors unchanged (`#a855f7, #c084fc, #f97316, #fb923c, #38bdf8, #e8c97a`). All Framer Motion props (`motion.*`, `AnimatePresence`, `whileHover`, `whileTap`, transitions, `layout`) identical to before. State, handlers, Pusher subscription untouched.
+1. **`src/lib/animations.ts` — dead code presets**
+   Les presets `fadeInUp` (l.15), `scaleIn` (l.21) sont exportes mais importes nulle part dans le projet. Idem pour les alias de compatibilite `springConfig` (l.38), `snappySpring` (l.40), `bouncySpring` (l.42).
+   **Recommandation :** Supprimer ces exports morts ou, si conserves pour usage futur, ajouter un commentaire `// Reserved for future use`. Le brief demandait de "mettre a jour leurs transitions pour utiliser les 3 configs" — comme ils ne sont pas utilises, c'est mineur, mais le brief n'est pas strictement respecte sur ce point.
 
-**xp.ts** — Only the `DIFFICULTY_COLORS` map changed. All functions (`getStreakMultiplier`, `getLevel`, `getXpRequiredForLevel`, `getXpForNextLevel`), all other maps (`XP_REWARDS`, `COIN_REWARDS`, `DIFFICULTY_LABELS`, `CATEGORY_*`, `ROOM_LABELS`, `RARITY_*`) identical.
+2. **`src/lib/animations.ts:53` — `staggerItem` sans transition explicite**
+   Le preset `staggerItem` (l.52-55) n'a pas de champ `transition`. Il utilise la transition par defaut de Framer Motion (pas une des 3 configs centralisees). Les composants qui l'utilisent (`StaggerList.tsx`) ont leur propre `itemVariants` avec `smooth`, donc pas d'impact reel — mais le preset dans `animations.ts` reste desaligne.
+   **Recommandation :** Ajouter `transition: smooth` dans `staggerItem.animate` pour la coherence, ou supprimer le preset s'il est devenu dead code.
 
-Ship it.
+---
+
+## Escalate to Architect
+
+Aucun.
+
+---
+
+## Cleared
+
+Step 6 a-d entierement revue et validee :
+
+- **6a** — Les 3 spring configs (`smooth`, `snappy`, `bouncy`) sont correctement definies dans `animations.ts`. Zero occurrence de `stiffness`/`damping` inline dans les composants (grep confirme : uniquement dans `animations.ts`). Les 15 fichiers du brief + login/register importent et utilisent correctement les configs centralisees.
+- **6b** — `PageTransition.tsx` utilise la spring `smooth`, les valeurs `y: 6` et `scale: 0.995` sont conformes au brief. Aucune trace de cubic easing. API inchangee (`{ children }`).
+- **6c** — `ColocNav.tsx` implemente correctement : `layoutId="nav-indicator"` avec transition `snappy`, bounce icone active (`scale: 1.15`, `bouncy`), badge unread anime avec `motion.span` + `AnimatePresence` + preset `scaleBounce`. L'accessibilite est preservee (`aria-current="page"`, `aria-label="Non lu"`, `role="status"`). Le CSS `animate-pulse` a bien ete remplace. Props et logique Pusher intactes.
+- **6d** — `StaggerList.tsx` utilise transition `smooth`, `y: 10`, `scale: 0.98` conformes au brief.
+- **TypeScript** — `npx tsc --noEmit` passe sans erreur.
+- **globals.css** — Non modifie (confirme par git diff).
+- **package.json** — Non modifie, aucune nouvelle dependance.
+- **prefers-reduced-motion** — `MotionConfig reducedMotion="user"` toujours en place dans `Providers.tsx`.

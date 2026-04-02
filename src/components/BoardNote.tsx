@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { motion } from 'framer-motion'
+import { smooth } from '@/lib/animations'
 import { renderMiniMarkdown } from '@/lib/markdown'
 
 type BoardItem = {
@@ -170,7 +171,7 @@ export default function BoardNote({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5, y: 20 }}
       whileHover={!editing ? { scale: 1.02, rotate: 0.5 } : undefined}
-      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      transition={smooth}
       className={`${colors.bg} ${colors.border} border rounded-lg backdrop-blur-sm p-4 relative group ${
         item.size === 'large' ? 'col-span-2' : ''
       } ${isDragging ? 'z-50 shadow-2xl opacity-80' : ''}`}

@@ -1,16 +1,16 @@
 // Presets d'animation Framer Motion réutilisables
 
-export const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -10 },
-}
+// ─── Spring configs centralisées ────────────────────────────────────
+// Smooth — transitions de page, entrées de contenu, modales
+export const smooth = { type: 'spring' as const, stiffness: 300, damping: 28 }
 
-export const scaleIn = {
-  initial: { opacity: 0, scale: 0.9 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.95 },
-}
+// Snappy — boutons, toggles, tabs, interactions rapides
+export const snappy = { type: 'spring' as const, stiffness: 500, damping: 30 }
+
+// Bouncy — badges, notifications, éléments ludiques (rank up, shop)
+export const bouncy = { type: 'spring' as const, stiffness: 400, damping: 12 }
+
+// ─── Presets d'animation ────────────────────────────────────────────
 
 export const buttonTap = {
   whileTap: { scale: 0.97 },
@@ -20,25 +20,7 @@ export const buttonTap = {
 export const buttonPop = {
   whileTap: { scale: 0.93 },
   whileHover: { scale: 1.05 },
-  transition: { type: 'spring' as const, stiffness: 400, damping: 17 },
-}
-
-export const springConfig = {
-  type: 'spring' as const,
-  stiffness: 300,
-  damping: 25,
-}
-
-export const snappySpring = {
-  type: 'spring' as const,
-  stiffness: 500,
-  damping: 30,
-}
-
-export const bouncySpring = {
-  type: 'spring' as const,
-  stiffness: 400,
-  damping: 15,
+  transition: bouncy,
 }
 
 export const staggerContainer = {
@@ -49,17 +31,12 @@ export const staggerContainer = {
   },
 }
 
-export const staggerItem = {
-  initial: { opacity: 0, y: 15 },
-  animate: { opacity: 1, y: 0 },
-}
-
 // Slide down pour formulaires / dropdowns
 export const slideDown = {
   initial: { opacity: 0, height: 0, y: -8 },
   animate: { opacity: 1, height: 'auto', y: 0 },
   exit: { opacity: 0, height: 0, y: -8 },
-  transition: { type: 'spring' as const, stiffness: 400, damping: 30 },
+  transition: snappy,
 }
 
 // Wiggle pour attirer l'attention (notification bell)
@@ -75,12 +52,12 @@ export const scaleBounce = {
   initial: { scale: 0, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
   exit: { scale: 0, opacity: 0 },
-  transition: { type: 'spring' as const, stiffness: 500, damping: 20 },
+  transition: bouncy,
 }
 
 // Hover lift pour les cards
 export const hoverLift = {
-  whileHover: { y: -4, transition: { type: 'spring' as const, stiffness: 400, damping: 25 } },
+  whileHover: { y: -4, transition: smooth },
   whileTap: { y: 0, scale: 0.99 },
 }
 
@@ -94,5 +71,5 @@ export const checkmark = {
 // Tab underline indicator
 export const tabIndicator = {
   layoutId: 'tab-indicator',
-  transition: { type: 'spring' as const, stiffness: 500, damping: 35 },
+  transition: snappy,
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
+import { smooth, snappy, bouncy } from '@/lib/animations'
 import { XP_REWARDS, DIFFICULTY_LABELS, DIFFICULTY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS, ROOM_LABELS } from '@/lib/xp'
 import { api } from '@/lib/api'
 import { pusherClient } from '@/lib/pusher-client'
@@ -75,7 +76,7 @@ function AnimatedCheckbox({
           <motion.svg
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+            transition={snappy}
             className="w-3.5 h-3.5 text-accent"
             fill="none"
             viewBox="0 0 24 24"
@@ -215,7 +216,7 @@ export default function TaskList({
               <motion.div
                 layout
                 whileHover={{ y: -2, boxShadow: 'var(--shadow-lg)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                transition={smooth}
                 className="bg-surface rounded-lg border border-[var(--border)] backdrop-blur-sm p-4 flex items-center gap-4 relative overflow-hidden"
               >
                 {/* Popup récompenses animé */}
@@ -225,7 +226,7 @@ export default function TaskList({
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 1.1 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      transition={smooth}
                       className="absolute inset-0 bg-accent flex items-center justify-center rounded-lg z-10"
                     >
                       <Confetti />
@@ -364,7 +365,7 @@ export default function TaskList({
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 15, delay: i * 0.05 + 0.1 }}
+                  transition={{ ...bouncy, delay: i * 0.05 + 0.1 }}
                   className="w-6 h-6 rounded-full bg-success flex items-center justify-center flex-shrink-0"
                 >
                   <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

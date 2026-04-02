@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { snappy } from '@/lib/animations'
 import { api } from '@/lib/api'
 import { pusherClient } from '@/lib/pusher-client'
 
@@ -416,7 +417,7 @@ export default function Chat({
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              transition={snappy}
               className="absolute bottom-full left-3 right-3 mb-1 bg-surface border border-b rounded-xl overflow-hidden z-50"
               style={{ boxShadow: 'var(--shadow-lg)' }}
             >

@@ -7,6 +7,7 @@ import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PageTransition from '@/components/PageTransition'
 
 export default function NewColocPage() {
   const router = useRouter()
@@ -48,6 +49,7 @@ export default function NewColocPage() {
   return (
     <main className="min-h-screen flex items-center justify-center p-4 relative z-10">
       <PageAmbiance theme="accueil" />
+      <PageTransition>
       <div className="card card-glow gradient-border p-8 w-full max-w-sm">
         {hasColoc === false ? null : (
           <Link href="/" className="text-sm text-t-muted hover:text-t-primary mb-6 block transition">
@@ -83,6 +85,7 @@ export default function NewColocPage() {
           </Button>
         </form>
       </div>
+      </PageTransition>
     </main>
   )
 }

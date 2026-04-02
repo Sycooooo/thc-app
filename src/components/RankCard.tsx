@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { smooth } from '@/lib/animations'
 import { type RankInfo, RANKS, RANK_THRESHOLDS } from '@/lib/ranking'
 import RankBadge from './RankBadge'
 import RankEmblem from './RankEmblem'
@@ -29,7 +30,7 @@ function AllRanksModal({
             initial={{ scale: 0.9, opacity: 0, y: 30 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            transition={smooth}
             onClick={(e) => e.stopPropagation()}
             className="bg-surface rounded-lg border border-b max-w-md w-full max-h-[85vh] overflow-y-auto"
             style={{ boxShadow: 'var(--shadow-lg)' }}
@@ -172,7 +173,7 @@ export default function RankCard({
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              transition={smooth}
             >
               <RankEmblem tier={rank.tier} size={96} />
             </motion.div>

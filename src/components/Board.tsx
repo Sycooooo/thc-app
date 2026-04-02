@@ -16,6 +16,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable'
 import { AnimatePresence, motion } from 'framer-motion'
+import { smooth } from '@/lib/animations'
 import { api } from '@/lib/api'
 import { pusherClient } from '@/lib/pusher-client'
 import BoardNote, { NOTE_COLORS } from './BoardNote'
@@ -324,7 +325,7 @@ export default function Board({ colocId, currentUserId }: { colocId: string; cur
             initial={{ opacity: 0, height: 0, y: -8 }}
             animate={{ opacity: 1, height: 'auto', y: 0 }}
             exit={{ opacity: 0, height: 0, y: -8 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            transition={smooth}
             className="card card-glow p-4 space-y-3 overflow-hidden"
           >
             {/* Toolbar de formatage */}

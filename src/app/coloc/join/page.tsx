@@ -7,6 +7,7 @@ import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PageTransition from '@/components/PageTransition'
 
 export default function JoinColocPage() {
   const router = useRouter()
@@ -42,6 +43,7 @@ export default function JoinColocPage() {
   return (
     <main className="min-h-screen flex items-center justify-center p-4 relative z-10">
       <PageAmbiance theme="accueil" />
+      <PageTransition>
       <div className="card card-glow gradient-border p-8 w-full max-w-sm">
         <Link href="/" className="text-sm text-t-muted hover:text-t-primary mb-6 block transition">
           ← Retour
@@ -78,6 +80,7 @@ export default function JoinColocPage() {
           </Button>
         </form>
       </div>
+      </PageTransition>
     </main>
   )
 }

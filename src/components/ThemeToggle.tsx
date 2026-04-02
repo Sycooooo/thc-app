@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { bouncy } from '@/lib/animations'
 
 export default function ThemeToggle() {
   const [dark, setDark] = useState(true)
@@ -38,7 +39,7 @@ export default function ThemeToggle() {
         key={animKey}
         initial={{ rotate: -90, scale: 0, opacity: 0 }}
         animate={{ rotate: 0, scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+        transition={bouncy}
         className="block"
       >
         {dark ? '☀️' : '🌙'}

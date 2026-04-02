@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import HomeButtons from './HomeButtons'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PageTransition from '@/components/PageTransition'
 
 export default async function Home() {
   const session = await auth()
@@ -22,6 +23,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 relative z-10">
       <PageAmbiance theme="accueil" />
+      <PageTransition>
       <div className="text-center max-w-md">
         <div className="text-6xl mb-6">🏠</div>
         <h1 className="font-display text-6xl tracking-wide text-t-primary uppercase mb-4 neon-title">
@@ -32,6 +34,7 @@ export default async function Home() {
         </p>
         <HomeButtons />
       </div>
+      </PageTransition>
     </main>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { smooth, snappy } from '@/lib/animations'
 import { api } from '@/lib/api'
 
 type CalendarEvent = {
@@ -204,7 +205,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
                 onClick={() => openMonth(m)}
                 whileHover={{ y: -3, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                transition={snappy}
                 className={`bg-[#161628]/65 hover:bg-[#161628] backdrop-blur-sm rounded-lg border p-3 cursor-pointer hover:border-accent/50 transition-all ${
                   isCurrentMonth ? 'border-accent' : 'border-[var(--border)]'
                 }`}
@@ -358,7 +359,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
           initial={{ opacity: 0, height: 0, y: -8 }}
           animate={{ opacity: 1, height: 'auto', y: 0 }}
           exit={{ opacity: 0, height: 0, y: -8 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          transition={smooth}
           className="card card-glow p-4 space-y-3 overflow-hidden"
         >
           <div className="flex items-center justify-between">
@@ -433,7 +434,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          transition={smooth}
           className="card p-4 space-y-2"
         >
           <h3 className="font-semibold text-t-primary text-sm">

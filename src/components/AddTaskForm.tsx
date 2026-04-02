@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { smooth } from '@/lib/animations'
 import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
@@ -75,7 +76,7 @@ export default function AddTaskForm({
           initial={{ opacity: 0, height: 0, y: -8 }}
           animate={{ opacity: 1, height: 'auto', y: 0 }}
           exit={{ opacity: 0, height: 0, y: -8 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          transition={smooth}
           className="bg-surface rounded-xl border border-accent/20 p-5 overflow-hidden"
           style={{ boxShadow: 'var(--shadow)' }}
         >

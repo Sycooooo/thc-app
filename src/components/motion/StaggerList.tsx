@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
+import { smooth } from '@/lib/animations'
 
 const containerVariants = {
   hidden: {},
@@ -13,8 +14,13 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 10, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: smooth,
+  },
 }
 
 export function StaggerContainer({

@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { toast } from 'sonner'
 import { RARITY_LABELS, RARITY_COLORS } from '@/lib/xp'
 import { motion, AnimatePresence } from 'framer-motion'
+import { snappy } from '@/lib/animations'
 import Button, { ToggleButton } from '@/components/ui/Button'
 
 type ShopItem = {
@@ -107,7 +108,7 @@ export default function Shop({ initialItems, initialCurrency }: Props) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               whileHover={!item.owned ? { y: -4, scale: 1.02 } : {}}
-              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              transition={snappy}
               className={`bg-surface border border-[var(--border)] rounded-lg backdrop-blur-sm p-4 flex flex-col items-center gap-3 ${
                 item.owned ? 'opacity-60' : ''
               }`}

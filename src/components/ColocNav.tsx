@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 import { pusherClient } from '@/lib/pusher-client'
+import { snappy, bouncy, scaleBounce } from '@/lib/animations'
 
 type Props = {
   colocId: string
@@ -126,13 +128,32 @@ export default function ColocNav({ colocId, currentUserId }: Props) {
                 isActive ? 'text-accent' : 'text-t-muted hover:text-t-primary'
               }`}
             >
-              <span className={`text-lg relative ${isActive ? 'drop-shadow-[0_0_6px_rgba(192,132,252,0.4)]' : ''}`}>
+              {/* Indicateur actif glissant */}
+              {isActive && (
+                <motion.div
+                  layoutId="nav-indicator"
+                  className="absolute inset-0 rounded-lg bg-accent/10"
+                  transition={snappy}
+                />
+              )}
+              <motion.span
+                animate={{ scale: isActive ? 1.15 : 1 }}
+                transition={bouncy}
+                className={`text-lg relative ${isActive ? 'drop-shadow-[0_0_6px_rgba(192,132,252,0.4)]' : ''}`}
+              >
                 {link.icon}
-                {hasUnread && (
-                  <span role="status" aria-label="Non lu" className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-danger rounded-full border-2 border-surface animate-pulse" />
-                )}
-              </span>
-              <span className="text-xs font-medium leading-tight">{link.label}</span>
+                <AnimatePresence>
+                  {hasUnread && (
+                    <motion.span
+                      role="status"
+                      aria-label="Non lu"
+                      {...scaleBounce}
+                      className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-danger rounded-full border-2 border-surface"
+                    />
+                  )}
+                </AnimatePresence>
+              </motion.span>
+              <span className="text-xs font-medium leading-tight relative">{link.label}</span>
             </Link>
           )
         })}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { smooth } from '@/lib/animations'
 import { api } from '@/lib/api'
 import Button from '@/components/ui/Button'
 
@@ -393,7 +394,7 @@ export default function Expenses({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          transition={smooth}
           className="card card-glow p-5 overflow-hidden"
         >
           <h3 className="font-semibold text-t-primary mb-4">Détail des dettes</h3>
@@ -454,7 +455,7 @@ export default function Expenses({
           initial={{ opacity: 0, height: 0, y: -8 }}
           animate={{ opacity: 1, height: 'auto', y: 0 }}
           exit={{ opacity: 0, height: 0, y: -8 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          transition={smooth}
           className="card card-glow p-5 space-y-4 overflow-hidden"
         >
           <h3 className="font-semibold text-t-primary">Nouvelle dépense</h3>

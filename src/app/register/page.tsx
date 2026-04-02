@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { smooth, bouncy } from '@/lib/animations'
 import { api } from '@/lib/api'
 import Button from '@/components/ui/Button'
 
@@ -33,14 +34,14 @@ export default function RegisterPage() {
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        transition={smooth}
         className="card card-glow gradient-border p-8 w-full max-w-sm"
       >
         <div className="text-center mb-8">
           <motion.div
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.1 }}
+            transition={{ ...bouncy, delay: 0.1 }}
             className="text-4xl mb-3"
           >
             🏠
