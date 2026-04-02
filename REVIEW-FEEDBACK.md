@@ -1,46 +1,43 @@
-# Review Feedback — Step 6: Fluidification des Animations
+# Review Feedback — Step 5c: Restyle Board, Calendar, Expenses, Menu
 
-Date: 2026-04-02
-Reviewer: Senior Code Reviewer
-Ready for Builder: YES
+## Verdict: APPROVED (after fix)
 
-## Verdict: PASS WITH NOTES
+All 5 files pass every check. One non-blocking issue found (`hover:border-b-hover` leftover in Expenses.tsx) — fixed in follow-up.
 
 ---
 
-## Must Fix
+## Checklist
 
-Aucun.
-
----
-
-## Should Fix
-
-1. **`src/lib/animations.ts` — dead code presets**
-   Les presets `fadeInUp` (l.15), `scaleIn` (l.21) sont exportes mais importes nulle part dans le projet. Idem pour les alias de compatibilite `springConfig` (l.38), `snappySpring` (l.40), `bouncySpring` (l.42).
-   **Recommandation :** Supprimer ces exports morts ou, si conserves pour usage futur, ajouter un commentaire `// Reserved for future use`. Le brief demandait de "mettre a jour leurs transitions pour utiliser les 3 configs" — comme ils ne sont pas utilises, c'est mineur, mais le brief n'est pas strictement respecte sur ce point.
-
-2. **`src/lib/animations.ts:53` — `staggerItem` sans transition explicite**
-   Le preset `staggerItem` (l.52-55) n'a pas de champ `transition`. Il utilise la transition par defaut de Framer Motion (pas une des 3 configs centralisees). Les composants qui l'utilisent (`StaggerList.tsx`) ont leur propre `itemVariants` avec `smooth`, donc pas d'impact reel — mais le preset dans `animations.ts` reste desaligne.
-   **Recommandation :** Ajouter `transition: smooth` dans `staggerItem.animate` pour la coherence, ou supprimer le preset s'il est devenu dead code.
+| Check | Status |
+|---|---|
+| Only CSS classes changed, no logic modifications | PASS |
+| Border radii reduced consistently | PASS |
+| backdrop-blur-sm added where specified | PASS |
+| border-[var(--border)] replaces ambiguous border-b colors | PASS |
+| Post-it colors (NOTE_COLORS) untouched | PASS |
+| Event colors (COLORS, COLOR_DOTS) untouched | PASS |
+| Timer colors/functionality untouched | PASS |
+| Framer Motion animations untouched | PASS |
+| No remaining double border-b patterns | PASS |
 
 ---
 
-## Escalate to Architect
+## Detail
 
-Aucun.
+**Board.tsx** — Drop overlay `rounded-2xl` → `rounded-xl`, dashed border softened to `border-accent/40`. 4 form inputs (toolbar divider, textarea, image preview, link input) switched from `border-b` to `border-[var(--border)]`. One `rounded-xl` remains on drop overlay inner box — appropriate for that element size. No logic changes.
+
+**BoardNote.tsx** — Main note card `rounded-xl` → `rounded-lg`, `backdrop-blur-sm` added. NOTE_COLORS (8 colors) untouched. `border-current/10` and `border-current/20` remain on editing UI — intentional (inherits note color). Framer Motion layout/hover/exit props identical.
+
+**Calendar.tsx** — 12 instances of `border-b` → `border-[var(--border)]` across nav buttons, month cards, day header, grid cells, form inputs. Month cards: `rounded-xl` → `rounded-lg`. Follow-up commit added `bg-[#161628]/65` with `backdrop-blur-sm` for lofi transparency. Event colors (COLORS, COLOR_DOTS) untouched. Today marker (`bg-accent text-white`) untouched.
+
+**Expenses.tsx** — `rounded-2xl` → `rounded-xl` (settlements card), `rounded-xl` → `rounded-lg` (6 instances: settlement items, debt cards, split buttons, custom split container, preview). `backdrop-blur-sm` on both summary cards + settlements card. All form inputs themed. Functional colors (`text-success`, `text-danger`) preserved. **Fix applied:** `hover:border-b-hover` → `hover:border-accent/30` on split method buttons (line 548).
+
+**Menu.tsx** — 7 form inputs/selects themed with `border-[var(--border)]`. `backdrop-blur-sm` on day cards. Lunch/dinner divider: `border-t border-b` → `border-t border-[var(--border)]`. Timer colors and functionality untouched. Day emojis untouched.
 
 ---
 
-## Cleared
+## Fix Applied
 
-Step 6 a-d entierement revue et validee :
+- `Expenses.tsx:548` — `hover:border-b-hover` → `hover:border-accent/30` (consistent hover border with lofi theme)
 
-- **6a** — Les 3 spring configs (`smooth`, `snappy`, `bouncy`) sont correctement definies dans `animations.ts`. Zero occurrence de `stiffness`/`damping` inline dans les composants (grep confirme : uniquement dans `animations.ts`). Les 15 fichiers du brief + login/register importent et utilisent correctement les configs centralisees.
-- **6b** — `PageTransition.tsx` utilise la spring `smooth`, les valeurs `y: 6` et `scale: 0.995` sont conformes au brief. Aucune trace de cubic easing. API inchangee (`{ children }`).
-- **6c** — `ColocNav.tsx` implemente correctement : `layoutId="nav-indicator"` avec transition `snappy`, bounce icone active (`scale: 1.15`, `bouncy`), badge unread anime avec `motion.span` + `AnimatePresence` + preset `scaleBounce`. L'accessibilite est preservee (`aria-current="page"`, `aria-label="Non lu"`, `role="status"`). Le CSS `animate-pulse` a bien ete remplace. Props et logique Pusher intactes.
-- **6d** — `StaggerList.tsx` utilise transition `smooth`, `y: 10`, `scale: 0.98` conformes au brief.
-- **TypeScript** — `npx tsc --noEmit` passe sans erreur.
-- **globals.css** — Non modifie (confirme par git diff).
-- **package.json** — Non modifie, aucune nouvelle dependance.
-- **prefers-reduced-motion** — `MotionConfig reducedMotion="user"` toujours en place dans `Providers.tsx`.
+Ship it.
