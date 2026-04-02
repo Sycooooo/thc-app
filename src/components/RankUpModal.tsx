@@ -84,7 +84,7 @@ export default function RankUpModal({
                 initial={{ scale: 0, rotate: -30 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ ...bouncy, delay: 0.3 }}
-                className="mb-4"
+                className="mb-4 flex justify-center"
               >
                 <RankEmblem tier={newRank.tier} size={120} />
               </motion.div>

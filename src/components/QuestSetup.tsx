@@ -97,7 +97,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="card card-glow p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-xl tracking-wide text-t-primary uppercase">Configuration des quêtes</h2>

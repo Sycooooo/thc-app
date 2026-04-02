@@ -1,126 +1,43 @@
-# Architect Brief — Step 6: Fluidification des Animations
+# Architect Brief
 
----
+## Step 7 — PWA Setup: Make App Installable on Mobile
 
-## Objectif
+### Context
+L'app doit être installable sur les téléphones des 3 colocs via "Ajouter à l'écran d'accueil". Hébergement local (Mac sur le WiFi). On ajoute juste le minimum pour que les navigateurs reconnaissent l'app comme installable.
 
-Harmoniser et améliorer toutes les animations de l'app. Pas de changement fonctionnel — uniquement du polish visuel.
+### Build Order
 
----
+1. **Créer `/public/manifest.json`**
+   - `name`: "THC App"
+   - `short_name`: "THC"
+   - `start_url`: "/"
+   - `display`: "standalone"
+   - `background_color`: "#0a0a14"
+   - `theme_color`: "#0a0a14"
+   - `icons`: tableau avec icon-192.png et icon-512.png
 
-## 6a — Harmoniser les springs dans `src/lib/animations.ts`
+2. **Créer les icônes**
+   - Utiliser une des images Midjourney existantes dans `/public/ranks/` (la plus iconique, genre piatella ou og-kush)
+   - La redimensionner en 192x192 et 512x512
+   - Sauver dans `/public/icon-192.png` et `/public/icon-512.png`
+   - Utiliser `sips` (outil macOS) pour le resize
 
-Actuellement ~15 combinaisons stiffness/damping différentes hardcodées dans 15+ fichiers. Centraliser en 3 configs nommées :
+3. **Modifier `src/app/layout.tsx`**
+   - Ajouter dans `<head>` :
+     - `<link rel="manifest" href="/manifest.json" />`
+     - `<meta name="theme-color" content="#0a0a14" />`
+     - `<meta name="apple-mobile-web-app-capable" content="yes" />`
+     - `<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />`
+     - `<link rel="apple-touch-icon" href="/icon-192.png" />`
 
-```ts
-// Smooth — transitions de page, entrées de contenu, modales
-export const smooth = { type: 'spring', stiffness: 300, damping: 28 }
+### Flags
+- NE PAS ajouter de service worker
+- NE PAS ajouter de mode offline
+- NE PAS changer de logique ou de composants
+- Changements minimaux : 1 nouveau fichier JSON, 2 icônes, quelques meta tags
 
-// Snappy — boutons, toggles, tabs, interactions rapides  
-export const snappy = { type: 'spring', stiffness: 500, damping: 30 }
-
-// Bouncy — badges, notifications, éléments ludiques (rank up, shop)
-export const bouncy = { type: 'spring', stiffness: 400, damping: 12 }
-```
-
-- Garder les presets existants (fadeInUp, scaleIn, etc.) mais mettre à jour leurs transitions pour utiliser ces 3 configs
-- NE PAS supprimer les presets existants, juste aligner leurs valeurs
-
-**Fichiers à modifier :** `src/lib/animations.ts` uniquement pour les définitions.
-
-Puis remplacer TOUS les `{ type: 'spring', stiffness: X, damping: Y }` inline dans ces fichiers par l'import de la config appropriée :
-
-| Fichier | Config à utiliser |
-|---|---|
-| `src/components/TaskList.tsx` | snappy (badges), smooth (listes) |
-| `src/components/ThemeToggle.tsx` | bouncy |
-| `src/components/NotificationBell.tsx` | snappy (dropdown), bouncy (badge) |
-| `src/components/Board.tsx` | smooth |
-| `src/components/Expenses.tsx` | smooth |
-| `src/components/ui/Button.tsx` | snappy |
-| `src/components/RankUpModal.tsx` | bouncy |
-| `src/components/Chat.tsx` | snappy |
-| `src/components/RankCard.tsx` | smooth |
-| `src/components/AddTaskForm.tsx` | smooth |
-| `src/components/Shop.tsx` | snappy |
-| `src/components/BoardNote.tsx` | smooth |
-| `src/components/Calendar.tsx` | smooth (modal), snappy (items) |
-| `src/app/register/page.tsx` | smooth (page), bouncy (éléments) |
-| `src/app/login/page.tsx` | smooth (page), bouncy (éléments) |
-
-**Règle :** ne jamais écrire `stiffness` ou `damping` en dehors de `animations.ts`.
-
----
-
-## 6b — Améliorer PageTransition
-
-Fichier : `src/components/PageTransition.tsx`
-
-Actuellement : `duration: 0.4, ease: [0.22, 1, 0.36, 1]` — trop linéaire, pas de personnalité.
-
-Remplacer par :
-- Transition spring `smooth` (importée de animations.ts)
-- Réduire le y initial de 8 à 6 (plus subtil)
-- Ajouter un léger scale : `initial: { opacity: 0, y: 6, scale: 0.995 }` → `animate: { opacity: 1, y: 0, scale: 1 }`
-
-Le composant est déjà utilisé sur 11 pages — ne pas changer l'API (props restent `{ children }`).
-
----
-
-## 6c — Animer ColocNav
-
-Fichier : `src/components/ColocNav.tsx`
-
-Ajouter Framer Motion pour :
-
-1. **Indicateur actif glissant** — un `motion.div` avec `layoutId="nav-indicator"` positionné derrière l'icône active (background subtil violet). Quand on change de page, l'indicateur glisse vers la nouvelle icône avec transition `snappy`.
-
-2. **Bounce de l'icône active** — wrapper `motion.span` autour de l'icône avec `animate={{ scale: 1.15 }}` quand active, `scale: 1` sinon. Transition `bouncy`.
-
-3. **Badge unread** — remplacer `animate-pulse` CSS par `motion.span` avec `scaleBounce` preset (déjà dans animations.ts).
-
-**Contraintes :**
-- Garder `'use client'`
-- Le composant reçoit `colocId` et `currentUserId` — ne pas changer les props
-- Le Pusher logic ne change pas du tout
-- Garder l'accessibilité (`aria-current`, `aria-label`, `role="status"`)
-
----
-
-## 6d — Améliorer StaggerList
-
-Fichier : `src/components/motion/StaggerList.tsx`
-
-- Utiliser transition `smooth` au lieu de la valeur implicite par défaut
-- Réduire le y de 15 à 10 (plus subtil)
-- Ajouter un léger scale sur les items : `hidden: { opacity: 0, y: 10, scale: 0.98 }` → `show: { opacity: 1, y: 0, scale: 1 }`
-
----
-
-## Ordre de build
-
-1. `animations.ts` (6a - définitions) — tout le reste en dépend
-2. `PageTransition.tsx` (6b) + `StaggerList.tsx` (6d) — en parallèle
-3. `ColocNav.tsx` (6c) — peut se faire en parallèle avec 2
-4. Remplacement des inline springs dans tous les composants (6a - suite)
-
----
-
-## Flags
-
-- NE PAS toucher aux animations CSS (keyframes dans globals.css) — elles sont pour les scènes décoratives, pas les interactions
-- NE PAS ajouter d'exit animations sur les pages (contrainte Next.js App Router)
-- Vérifier que `prefers-reduced-motion` est toujours respecté (MotionConfig dans Providers.tsx le gère)
-- Ne pas installer de nouvelle dépendance
-
----
-
-## Definition of Done
-
-- [ ] 3 spring configs centralisées dans animations.ts (smooth, snappy, bouncy)
-- [ ] Zéro `stiffness`/`damping` inline dans les composants
-- [ ] PageTransition spring-based avec micro-scale
-- [ ] ColocNav avec indicateur glissant + bounce icône + badge animé
-- [ ] StaggerList plus subtil avec scale
-- [ ] Aucune fonctionnalité cassée
-- [ ] prefers-reduced-motion toujours respecté
+### Definition of Done
+- [ ] manifest.json créé avec les bonnes valeurs
+- [ ] Icônes 192x192 et 512x512 générées
+- [ ] Meta tags ajoutés dans layout.tsx
+- [ ] L'app propose "Ajouter à l'écran d'accueil" sur mobile

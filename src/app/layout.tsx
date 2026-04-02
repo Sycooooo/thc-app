@@ -40,29 +40,15 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} ${pressStart.variable} h-full antialiased`}
-      suppressHydrationWarning
+      className={`dark ${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} ${pressStart.variable} h-full antialiased`}
     >
       <head>
-        {/* Script inline pour éviter le flash de thème */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme');
-                  if (theme === 'light') {
-                    document.documentElement.classList.remove('dark');
-                  } else {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch(e) {
-                  document.documentElement.classList.add('dark');
-                }
-              })();
-            `,
-          }}
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0a0a14" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>

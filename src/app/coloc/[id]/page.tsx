@@ -5,7 +5,6 @@ import Link from 'next/link'
 import TaskList from '@/components/TaskList'
 import AddTaskForm from '@/components/AddTaskForm'
 import NotificationBell from '@/components/NotificationBell'
-import ThemeToggle from '@/components/ThemeToggle'
 import { autoGenerateQuests } from '@/lib/quest-generator'
 import { getRankFromPoints } from '@/lib/ranking'
 import PageTransition from '@/components/PageTransition'
@@ -71,7 +70,6 @@ export default async function ColocPage({
               ⚙️ Admin
             </Link>
           )}
-          <ThemeToggle />
           <NotificationBell />
         </div>
       </header>

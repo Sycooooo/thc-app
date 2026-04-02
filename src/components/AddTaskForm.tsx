@@ -77,7 +77,7 @@ export default function AddTaskForm({
           animate={{ opacity: 1, height: 'auto', y: 0 }}
           exit={{ opacity: 0, height: 0, y: -8 }}
           transition={smooth}
-          className="bg-surface rounded-xl border border-accent/20 p-5 overflow-hidden"
+          className="card rounded-xl border border-accent/20 p-5 overflow-hidden"
           style={{ boxShadow: 'var(--shadow)' }}
         >
           <h3 className="font-semibold text-t-primary mb-4">Nouvelle tâche</h3>

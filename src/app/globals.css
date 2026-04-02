@@ -170,13 +170,11 @@ body::after {
   overflow: hidden;
 }
 .dark .card {
-  background: rgba(22, 22, 40, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: background 0.3s ease;
+  background: #161628;
 }
 .dark .card:hover {
-  background: rgba(22, 22, 40, 0.95);
+  background: #1e1e38;
+  transition: background 0.3s ease;
 }
 .card::before {
   content: "";

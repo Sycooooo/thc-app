@@ -5,14 +5,14 @@
 // ─── Rangs ───────────────────────────────────────────────
 
 export const RANKS = [
-  { tier: 0, name: 'Toz',          icon: '🗑️', color: '#6b7280', glow: 'rgba(107,114,128,0.3)' },
-  { tier: 1, name: 'Shit',         icon: '💩', color: '#92603a', glow: 'rgba(146,96,58,0.3)' },
-  { tier: 2, name: 'Beurre',       icon: '🧈', color: '#d4a843', glow: 'rgba(212,168,67,0.3)' },
-  { tier: 3, name: 'Skunk',        icon: '🌿', color: '#22c55e', glow: 'rgba(34,197,94,0.3)' },
-  { tier: 4, name: 'Purple Haze',  icon: '💜', color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
-  { tier: 5, name: 'Amnesia',      icon: '🌀', color: '#ec4899', glow: 'rgba(236,72,153,0.4)' },
-  { tier: 6, name: 'OG Kush',      icon: '👑', color: '#f97316', glow: 'rgba(249,115,22,0.4)' },
-  { tier: 7, name: 'Double Zéro',  icon: '💎', color: '#e8c97a', glow: 'rgba(232,201,122,0.5)' },
+  { tier: 0, name: 'Pneu',          icon: '⚫', color: '#6b7280', glow: 'rgba(107,114,128,0.3)' },
+  { tier: 1, name: 'Teu-Teu',       icon: '🟤', color: '#92603a', glow: 'rgba(146,96,58,0.3)' },
+  { tier: 2, name: 'Fent',           icon: '💊', color: '#d4a843', glow: 'rgba(212,168,67,0.3)' },
+  { tier: 3, name: 'Spanli',        icon: '🌿', color: '#22c55e', glow: 'rgba(34,197,94,0.3)' },
+  { tier: 4, name: 'Static',        icon: '⚡', color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
+  { tier: 5, name: 'White Widow',   icon: '🕸️', color: '#e2e8f0', glow: 'rgba(226,232,240,0.4)' },
+  { tier: 6, name: 'OG Kush',       icon: '👑', color: '#f97316', glow: 'rgba(249,115,22,0.4)' },
+  { tier: 7, name: 'Piatella',      icon: '💎', color: '#e8c97a', glow: 'rgba(232,201,122,0.5)' },
 ] as const
 
 // Seuils d'XP pour entrer dans chaque rang (cumulatif depuis le début de saison)
@@ -58,14 +58,14 @@ export function getRankFromPoints(points: number): RankInfo {
 
   const rank = RANKS[tier]
 
-  // Ethereal (tier 7) — pas de divisions
+  // Piatella (tier 7) — pas de divisions
   if (tier === 7) {
     return {
       ...rank,
       division: null,
       divisionIndex: -1,
-      label: 'Ethereal',
-      key: 'ethereal',
+      label: 'Piatella',
+      key: 'piatella',
       points,
       pointsForCurrentDiv: RANK_THRESHOLDS[7],
       pointsForNextDiv: RANK_THRESHOLDS[7],
@@ -137,14 +137,14 @@ export function softResetPoints(points: number): number {
 
 // Récompenses de fin de saison par tier atteint
 export const SEASON_REWARDS: Record<number, { type: string; description: string; coins: number }> = {
-  0: { type: 'badge',  description: 'Badge Toz',             coins: 0 },
-  1: { type: 'badge',  description: 'Badge Shit',            coins: 10 },
-  2: { type: 'badge',  description: 'Badge Beurre',          coins: 25 },
-  3: { type: 'border', description: 'Bordure Skunk',         coins: 50 },
-  4: { type: 'border', description: 'Bordure Purple Haze',   coins: 100 },
-  5: { type: 'title',  description: 'Titre "Amnesia"',       coins: 200 },
+  0: { type: 'badge',  description: 'Badge Pneu',            coins: 0 },
+  1: { type: 'badge',  description: 'Badge Teu-Teu',         coins: 10 },
+  2: { type: 'badge',  description: 'Badge Fent',             coins: 25 },
+  3: { type: 'border', description: 'Bordure Spanli',        coins: 50 },
+  4: { type: 'border', description: 'Bordure Static',        coins: 100 },
+  5: { type: 'title',  description: 'Titre "White Widow"',   coins: 200 },
   6: { type: 'title',  description: 'Titre "OG Kush"',       coins: 400 },
-  7: { type: 'title',  description: 'Titre "Double Zéro"',   coins: 1000 },
+  7: { type: 'title',  description: 'Titre "Piatella"',      coins: 1000 },
 }
 
 // ─── Tableau complet ─────────────────────────────────────
@@ -168,6 +168,6 @@ export function getRankTable(): { rank: string; division: string; xpRequired: nu
     }
   }
 
-  table.push({ rank: 'Ethereal', division: '—', xpRequired: 30000 })
+  table.push({ rank: 'Piatella', division: '—', xpRequired: 30000 })
   return table
 }
