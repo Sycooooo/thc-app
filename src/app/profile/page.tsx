@@ -8,6 +8,7 @@ import AvatarUpload from '@/components/AvatarUpload'
 import PixelAvatar from '@/components/PixelAvatar'
 import RankCard from '@/components/RankCard'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PageTransition from '@/components/PageTransition'
 
 export default async function ProfilePage() {
   const session = await auth()
@@ -43,7 +44,7 @@ export default async function ProfilePage() {
       </header>
 
       <main className="max-w-lg mx-auto p-6 space-y-5">
-
+        <PageTransition>
         {/* Carte profil */}
         <div className="card card-glow gradient-border p-6 flex flex-col items-center gap-4">
           {user.avatarConfig ? (
@@ -197,6 +198,7 @@ export default async function ProfilePage() {
           </div>
         </div>
 
+        </PageTransition>
       </main>
     </div>
   )
