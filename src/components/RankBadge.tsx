@@ -13,9 +13,8 @@ export default function RankBadge({ rank, size = 'md' }: { rank: RankInfo; size?
 
   return (
     <span
-      className={`inline-flex items-center font-bold rounded-md ${s.badge}`}
+      className={`inline-flex items-center font-pixel font-bold rounded-md ${s.badge}`}
       style={{
-        fontFamily: 'var(--font-pixel)',
         backgroundColor: `${rank.color}20`,
         color: rank.color,
         boxShadow: `0 0 12px ${rank.glow}`,

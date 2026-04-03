@@ -235,7 +235,7 @@ export default function TaskList({
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.1 }}
-                          className="font-bold text-xl"
+                          className="font-pixel text-sm"
                         >
                           +{popup.xp} XP ⭐
                         </motion.div>
@@ -286,7 +286,7 @@ export default function TaskList({
                   )}
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${DIFFICULTY_COLORS[task.difficulty]}`}>
-                      {DIFFICULTY_LABELS[task.difficulty]} · +{XP_REWARDS[task.difficulty]} XP
+                      <span className="font-pixel">{DIFFICULTY_LABELS[task.difficulty]} · +{XP_REWARDS[task.difficulty]} XP</span>
                     </span>
                     {task.category && (
                       <span className="text-xs text-t-muted">

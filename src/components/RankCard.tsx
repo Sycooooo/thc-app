@@ -178,17 +178,17 @@ export default function RankCard({
               <RankEmblem tier={rank.tier} size={96} />
             </motion.div>
             <RankBadge rank={rank} size="lg" />
-            <p className="text-xs text-t-faint stat-number">{rank.points} RP</p>
+            <p className="text-[10px] text-t-faint font-pixel">{rank.points} RP</p>
           </div>
 
           {/* Barre de progression */}
           {!rank.isMaxRank && (
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-t-faint stat-number">
+                <span className="text-[10px] text-t-faint font-pixel">
                   {rank.points} RP
                 </span>
-                <span className="text-xs text-t-faint stat-number">
+                <span className="text-[10px] text-t-faint font-pixel">
                   {rank.pointsForNextDiv} RP
                 </span>
               </div>

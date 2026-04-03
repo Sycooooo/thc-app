@@ -26,7 +26,7 @@ export default function InviteCode({ code }: { code: string }) {
 
       {open && (
         <div className="mt-2 flex items-center gap-3 bg-accent-secondary/10 border border-accent-secondary/20 rounded-lg px-4 py-2.5">
-          <p className="code-text text-t-primary text-sm">{code}</p>
+          <p className="font-pixel text-t-primary text-[10px]">{code}</p>
           <button
             onClick={copy}
             className="text-xs text-accent-secondary hover:text-accent-secondary/80 transition cursor-pointer"

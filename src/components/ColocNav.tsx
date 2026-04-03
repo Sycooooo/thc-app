@@ -153,7 +153,7 @@ export default function ColocNav({ colocId, currentUserId }: Props) {
                   )}
                 </AnimatePresence>
               </motion.span>
-              <span className="text-xs font-medium leading-tight relative">{link.label}</span>
+              <span className="text-[7px] font-pixel leading-tight relative">{link.label}</span>
             </Link>
           )
         })}

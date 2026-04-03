@@ -94,7 +94,7 @@ export default async function ProfilePage() {
 
           {/* Badge niveau */}
           <div className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-full text-lg font-bold badge-neon">
-            ⭐ Niveau <span className="stat-number ml-1">{level}</span>
+            ⭐ Niveau <span className="font-pixel text-xs ml-1">{level}</span>
           </div>
         </div>
 
@@ -102,7 +102,7 @@ export default async function ProfilePage() {
         <div className="card card-glow p-5">
           <div className="flex justify-between items-center mb-2">
             <span className="font-semibold text-t-primary">Expérience</span>
-            <span className="text-sm text-t-muted stat-number">{user.xp} XP total</span>
+            <span className="text-sm text-t-muted font-pixel text-[10px]">{user.xp} XP total</span>
           </div>
           <div className="w-full bg-surface-hover rounded-full h-4 overflow-hidden">
             <div
@@ -110,7 +110,7 @@ export default async function ProfilePage() {
               style={{ width: `${xpInfo.percent}%`, boxShadow: '0 0 12px var(--glow-accent)' }}
             />
           </div>
-          <div className="flex justify-between text-xs text-t-faint mt-1 stat-number">
+          <div className="flex justify-between text-[10px] text-t-faint mt-1 font-pixel">
             <span>{xpInfo.current} XP</span>
             <span>{xpInfo.needed} XP pour le niveau {level + 1}</span>
           </div>
@@ -124,27 +124,27 @@ export default async function ProfilePage() {
           <h3 className="font-semibold text-t-primary mb-4">Statistiques</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-accent/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent stat-number">{totalCompleted}</p>
+              <p className="text-lg font-bold text-accent font-pixel">{totalCompleted}</p>
               <p className="text-sm text-t-muted mt-1">Tâches accomplies</p>
             </div>
             <div className="bg-accent-secondary/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent-secondary stat-number">{user.xp}</p>
+              <p className="text-lg font-bold text-accent-secondary font-pixel">{user.xp}</p>
               <p className="text-sm text-t-muted mt-1">XP totaux</p>
             </div>
             <div className="bg-accent/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent stat-number">{user.currency}</p>
+              <p className="text-lg font-bold text-accent font-pixel">{user.currency}</p>
               <p className="text-sm text-t-muted mt-1">🪙 Coins</p>
             </div>
             <div className="bg-accent-secondary/10 rounded-xl p-4 text-center">
-              <p className="text-3xl font-bold text-accent-secondary stat-number">{user.currentStreak}</p>
+              <p className="text-lg font-bold text-accent-secondary font-pixel">{user.currentStreak}</p>
               <p className="text-sm text-t-muted mt-1">🔥 Streak (jours)</p>
               {streakMultiplier > 1 && (
-                <p className="text-xs text-accent-secondary mt-1 font-medium stat-number">Bonus x{streakMultiplier}</p>
+                <p className="text-[10px] text-accent-secondary mt-1 font-pixel">Bonus x{streakMultiplier}</p>
               )}
             </div>
           </div>
           {user.longestStreak > 0 && (
-            <p className="text-xs text-t-faint text-center mt-3 stat-number">
+            <p className="text-[10px] text-t-faint text-center mt-3 font-pixel">
               Record : {user.longestStreak} jours de suite
             </p>
           )}
