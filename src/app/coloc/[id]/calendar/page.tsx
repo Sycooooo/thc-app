@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Calendar from '@/components/Calendar'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 
 export default async function CalendarPage({
   params,
@@ -34,7 +35,7 @@ export default async function CalendarPage({
         <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
           ←
         </Link>
-        <span className="text-xl">📅</span>
+        <PixelIcon name="calendar" size={24} className="text-accent" />
         <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Calendrier — {coloc.name}</h1>
       </header>
 

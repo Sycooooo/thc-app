@@ -6,6 +6,7 @@ import Expenses from '@/components/Expenses'
 import NotificationBell from '@/components/NotificationBell'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 
 export default async function ExpensesPage({
   params,
@@ -39,7 +40,7 @@ export default async function ExpensesPage({
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←
           </Link>
-          <span className="text-xl">💰</span>
+          <PixelIcon name="expenses" size={24} className="text-accent" />
           <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Dépenses</h1>
         </div>
         <NotificationBell />

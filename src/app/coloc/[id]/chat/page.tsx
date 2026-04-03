@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import Chat from '@/components/Chat'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 
 export default async function ChatPage({
   params,
@@ -50,7 +51,7 @@ export default async function ChatPage({
         <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
           ←
         </Link>
-        <span className="text-xl">💬</span>
+        <PixelIcon name="chat" size={24} className="text-accent" />
         <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">{coloc.name} — Chat</h1>
       </header>
 

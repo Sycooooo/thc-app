@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 import MusicStories from '@/components/music/MusicStories'
 import NowPlaying from '@/components/music/NowPlaying'
 import TopArtists from '@/components/music/TopArtists'
@@ -59,7 +60,7 @@ export default async function MusicPage({
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←
           </Link>
-          <span className="text-xl">🎵</span>
+          <PixelIcon name="music" size={24} className="text-accent" />
           <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Music</h1>
         </div>
         {!hasSpotify && (

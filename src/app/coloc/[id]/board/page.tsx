@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Board from '@/components/Board'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 
 export default async function BoardPage({
   params,
@@ -34,7 +35,7 @@ export default async function BoardPage({
         <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
           ←
         </Link>
-        <span className="text-xl">📌</span>
+        <PixelIcon name="board" size={24} className="text-accent" />
         <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Tableau — {coloc.name}</h1>
       </header>
 

@@ -5,6 +5,7 @@ import HabitTracker from '@/components/HabitTracker'
 import TabSwitcher from '@/components/TabSwitcher'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 import NotificationBell from '@/components/NotificationBell'
 
 export default async function HabitsPage({
@@ -56,7 +57,7 @@ export default async function HabitsPage({
       <PageAmbiance theme="bureau" />
       <header className="glass-header-lofi sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-xl">🔥</span>
+          <PixelIcon name="habits" size={24} className="text-accent" />
           <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">{coloc.name}</h1>
         </div>
         <NotificationBell />

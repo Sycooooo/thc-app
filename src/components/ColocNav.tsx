@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { pusherClient } from '@/lib/pusher-client'
 import { snappy, bouncy, scaleBounce } from '@/lib/animations'
+import PixelIcon from '@/components/ui/PixelIcon'
+import type { IconName } from '@/components/ui/PixelIcon'
 
 type Props = {
   colocId: string
@@ -102,15 +104,15 @@ export default function ColocNav({ colocId, currentUserId }: Props) {
 
   const base = `/coloc/${colocId}`
 
-  const links = [
-    { href: base, label: 'Tâches', icon: '📋', unreadKey: 'tasks' as const, match: (p: string) => p === base || p.includes('/habits') },
-    { href: `${base}/chat`, label: 'Chat', icon: '💬', unreadKey: 'chat' as const, match: (p: string) => p.includes('/chat') },
-    { href: `${base}/board`, label: 'Tableau', icon: '📌', unreadKey: 'board' as const, match: (p: string) => p.includes('/board') },
-    { href: `${base}/calendar`, label: 'Calendrier', icon: '📅', unreadKey: null, match: (p: string) => p.includes('/calendar') },
-    { href: `${base}/music`, label: 'Music', icon: '🎵', unreadKey: null, match: (p: string) => p.includes('/music') },
-    { href: `${base}/menu`, label: 'Menu', icon: '🍽️', unreadKey: null, match: (p: string) => p.includes('/menu') },
-    { href: `${base}/expenses`, label: 'Dépenses', icon: '💰', unreadKey: null, match: (p: string) => p.includes('/expenses') },
-    { href: '/profile', label: 'Profil', icon: '👤', unreadKey: null, match: (p: string) => p.startsWith('/profile') },
+  const links: { href: string; label: string; pixelIcon: IconName; unreadKey: 'tasks' | 'chat' | 'board' | null; match: (p: string) => boolean }[] = [
+    { href: base, label: 'Tâches', pixelIcon: 'tasks', unreadKey: 'tasks', match: (p) => p === base || p.includes('/habits') },
+    { href: `${base}/chat`, label: 'Chat', pixelIcon: 'chat', unreadKey: 'chat', match: (p) => p.includes('/chat') },
+    { href: `${base}/board`, label: 'Tableau', pixelIcon: 'board', unreadKey: 'board', match: (p) => p.includes('/board') },
+    { href: `${base}/calendar`, label: 'Calendrier', pixelIcon: 'calendar', unreadKey: null, match: (p) => p.includes('/calendar') },
+    { href: `${base}/music`, label: 'Music', pixelIcon: 'music', unreadKey: null, match: (p) => p.includes('/music') },
+    { href: `${base}/menu`, label: 'Menu', pixelIcon: 'menu', unreadKey: null, match: (p) => p.includes('/menu') },
+    { href: `${base}/expenses`, label: 'Dépenses', pixelIcon: 'expenses', unreadKey: null, match: (p) => p.includes('/expenses') },
+    { href: '/profile', label: 'Profil', pixelIcon: 'profile', unreadKey: null, match: (p) => p.startsWith('/profile') },
   ]
 
   return (
@@ -139,9 +141,9 @@ export default function ColocNav({ colocId, currentUserId }: Props) {
               <motion.span
                 animate={{ scale: isActive ? 1.15 : 1 }}
                 transition={bouncy}
-                className={`text-lg relative ${isActive ? 'drop-shadow-[0_0_6px_rgba(192,132,252,0.4)]' : ''}`}
+                className={`relative ${isActive ? 'drop-shadow-[0_0_6px_rgba(192,132,252,0.4)]' : ''}`}
               >
-                {link.icon}
+                <PixelIcon name={link.pixelIcon} size={18} />
                 <AnimatePresence>
                   {hasUnread && (
                     <motion.span

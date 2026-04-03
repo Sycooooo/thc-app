@@ -6,6 +6,7 @@ import QuestSetup from '@/components/QuestSetup'
 import AffinitySetup from '@/components/AffinitySetup'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 
 export default async function AdminPage({
   params,
@@ -41,7 +42,7 @@ export default async function AdminPage({
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
             ←
           </Link>
-          <span className="text-xl">⚙️</span>
+          <PixelIcon name="admin" size={24} className="text-accent" />
           <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">Admin — {coloc.name}</h1>
         </div>
       </header>

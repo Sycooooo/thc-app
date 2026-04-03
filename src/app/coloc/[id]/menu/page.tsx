@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Menu from '@/components/Menu'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
+import PixelIcon from '@/components/ui/PixelIcon'
 
 export default async function MenuPage({
   params,
@@ -49,7 +50,7 @@ export default async function MenuPage({
         <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
           ←
         </Link>
-        <span className="text-xl">🍽️</span>
+        <PixelIcon name="menu" size={24} className="text-accent" />
         <h1 className="font-display text-2xl tracking-wide text-t-primary uppercase neon-title">{coloc.name} — Menu & Courses</h1>
       </header>
 
