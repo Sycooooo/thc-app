@@ -21,14 +21,14 @@ type BoardItem = {
 }
 
 const NOTE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  yellow: { bg: 'bg-yellow-500/15 dark:bg-yellow-500/20', border: 'border-yellow-500/30', text: 'text-yellow-900 dark:text-yellow-200' },
-  pink: { bg: 'bg-pink-500/15 dark:bg-pink-500/20', border: 'border-pink-500/30', text: 'text-pink-900 dark:text-pink-200' },
-  blue: { bg: 'bg-blue-500/15 dark:bg-blue-500/20', border: 'border-blue-500/30', text: 'text-blue-900 dark:text-blue-200' },
-  green: { bg: 'bg-green-500/15 dark:bg-green-500/20', border: 'border-green-500/30', text: 'text-green-900 dark:text-green-200' },
-  purple: { bg: 'bg-purple-500/15 dark:bg-purple-500/20', border: 'border-purple-500/30', text: 'text-purple-900 dark:text-purple-200' },
-  orange: { bg: 'bg-orange-500/15 dark:bg-orange-500/20', border: 'border-orange-500/30', text: 'text-orange-900 dark:text-orange-200' },
-  teal: { bg: 'bg-teal-500/15 dark:bg-teal-500/20', border: 'border-teal-500/30', text: 'text-teal-900 dark:text-teal-200' },
-  red: { bg: 'bg-red-500/15 dark:bg-red-500/20', border: 'border-red-500/30', text: 'text-red-900 dark:text-red-200' },
+  yellow: { bg: 'bg-yellow-500/20', border: 'border-yellow-500/30', text: 'text-yellow-200' },
+  pink: { bg: 'bg-pink-500/20', border: 'border-pink-500/30', text: 'text-pink-200' },
+  blue: { bg: 'bg-blue-500/20', border: 'border-blue-500/30', text: 'text-blue-200' },
+  green: { bg: 'bg-green-500/20', border: 'border-green-500/30', text: 'text-green-200' },
+  purple: { bg: 'bg-purple-500/20', border: 'border-purple-500/30', text: 'text-purple-200' },
+  orange: { bg: 'bg-orange-500/20', border: 'border-orange-500/30', text: 'text-orange-200' },
+  teal: { bg: 'bg-teal-500/20', border: 'border-teal-500/30', text: 'text-teal-200' },
+  red: { bg: 'bg-red-500/20', border: 'border-red-500/30', text: 'text-red-200' },
 }
 
 export { NOTE_COLORS }

@@ -9,7 +9,7 @@ type Affinity = { userId: string; category: string; weight: number }
 
 const WEIGHTS = [
   { value: 0, label: 'Normal', color: 'bg-surface-hover text-t-muted' },
-  { value: 1, label: '+', color: 'bg-blue-500/15 text-blue-600 dark:text-blue-400' },
+  { value: 1, label: '+', color: 'bg-blue-500/15 text-blue-400' },
   { value: 2, label: '++', color: 'bg-accent-secondary/15 text-accent-secondary' },
   { value: 3, label: '+++', color: 'bg-accent/15 text-accent' },
 ]

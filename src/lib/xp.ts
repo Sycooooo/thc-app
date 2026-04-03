@@ -100,8 +100,8 @@ export const RARITY_LABELS: Record<string, string> = {
 }
 
 export const RARITY_COLORS: Record<string, string> = {
-  common: 'bg-gray-500/15 text-gray-600 dark:text-gray-400',
-  rare: 'bg-blue-500/15 text-blue-600 dark:text-blue-400',
-  epic: 'bg-purple-500/15 text-purple-600 dark:text-purple-400',
-  legendary: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+  common: 'bg-gray-500/15 text-gray-400',
+  rare: 'bg-blue-500/15 text-blue-400',
+  epic: 'bg-purple-500/15 text-purple-400',
+  legendary: 'bg-amber-500/15 text-amber-400',
 }

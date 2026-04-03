@@ -257,7 +257,7 @@ export default function Menu({
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-t-primary">Liste de courses</h3>
                 <div className="flex items-center gap-3">
-                  <p className="text-sm font-medium text-green-600 dark:text-green-400">~{totalPrice.toFixed(2)}€</p>
+                  <p className="text-sm font-medium text-green-400">~{totalPrice.toFixed(2)}€</p>
                   <button
                     onClick={downloadShoppingList}
                     className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-accent/15 text-accent hover:bg-accent/25 transition cursor-pointer"
@@ -424,7 +424,7 @@ function EtapeRow({ index, etape }: { index: number; etape: Etape }) {
             </div>
           )}
           {done && (
-            <span className="text-green-600 dark:text-green-400 font-medium">Terminé !</span>
+            <span className="text-green-400 font-medium">Terminé !</span>
           )}
         </div>
       )}

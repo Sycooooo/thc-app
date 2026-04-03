@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`dark ${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} ${pressStart.variable} h-full antialiased`}
+      className={`${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} ${pressStart.variable} h-full antialiased`}
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -286,7 +286,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
               }`}
             >
               <span
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-surface rounded-full shadow transition-transform ${
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-surface rounded-full shadow transition-transform ${
                   t.isActive ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />

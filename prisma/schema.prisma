@@ -64,7 +64,6 @@ model Colocation {
   placedFurniture PlacedFurniture[]
 
   musicStories    MusicStory[]
-  blindTestRounds BlindTestRound[]
 }
 
 model UserColoc {
@@ -431,20 +430,6 @@ model MusicStory {
   colocId String
   coloc   Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
 }
-
-model BlindTestRound {
-  id         String   @id @default(cuid())
-  trackId    String
-  trackName  String
-  artistName String
-  previewUrl String
-  sharedById String
-  createdAt  DateTime @default(now())
-
-  colocId String
-  coloc   Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
-}
-
 
 // === Chat ===
 
