@@ -115,7 +115,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
 
       {/* Formulaire quête custom */}
       {showForm && (
-        <div className="card card-glow p-5 space-y-4">
+        <div className="rounded-xl border border-accent/20 p-5 space-y-4 bg-[#161628]/95 backdrop-blur-xl" style={{ boxShadow: 'var(--shadow)' }}>
           <h3 className="font-semibold text-t-primary">Nouvelle quête personnalisée</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
@@ -125,7 +125,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="Ex: Arroser les plantes"
-                className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             <div className="col-span-2">
@@ -135,7 +135,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
                 placeholder="Optionnel"
-                className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
             <div>
@@ -143,7 +143,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
               <select
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 {Object.entries(CATEGORY_LABELS).map(([val, label]) => (
                   <option key={val} value={val}>{label}</option>
@@ -155,7 +155,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
               <select
                 value={newRoom}
                 onChange={(e) => setNewRoom(e.target.value)}
-                className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 <option value="">Aucune</option>
                 {Object.entries(ROOM_LABELS).map(([val, label]) => (
@@ -168,7 +168,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
               <select
                 value={newDifficulty}
                 onChange={(e) => setNewDifficulty(e.target.value)}
-                className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 {Object.entries(DIFFICULTY_LABELS).map(([val, label]) => (
                   <option key={val} value={val}>{label}</option>
@@ -180,7 +180,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
               <select
                 value={newRecurrence}
                 onChange={(e) => setNewRecurrence(e.target.value)}
-                className="w-full px-3 py-2 border border-b rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm text-t-primary bg-input-bg focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 <option value="daily">Quotidien</option>
                 <option value="weekly">Hebdomadaire</option>
@@ -213,7 +213,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
             {customTemplates.map((t) => (
               <div
                 key={t.id}
-                className="card card-glow border-accent/30 p-4 flex items-center justify-between"
+                className="rounded-lg border border-accent/30 p-4 flex items-center justify-between bg-[#161628]/85 backdrop-blur-lg"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-lg">{CATEGORY_ICONS[t.category] ?? '📌'}</span>
@@ -246,7 +246,7 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
               filter === cat
                 ? 'bg-accent text-white'
-                : 'bg-surface-hover text-t-muted hover:text-t-primary'
+                : 'bg-[#161628]/70 text-t-muted hover:text-t-primary backdrop-blur-sm'
             }`}
           >
             {cat === 'all' ? 'Toutes' : `${CATEGORY_ICONS[cat]} ${CATEGORY_LABELS[cat]}`}
@@ -259,8 +259,8 @@ export default function QuestSetup({ colocId }: { colocId: string }) {
         {filtered.map((t) => (
           <div
             key={t.id}
-            className={`bg-surface rounded-xl border p-4 flex items-center justify-between transition ${
-              t.isActive ? 'border-green-500/30 bg-green-500/5' : 'border-b'
+            className={`rounded-lg border p-4 flex items-center justify-between transition backdrop-blur-lg ${
+              t.isActive ? 'border-green-500/30 bg-[#161628]/80' : 'border-[var(--border)] bg-[#161628]/75'
             }`}
           >
             <div className="flex items-center gap-3">

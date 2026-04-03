@@ -66,7 +66,7 @@ export default function AddTaskForm({
           exit={{ opacity: 0, y: -10 }}
           whileHover={{ scale: 1.01, borderColor: 'var(--accent)' }}
           whileTap={{ scale: 0.99 }}
-          className="w-full py-3 border-2 border-dashed border-b-hover rounded-lg text-t-muted hover:border-accent hover:text-accent transition-colors font-medium"
+          className="w-full py-3 border-2 border-dashed border-accent/30 rounded-lg text-t-muted hover:border-accent hover:text-accent transition-colors font-medium bg-[#161628]/90 backdrop-blur-sm"
         >
           + Ajouter une tâche
         </motion.button>
@@ -77,7 +77,7 @@ export default function AddTaskForm({
           animate={{ opacity: 1, height: 'auto', y: 0 }}
           exit={{ opacity: 0, height: 0, y: -8 }}
           transition={smooth}
-          className="card rounded-xl border border-accent/20 p-5 overflow-hidden"
+          className="rounded-xl border border-accent/20 p-5 overflow-hidden bg-[#161628]/95 backdrop-blur-xl"
           style={{ boxShadow: 'var(--shadow)' }}
         >
           <h3 className="font-semibold text-t-primary mb-4">Nouvelle tâche</h3>
@@ -88,7 +88,7 @@ export default function AddTaskForm({
               onChange={(e) => setTitle(e.target.value)}
               required
               placeholder="Titre de la tâche"
-              className="w-full px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
+              className="w-full px-4 py-2.5 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
             />
 
             <input
@@ -96,7 +96,7 @@ export default function AddTaskForm({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Description (optionnel)"
-              className="w-full px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
+              className="w-full px-4 py-2.5 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
             />
 
             {/* Difficulté / XP */}
@@ -115,7 +115,7 @@ export default function AddTaskForm({
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     className={`py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                      difficulty === d.value ? d.color : 'border-b text-t-muted hover:border-b-hover'
+                      difficulty === d.value ? d.color : 'border-[var(--border)] text-t-muted hover:border-accent/30'
                     }`}
                   >
                     {d.label}<br />
@@ -129,7 +129,7 @@ export default function AddTaskForm({
               <select
                 value={assignedToId}
                 onChange={(e) => setAssignedToId(e.target.value)}
-                className="px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
+                className="px-4 py-2.5 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
               >
                 <option value="">Assigner à...</option>
                 {members.map((m) => (
@@ -142,7 +142,7 @@ export default function AddTaskForm({
               <select
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
-                className="px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
+                className="px-4 py-2.5 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
               >
                 <option value="">Pièce...</option>
                 <option value="sejour">🛋️ Séjour</option>
@@ -161,7 +161,7 @@ export default function AddTaskForm({
               <select
                 value={recurrence}
                 onChange={(e) => setRecurrence(e.target.value)}
-                className="px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
+                className="px-4 py-2.5 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
               >
                 <option value="">Pas de récurrence</option>
                 <option value="daily">Quotidien</option>
@@ -174,7 +174,7 @@ export default function AddTaskForm({
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-4 py-2.5 border border-b rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
+              className="w-full px-4 py-2.5 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-t-primary bg-input-bg"
             />
 
             <div className="flex gap-3 pt-1">

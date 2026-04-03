@@ -11,7 +11,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         position="top-right"
         toastOptions={{
           style: {
-            background: 'var(--surface)',
+            background: 'var(--surface-solid)',
             color: 'var(--text)',
             border: '1px solid var(--border)',
           },

@@ -164,7 +164,7 @@ export default function MusicStories({
       {/* Modal ajouter */}
       {showAdd && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowAdd(false)}>
-          <div className="bg-surface rounded-2xl border border-b w-full max-w-md p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-surface-solid rounded-2xl border border-b w-full max-w-md p-5 space-y-4" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-semibold text-t-primary">Partager un son</h3>
 
             {!selectedTrack ? (

@@ -116,7 +116,7 @@ export default async function ColocPage({
         </div>
 
         {/* Classement compétitif */}
-        <div className="card card-glow p-5">
+        <div className="card card-glow p-5" style={{ background: 'rgba(22, 22, 40, 0.75)' }}>
           <h2 className="font-semibold text-t-primary mb-4">Classement compétitif</h2>
           <div className="space-y-2">
             {[...coloc.members]

@@ -206,7 +206,7 @@ export default function Calendar({ colocId }: { colocId: string }) {
                 whileHover={{ y: -3, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 transition={snappy}
-                className={`bg-[#161628]/65 hover:bg-[#161628] backdrop-blur-sm rounded-lg border p-3 cursor-pointer hover:border-accent/50 transition-all ${
+                className={`bg-[#161628]/65 hover:bg-[#161628]/75 backdrop-blur-sm rounded-lg border p-3 cursor-pointer hover:border-accent/50 transition-all ${
                   isCurrentMonth ? 'border-accent' : 'border-[var(--border)]'
                 }`}
                 style={{ boxShadow: isCurrentMonth ? 'var(--shadow)' : undefined }}

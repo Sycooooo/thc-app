@@ -108,7 +108,7 @@ export default function StoryModal({
         </div>
 
         {/* Infos */}
-        <div className="bg-surface p-5 space-y-3">
+        <div className="bg-surface-solid p-5 space-y-3">
           <div>
             <p className="font-bold text-t-primary text-lg">{story.trackName}</p>
             <p className="text-sm text-t-muted">{story.artistName}</p>

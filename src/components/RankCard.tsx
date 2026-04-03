@@ -32,7 +32,7 @@ function AllRanksModal({
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={smooth}
             onClick={(e) => e.stopPropagation()}
-            className="bg-surface rounded-lg border border-b max-w-md w-full max-h-[85vh] overflow-y-auto"
+            className="bg-surface-solid rounded-lg border border-b max-w-md w-full max-h-[85vh] overflow-y-auto"
             style={{ boxShadow: 'var(--shadow-lg)' }}
           >
             {/* Header */}

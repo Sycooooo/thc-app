@@ -34,7 +34,7 @@ export default function RankUpModal({
             exit={{ scale: 0.8, opacity: 0, y: 20 }}
             transition={smooth}
             onClick={(e) => e.stopPropagation()}
-            className="relative bg-surface rounded-2xl p-8 max-w-sm w-full mx-4 text-center overflow-hidden"
+            className="relative bg-surface-solid rounded-2xl p-8 max-w-sm w-full mx-4 text-center overflow-hidden"
             style={{
               boxShadow: `0 0 60px ${newRank.glow}, 0 0 120px ${newRank.glow}`,
               border: `2px solid ${newRank.color}60`,

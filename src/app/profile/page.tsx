@@ -151,7 +151,7 @@ export default async function ProfilePage() {
         </div>
 
         {/* Achievements */}
-        <div className="bg-[#161628]/95 backdrop-blur-md rounded-xl border border-[var(--border)] p-5" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="bg-[#161628]/60 backdrop-blur-lg rounded-xl border border-[var(--border)] p-5" style={{ boxShadow: 'var(--shadow)' }}>
           <h3 className="font-semibold text-t-primary mb-4">
             Achievements ({user.achievements.length}/{allAchievements.length})
           </h3>
@@ -164,7 +164,7 @@ export default async function ProfilePage() {
                   className={`rounded-lg p-3 text-center border ${
                     unlocked
                       ? 'bg-[#1e1e38]/95 border-accent/30'
-                      : 'bg-[#161628]/90 border-[var(--border)] text-t-faint'
+                      : 'bg-[#161628]/55 border-[var(--border)] text-t-faint'
                   }`}
                 >
                   <div className="text-2xl mb-1">{achievement.icon}</div>
@@ -180,7 +180,7 @@ export default async function ProfilePage() {
         </div>
 
         {/* Récompenses par tâche */}
-        <div className="bg-[#161628]/95 backdrop-blur-md rounded-xl border border-[var(--border)] p-5" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="bg-[#161628]/60 backdrop-blur-lg rounded-xl border border-[var(--border)] p-5" style={{ boxShadow: 'var(--shadow)' }}>
           <h3 className="font-semibold text-t-primary mb-3">Récompenses par tâche</h3>
           <div className="space-y-2">
             <div className="flex justify-between items-center">

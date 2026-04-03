@@ -355,7 +355,7 @@ export default function Expenses({
 
       {/* Remboursements optimaux */}
       {settlements.length > 0 && (
-        <div className="bg-[#161628]/75 hover:bg-[#161628]/95 backdrop-blur-sm border border-[var(--border)] rounded-xl p-5 transition-all" style={{ boxShadow: 'var(--shadow)' }}>
+        <div className="bg-[#161628]/65 hover:bg-[#161628]/75 backdrop-blur-sm border border-[var(--border)] rounded-xl p-5 transition-all" style={{ boxShadow: 'var(--shadow)' }}>
           <h3 className="font-semibold text-accent mb-3">Remboursements simplifiés</h3>
           <p className="text-xs text-accent mb-3">Le minimum de virements pour tout équilibrer</p>
           <div className="space-y-3">

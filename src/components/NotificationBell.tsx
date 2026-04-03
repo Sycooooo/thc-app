@@ -162,7 +162,7 @@ export default function NotificationBell() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
             transition={snappy}
-            className="absolute right-0 top-full mt-2 w-80 bg-surface rounded-xl border border-b z-50 max-h-96 overflow-y-auto"
+            className="absolute right-0 top-full mt-2 w-80 bg-surface-solid rounded-xl border border-b z-50 max-h-96 overflow-y-auto backdrop-blur-lg"
             style={{ boxShadow: 'var(--shadow-lg)' }}
           >
             <div className="p-3 border-b border-b">

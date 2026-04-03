@@ -348,7 +348,7 @@ export default function Chat({
                   className={`rounded-2xl px-3 py-2 ${
                     isMe
                       ? 'bg-[#7c3aed]/95 backdrop-blur-md text-white rounded-br-sm'
-                      : 'bg-[#2a2a4a]/95 backdrop-blur-md text-t-primary rounded-bl-sm'
+                      : 'bg-[#2a2a4a]/70 backdrop-blur-md text-t-primary rounded-bl-sm'
                   }`}
                   style={!isMe ? { boxShadow: 'var(--shadow)' } : undefined}
                 >
@@ -379,7 +379,7 @@ export default function Chat({
 
       {/* Picker GIF */}
       {showGif && (
-        <div className="border-t border-[var(--border)] bg-[#161628]/95 backdrop-blur-md p-3 max-h-72 overflow-y-auto">
+        <div className="border-t border-[var(--border)] bg-[#161628]/65 backdrop-blur-lg p-3 max-h-72 overflow-y-auto">
           <input
             type="text"
             value={gifSearch}
@@ -456,7 +456,7 @@ export default function Chat({
           )}
         </AnimatePresence>
 
-        <form onSubmit={sendMessage} className="border-t border-[var(--border)] bg-[#161628]/95 backdrop-blur-md p-3 flex items-center gap-2">
+        <form onSubmit={sendMessage} className="border-t border-[var(--border)] bg-[#161628]/65 backdrop-blur-lg p-3 flex items-center gap-2">
           <button
             type="button"
             onClick={() => setShowGif(!showGif)}
