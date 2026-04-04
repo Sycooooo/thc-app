@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import QuestSetup from '@/components/QuestSetup'
 import AffinitySetup from '@/components/AffinitySetup'
+import AwayManager from '@/components/AwayManager'
 import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
 import PixelIcon from '@/components/ui/PixelIcon'
@@ -18,14 +19,17 @@ export default async function AdminPage({
 
   const { id } = await params
 
-  const coloc = await prisma.colocation.findUnique({
-    where: { id },
-    include: {
-      members: {
-        include: { user: { select: { id: true, username: true } } },
+  const [coloc, awayVotes] = await Promise.all([
+    prisma.colocation.findUnique({
+      where: { id },
+      include: {
+        members: {
+          include: { user: { select: { id: true, username: true } } },
+        },
       },
-    },
-  })
+    }),
+    prisma.awayVote.findMany({ where: { colocId: id } }),
+  ])
 
   if (!coloc) notFound()
 
@@ -49,6 +53,24 @@ export default async function AdminPage({
 
       <main className="max-w-4xl mx-auto p-6 space-y-8">
         <PageTransition>
+          {/* Section 0 : Mode Vacances */}
+          <AwayManager
+            colocId={id}
+            currentUserId={userId}
+            members={coloc.members.map((m) => ({
+              userId: m.user.id,
+              username: m.user.username,
+              isAway: m.isAway,
+              awayStartDate: m.awayStartDate?.toISOString() ?? null,
+            }))}
+            currentUserIsAway={member.isAway}
+            pendingVotes={awayVotes.map((v) => ({
+              targetId: v.targetId,
+              voterId: v.voterId,
+              approved: v.approved,
+            }))}
+          />
+
           {/* Section 1 : Configuration des quêtes */}
           <QuestSetup colocId={id} />
 

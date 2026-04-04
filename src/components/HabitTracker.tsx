@@ -111,14 +111,23 @@ export default function HabitTracker({ habits: initialHabits, colocId }: Props) 
   const [toggling, setToggling] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [managing, setManaging] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [popup, setPopup] = useState<{ habitId: string; xp: number; coins: number; streak: number } | null>(null)
   const [rankUp, setRankUp] = useState<{ type: string; newRank: Record<string, unknown> } | null>(null)
 
-  // Form state
+  // Form state (create)
   const [newTitle, setNewTitle] = useState('')
   const [newIcon, setNewIcon] = useState('✅')
   const [newDifficulty, setNewDifficulty] = useState('medium')
   const [newBlock, setNewBlock] = useState('anytime')
+
+  // Form state (edit)
+  const [editTitle, setEditTitle] = useState('')
+  const [editIcon, setEditIcon] = useState('')
+  const [editDifficulty, setEditDifficulty] = useState('')
+  const [editBlock, setEditBlock] = useState('')
 
   const weekDays = getWeekDays()
   const today = new Date()
@@ -197,8 +206,40 @@ export default function HabitTracker({ habits: initialHabits, colocId }: Props) 
     try {
       await api.delete(`/api/coloc/${colocId}/habits`, { habitId })
       setHabits((prev) => prev.filter((h) => h.id !== habitId))
+      setConfirmDeleteId(null)
     } catch (err) {
       console.error('Erreur suppression:', err)
+    }
+  }
+
+  function startEdit(habit: Habit) {
+    setEditingId(habit.id)
+    setEditTitle(habit.title)
+    setEditIcon(habit.icon)
+    setEditDifficulty(habit.difficulty)
+    setEditBlock(habit.block)
+  }
+
+  async function saveEdit(habitId: string) {
+    if (!editTitle.trim()) return
+    try {
+      await api.patch(`/api/coloc/${colocId}/habits`, {
+        habitId,
+        title: editTitle.trim(),
+        icon: editIcon || '✅',
+        difficulty: editDifficulty,
+        block: editBlock,
+      })
+      setHabits((prev) =>
+        prev.map((h) =>
+          h.id === habitId
+            ? { ...h, title: editTitle.trim(), icon: editIcon || '✅', difficulty: editDifficulty, block: editBlock }
+            : h
+        )
+      )
+      setEditingId(null)
+    } catch (err) {
+      console.error('Erreur édition:', err)
     }
   }
 
@@ -226,8 +267,24 @@ export default function HabitTracker({ habits: initialHabits, colocId }: Props) 
         )}
       </AnimatePresence>
 
+      {/* Header avec bouton Gérer */}
+      {habits.length > 0 && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => { setManaging(!managing); setEditingId(null); setConfirmDeleteId(null) }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+              managing
+                ? 'bg-accent/30 text-accent'
+                : 'bg-surface-hover text-t-primary hover:bg-accent/15'
+            }`}
+          >
+            {managing ? 'Terminé' : 'Gérer'}
+          </button>
+        </div>
+      )}
+
       {/* Calendrier semaine */}
-      <div className="rounded-xl border border-[var(--border)] bg-[#161628]/75 backdrop-blur-lg p-4">
+      <div className="rounded-xl border border-[var(--border)] bg-[#161628]/95 backdrop-blur-lg p-4">
         <div className="grid grid-cols-7 gap-2">
           {weekDays.map((day) => {
             const pct = getCompletionForDay(day.date)
@@ -280,54 +337,137 @@ export default function HabitTracker({ habits: initialHabits, colocId }: Props) 
             {group.habits.map((habit) => {
               const done = isCompletedToday(habit)
               const streak = getHabitStreak(habit.logs)
+              const isEditing = editingId === habit.id
+
+              // Mode édition inline
+              if (isEditing) {
+                return (
+                  <motion.div
+                    key={habit.id}
+                    layout
+                    className="rounded-lg border border-accent/30 p-4 bg-[#161628]/95 backdrop-blur-xl space-y-3"
+                  >
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={editIcon}
+                        onChange={(e) => setEditIcon(e.target.value)}
+                        maxLength={4}
+                        className="w-14 text-center px-2 py-2 border border-[var(--border)] rounded-lg bg-input-bg text-t-primary text-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                      <input
+                        type="text"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg bg-input-bg text-t-primary text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-t-muted mb-1">Difficulté</label>
+                      <div className="flex gap-2">
+                        {(['easy', 'medium', 'hard'] as const).map((d) => (
+                          <button
+                            key={d}
+                            type="button"
+                            onClick={() => setEditDifficulty(d)}
+                            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition ${
+                              editDifficulty === d
+                                ? DIFFICULTY_COLORS[d]
+                                : 'border border-[var(--border)] text-t-muted hover:border-accent/30'
+                            }`}
+                          >
+                            {DIFFICULTY_LABELS[d]}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-t-muted mb-1">Moment</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {BLOCK_ORDER.map((b) => (
+                          <button
+                            key={b}
+                            type="button"
+                            onClick={() => setEditBlock(b)}
+                            className={`py-1.5 rounded-lg text-xs font-medium transition ${
+                              editBlock === b
+                                ? 'bg-accent/15 text-accent border border-accent/30'
+                                : 'border border-[var(--border)] text-t-muted hover:border-accent/30'
+                            }`}
+                          >
+                            {BLOCK_ICONS[b]} {BLOCK_LABELS[b]}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => saveEdit(habit.id)}
+                        className="px-4 py-1.5 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent-hover transition"
+                      >
+                        Sauvegarder
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="px-4 py-1.5 bg-surface-hover text-t-muted rounded-lg text-sm font-medium hover:text-t-primary transition"
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </motion.div>
+                )
+              }
+
               return (
                 <motion.div
                   key={habit.id}
                   layout
                   className={`relative rounded-lg border p-3 flex items-center gap-3 transition backdrop-blur-lg ${
                     done
-                      ? 'border-green-500/30 bg-[#161628]/70'
-                      : 'border-[var(--border)] bg-[#161628]/60'
+                      ? 'border-green-500/30 bg-[#161628]/95'
+                      : 'border-[var(--border)] bg-[#161628]/90'
                   }`}
                 >
-                  {/* Checkbox */}
-                  <button
-                    onClick={() => toggleHabit(habit.id)}
-                    disabled={toggling === habit.id}
-                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition ${
-                      done
-                        ? 'bg-accent border-accent text-white'
-                        : 'border-t-faint hover:border-accent'
-                    } ${toggling === habit.id ? 'opacity-50' : ''}`}
-                  >
-                    {done && (
-                      <motion.svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 14 14"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={snappy}
-                      >
-                        <motion.path
-                          d="M2 7L5.5 10.5L12 3.5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          initial={{ pathLength: 0 }}
-                          animate={{ pathLength: 1 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      </motion.svg>
-                    )}
-                  </button>
+                  {/* Checkbox (hidden in manage mode) */}
+                  {!managing && (
+                    <button
+                      onClick={() => toggleHabit(habit.id)}
+                      disabled={toggling === habit.id}
+                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition ${
+                        done
+                          ? 'bg-accent border-accent text-white'
+                          : 'border-t-faint hover:border-accent'
+                      } ${toggling === habit.id ? 'opacity-50' : ''}`}
+                    >
+                      {done && (
+                        <motion.svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 14 14"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={snappy}
+                        >
+                          <motion.path
+                            d="M2 7L5.5 10.5L12 3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </motion.svg>
+                      )}
+                    </button>
+                  )}
 
                   {/* Icon + Title */}
                   <span className="text-lg">{habit.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium ${done ? 'text-t-muted line-through' : 'text-t-primary'}`}>
+                    <p className={`text-sm font-medium text-t-primary ${done ? 'line-through' : ''}`}>
                       {habit.title}
                     </p>
                     {habit.description && (
@@ -335,29 +475,59 @@ export default function HabitTracker({ habits: initialHabits, colocId }: Props) 
                     )}
                   </div>
 
-                  {/* Difficulty chip */}
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${DIFFICULTY_COLORS[habit.difficulty] ?? ''}`}>
-                    {DIFFICULTY_LABELS[habit.difficulty] ?? habit.difficulty}
-                  </span>
+                  {!managing ? (
+                    <>
+                      {/* Difficulty chip */}
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${DIFFICULTY_COLORS[habit.difficulty] ?? ''}`}>
+                        {DIFFICULTY_LABELS[habit.difficulty] ?? habit.difficulty}
+                      </span>
 
-                  {/* Streak badge */}
-                  {streak > 0 && (
-                    <motion.span
-                      {...scaleBounce}
-                      className="text-xs font-bold text-amber-400 flex items-center gap-0.5"
-                    >
-                      🔥 {streak}
-                    </motion.span>
+                      {/* Streak badge */}
+                      {streak > 0 && (
+                        <motion.span
+                          {...scaleBounce}
+                          className="text-xs font-bold text-amber-400 flex items-center gap-0.5"
+                        >
+                          🔥 {streak}
+                        </motion.span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {/* Edit button */}
+                      <button
+                        onClick={() => startEdit(habit)}
+                        className="px-2.5 py-1 rounded-lg text-xs font-medium bg-accent/15 text-accent hover:bg-accent/25 transition"
+                      >
+                        Modifier
+                      </button>
+
+                      {/* Delete with confirmation */}
+                      {confirmDeleteId === habit.id ? (
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => deleteHabit(habit.id)}
+                            className="px-2 py-1 rounded-lg text-xs font-medium bg-red-500/15 text-red-400 hover:bg-red-500/25 transition"
+                          >
+                            Confirmer
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="px-2 py-1 rounded-lg text-xs font-medium text-t-faint hover:text-t-primary transition"
+                          >
+                            Non
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmDeleteId(habit.id)}
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 transition"
+                        >
+                          Supprimer
+                        </button>
+                      )}
+                    </>
                   )}
-
-                  {/* Delete button */}
-                  <button
-                    onClick={() => deleteHabit(habit.id)}
-                    className="text-t-faint hover:text-danger text-xs opacity-0 group-hover:opacity-100 transition ml-1"
-                    title="Supprimer"
-                  >
-                    ✕
-                  </button>
 
                   {/* XP Popup */}
                   <AnimatePresence>
@@ -381,7 +551,7 @@ export default function HabitTracker({ habits: initialHabits, colocId }: Props) 
 
       {/* Empty state */}
       {habits.length === 0 && !showForm && (
-        <div className="rounded-xl border border-[var(--border)] bg-[#161628]/60 backdrop-blur-lg p-8 text-center text-t-faint">
+        <div className="rounded-xl border border-[var(--border)] bg-[#161628]/95 backdrop-blur-lg p-8 text-center text-t-faint">
           <p className="text-2xl mb-2">🔥</p>
           <p className="text-sm">Aucune habitude pour l&apos;instant</p>
           <p className="text-xs mt-1">Crée ta première habitude pour commencer à streak !</p>
@@ -397,7 +567,7 @@ export default function HabitTracker({ habits: initialHabits, colocId }: Props) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="w-full py-3 border-2 border-dashed border-accent/30 rounded-lg text-t-muted hover:border-accent hover:text-accent transition-colors font-medium bg-[#161628]/90 backdrop-blur-sm"
+            className="w-full py-3 border-2 border-dashed border-accent/30 rounded-lg text-t-primary hover:border-accent hover:text-accent transition-colors font-medium bg-[#161628]/95 backdrop-blur-sm"
           >
             + Ajouter une habitude
           </motion.button>

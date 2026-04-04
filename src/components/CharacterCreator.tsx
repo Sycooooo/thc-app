@@ -21,8 +21,11 @@ type Props = {
 }
 
 const SKIN_TONES = [
+  { id: 'porcelain', label: 'Porcelaine', color: '#fdf2f8' },
   { id: 'light', label: 'Clair', color: '#ffe0bd' },
   { id: 'medium', label: 'Moyen', color: '#eac099' },
+  { id: 'olive', label: 'Olive', color: '#a3b18a' },
+  { id: 'golden', label: 'Doré', color: '#e5a95a' },
   { id: 'tan', label: 'Mat', color: '#c6986f' },
   { id: 'dark', label: 'Foncé', color: '#8d6342' },
   { id: 'deep', label: 'Ébène', color: '#593823' },

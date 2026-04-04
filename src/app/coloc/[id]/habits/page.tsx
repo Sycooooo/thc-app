@@ -55,7 +55,7 @@ export default async function HabitsPage({
 
   return (
     <div className="min-h-screen relative z-10" data-room="bureau">
-      <PageAmbiance theme="bureau" />
+      <PageAmbiance theme="bureau" opacity={0.35} />
       <header className="glass-header-lofi sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/coloc/${id}`} className="text-t-muted hover:text-t-primary transition">
@@ -74,7 +74,7 @@ export default async function HabitsPage({
         active="habits"
       />
 
-      <main className="max-w-4xl mx-auto p-6 space-y-6">
+      <main className="max-w-4xl mx-auto p-6 space-y-6 relative z-10">
         <PageTransition>
           <HabitTracker
             habits={habits.map((h) => ({

@@ -63,29 +63,87 @@ const freeAvatarItems = [
 
 // === Items payants (boutique) ===
 const paidAvatarItems = [
-  // Cheveux premium
+  // Cheveux premium (existants)
   { name: 'Buzz blond', layer: 'hair', spriteName: 'buzz-blonde', rarity: 'rare', price: 20 },
   { name: 'Afro noir', layer: 'hair', spriteName: 'afro-black', rarity: 'rare', price: 25 },
 
-  // Yeux premium
+  // Yeux premium (existants)
   { name: 'Ronds', layer: 'eyes', spriteName: 'round', rarity: 'rare', price: 15 },
 
-  // Hauts premium
+  // Hauts premium (existants)
   { name: 'Oversized beige', layer: 'top', spriteName: 'oversized-beige', rarity: 'rare', price: 30 },
   { name: 'Bomber navy', layer: 'top', spriteName: 'bomber-navy', rarity: 'epic', price: 50 },
 
-  // Bas premium
+  // Bas premium (existants)
   { name: 'Cargo camo', layer: 'bottom', spriteName: 'cargo-camo', rarity: 'rare', price: 25 },
 
-  // Chaussures premium
+  // Chaussures premium (existants)
   { name: 'Timberland tan', layer: 'shoes', spriteName: 'timbs-tan', rarity: 'rare', price: 35 },
 
-  // Accessoires (tous payants)
+  // Accessoires (existants)
   { name: 'Casquette noire', layer: 'accessory', spriteName: 'cap-black', rarity: 'common', price: 15 },
   { name: 'Casquette camo', layer: 'accessory', spriteName: 'cap-camo', rarity: 'rare', price: 25 },
   { name: 'Lunettes rondes', layer: 'accessory', spriteName: 'glasses-round', rarity: 'rare', price: 20 },
   { name: 'Casque audio', layer: 'accessory', spriteName: 'headphones-black', rarity: 'epic', price: 45 },
   { name: 'Cagoule noire', layer: 'accessory', spriteName: 'balaclava-black', rarity: 'legendary', price: 80 },
+
+  // ===== NOUVEAUX ITEMS (AVATAR-DESIGNS.md) =====
+
+  // --- Yeux ---
+  { name: 'Clin d\'œil', layer: 'eyes', spriteName: 'wink', rarity: 'common', price: 10 },
+  { name: 'Yeux de chat', layer: 'eyes', spriteName: 'cat', rarity: 'uncommon', price: 20 },
+  { name: 'Yeux étoiles', layer: 'eyes', spriteName: 'star', rarity: 'rare', price: 35 },
+  { name: 'Yeux cœur', layer: 'eyes', spriteName: 'heart', rarity: 'rare', price: 35 },
+  { name: 'Œil cyber', layer: 'eyes', spriteName: 'cyber', rarity: 'epic', price: 60 },
+  { name: 'Regard du vide', layer: 'eyes', spriteName: 'void', rarity: 'legendary', price: 120 },
+
+  // --- Cheveux ---
+  { name: 'Crête rose', layer: 'hair', spriteName: 'mohawk-pink', rarity: 'uncommon', price: 20 },
+  { name: 'Couettes violettes', layer: 'hair', spriteName: 'twintails-purple', rarity: 'uncommon', price: 20 },
+  { name: 'Ébouriffé roux', layer: 'hair', spriteName: 'messy-ginger', rarity: 'common', price: 10 },
+  { name: 'Bol turquoise', layer: 'hair', spriteName: 'bowl-teal', rarity: 'common', price: 10 },
+  { name: 'Queue de cheval blonde', layer: 'hair', spriteName: 'ponytail-blonde', rarity: 'common', price: 10 },
+  { name: 'Rideaux argentés', layer: 'hair', spriteName: 'curtains-silver', rarity: 'uncommon', price: 20 },
+  { name: 'Hérisson rouge', layer: 'hair', spriteName: 'spiky-red', rarity: 'uncommon', price: 20 },
+  { name: 'Tresse couronne dorée', layer: 'hair', spriteName: 'crown-braid-gold', rarity: 'epic', price: 60 },
+
+  // --- Hauts ---
+  { name: 'Débardeur rouge', layer: 'top', spriteName: 'tank-red', rarity: 'common', price: 10 },
+  { name: 'Chemise à carreaux verte', layer: 'top', spriteName: 'flannel-green', rarity: 'common', price: 10 },
+  { name: 'Crop top lilas', layer: 'top', spriteName: 'crop-lilac', rarity: 'uncommon', price: 25 },
+  { name: 'Veste varsity navy', layer: 'top', spriteName: 'varsity-navy', rarity: 'uncommon', price: 25 },
+  { name: 'Kimono sakura', layer: 'top', spriteName: 'kimono-sakura', rarity: 'rare', price: 40 },
+  { name: 'Maillot sport orange', layer: 'top', spriteName: 'jersey-orange', rarity: 'common', price: 10 },
+  { name: 'Cape royale', layer: 'top', spriteName: 'cape-royal', rarity: 'epic', price: 65 },
+  { name: 'Hoodie flammes', layer: 'top', spriteName: 'hoodie-fire', rarity: 'rare', price: 40 },
+
+  // --- Bas ---
+  { name: 'Short blanc', layer: 'bottom', spriteName: 'shorts-white', rarity: 'common', price: 10 },
+  { name: 'Jogging gris', layer: 'bottom', spriteName: 'jogger-grey', rarity: 'common', price: 10 },
+  { name: 'Jupe écossaise', layer: 'bottom', spriteName: 'skirt-plaid', rarity: 'uncommon', price: 25 },
+  { name: 'Baggy violet', layer: 'bottom', spriteName: 'baggy-purple', rarity: 'uncommon', price: 25 },
+  { name: 'Hakama noir', layer: 'bottom', spriteName: 'hakama-black', rarity: 'rare', price: 40 },
+  { name: 'Drapé royal', layer: 'bottom', spriteName: 'royal-drape', rarity: 'epic', price: 65 },
+
+  // --- Chaussures ---
+  { name: 'Claquettes bleues', layer: 'shoes', spriteName: 'slides-blue', rarity: 'common', price: 10 },
+  { name: 'Bottes combat', layer: 'shoes', spriteName: 'boots-combat', rarity: 'uncommon', price: 25 },
+  { name: 'Plateformes roses', layer: 'shoes', spriteName: 'platforms-pink', rarity: 'uncommon', price: 25 },
+  { name: 'Mocassins marron', layer: 'shoes', spriteName: 'loafers-brown', rarity: 'common', price: 10 },
+  { name: 'Patins rétro', layer: 'shoes', spriteName: 'roller-retro', rarity: 'rare', price: 40 },
+  { name: 'Bottines enchantées', layer: 'shoes', spriteName: 'enchanted-glow', rarity: 'legendary', price: 120 },
+
+  // --- Accessoires ---
+  { name: 'Bonnet rouille', layer: 'accessory', spriteName: 'beanie-rust', rarity: 'common', price: 15 },
+  { name: 'Bandana rouge', layer: 'accessory', spriteName: 'bandana-red', rarity: 'common', price: 15 },
+  { name: 'Masque chirurgical', layer: 'accessory', spriteName: 'mask-surgical', rarity: 'common', price: 10 },
+  { name: 'Lunettes pixel', layer: 'accessory', spriteName: 'glasses-pixel', rarity: 'uncommon', price: 25 },
+  { name: 'Boucle d\'oreille or', layer: 'accessory', spriteName: 'earring-gold', rarity: 'uncommon', price: 25 },
+  { name: 'Oreilles de chat', layer: 'accessory', spriteName: 'cat-ears', rarity: 'rare', price: 40 },
+  { name: 'Auréole dorée', layer: 'accessory', spriteName: 'halo-golden', rarity: 'epic', price: 65 },
+  { name: 'Cornes de diable', layer: 'accessory', spriteName: 'devil-horns', rarity: 'epic', price: 65 },
+  { name: 'Ailes pixel', layer: 'accessory', spriteName: 'wings-pixel', rarity: 'legendary', price: 150 },
+  { name: 'Couronne royale', layer: 'accessory', spriteName: 'crown-royal', rarity: 'legendary', price: 150 },
 ]
 
 async function main() {

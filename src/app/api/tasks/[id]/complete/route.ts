@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { XP_REWARDS, COIN_REWARDS, getStreakMultiplier, getLevel } from '@/lib/xp'
@@ -30,10 +31,17 @@ export async function POST(
   }
 
   // Récupérer l'utilisateur pour le streak
-  const user = await prisma.user.findUnique({ where: { id: session.user.id } })
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: { avatarConfig: true },
+  })
   if (!user) {
     return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
   }
+
+  // Compter membres actifs pour le boost away
+  const totalMembers = await prisma.userColoc.count({ where: { colocId: task.colocId } })
+  const activeMembers = await prisma.userColoc.count({ where: { colocId: task.colocId, isAway: false } })
 
   // === Calcul du streak ===
   const today = new Date()
@@ -66,8 +74,18 @@ export async function POST(
   // === Calcul des récompenses ===
   const streakMultiplier = getStreakMultiplier(newStreak)
   const baseXp = XP_REWARDS[task.difficulty] ?? 50
-  const xpGained = Math.round(baseXp * streakMultiplier)
+  let xpGained = Math.round(baseXp * streakMultiplier)
   const coinsGained = COIN_REWARDS[task.difficulty] ?? 0
+
+  // Penalty multiplier (si malus actif)
+  if (membership.penaltyUntil && membership.penaltyUntil > new Date()) {
+    xpGained = Math.round(xpGained * membership.penaltyXpMult)
+  }
+
+  // Away boost : XP × (total / actifs)
+  if (activeMembers > 0 && activeMembers < totalMembers) {
+    xpGained = Math.round(xpGained * (totalMembers / activeMembers))
+  }
 
   // === Mise à jour en base ===
   try {
@@ -94,6 +112,41 @@ export async function POST(
   } catch (err) {
     console.error('Erreur mise à jour:', err)
     return NextResponse.json({ error: 'Erreur lors de la mise à jour' }, { status: 500 })
+  }
+
+  // === Lazy badge + avatar strip recovery ===
+  if (membership.lazyBadge || (user.avatarConfig?.savedOutfit)) {
+    const newLazyCount = membership.lazyTasksDone + 1
+    const updates: Record<string, unknown> = { lazyTasksDone: newLazyCount }
+
+    if (newLazyCount >= 3) {
+      // Retirer le badge fainéant
+      if (membership.lazyBadge) {
+        updates.lazyBadge = false
+      }
+      updates.lazyTasksDone = 0
+
+      // Restaurer l'avatar si stripped
+      if (user.avatarConfig?.savedOutfit) {
+        const saved = user.avatarConfig.savedOutfit as Record<string, string | null>
+        await prisma.avatarConfig.update({
+          where: { userId: session.user.id },
+          data: {
+            hair: saved.hair ?? null,
+            top: saved.top ?? null,
+            bottom: saved.bottom ?? null,
+            shoes: saved.shoes ?? null,
+            accessory: saved.accessory ?? null,
+            savedOutfit: Prisma.DbNull,
+          },
+        })
+      }
+    }
+
+    await prisma.userColoc.update({
+      where: { userId_colocId: { userId: session.user.id, colocId: task.colocId } },
+      data: updates,
+    })
   }
 
   // === Détection rank-up ===

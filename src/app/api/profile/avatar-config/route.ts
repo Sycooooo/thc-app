@@ -27,7 +27,7 @@ export async function PUT(request: Request) {
   const { skinTone, body: bodySprite, hair, eyes, top, bottom, shoes, accessory } = body
 
   // Valider les valeurs de skin tone
-  const validSkinTones = ['light', 'medium', 'tan', 'dark', 'deep']
+  const validSkinTones = ['porcelain', 'light', 'medium', 'olive', 'golden', 'tan', 'dark', 'deep']
   if (skinTone && !validSkinTones.includes(skinTone)) {
     return NextResponse.json({ error: 'Ton de peau invalide' }, { status: 400 })
   }

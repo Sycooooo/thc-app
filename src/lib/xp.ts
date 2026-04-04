@@ -108,6 +108,7 @@ export const BLOCK_ICONS: Record<string, string> = {
 
 export const RARITY_LABELS: Record<string, string> = {
   common: 'Commun',
+  uncommon: 'Peu commun',
   rare: 'Rare',
   epic: 'Épique',
   legendary: 'Légendaire',
@@ -115,6 +116,7 @@ export const RARITY_LABELS: Record<string, string> = {
 
 export const RARITY_COLORS: Record<string, string> = {
   common: 'bg-gray-500/15 text-gray-400',
+  uncommon: 'bg-green-500/15 text-green-400',
   rare: 'bg-blue-500/15 text-blue-400',
   epic: 'bg-purple-500/15 text-purple-400',
   legendary: 'bg-amber-500/15 text-amber-400',

@@ -96,6 +96,43 @@ export async function POST(
   return NextResponse.json(habit, { status: 201 })
 }
 
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+  }
+
+  const { id: colocId } = await params
+  const { habitId, title, icon, difficulty, block } = await request.json()
+
+  if (!habitId) {
+    return NextResponse.json({ error: 'habitId requis' }, { status: 400 })
+  }
+
+  const habit = await prisma.habit.findFirst({
+    where: { id: habitId, userId: session.user.id, colocId },
+  })
+  if (!habit) {
+    return NextResponse.json({ error: 'Habitude introuvable' }, { status: 404 })
+  }
+
+  const data: Record<string, unknown> = {}
+  if (title !== undefined) data.title = title.trim()
+  if (icon !== undefined) data.icon = icon
+  if (difficulty !== undefined) data.difficulty = difficulty
+  if (block !== undefined) data.block = block
+
+  const updated = await prisma.habit.update({
+    where: { id: habitId },
+    data,
+  })
+
+  return NextResponse.json(updated)
+}
+
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

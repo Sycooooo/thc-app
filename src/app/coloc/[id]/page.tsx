@@ -7,6 +7,8 @@ import PageTransition from '@/components/PageTransition'
 import PageAmbiance from '@/components/ui/PageAmbiance'
 import PixelIcon from '@/components/ui/PixelIcon'
 import DashboardHub from '@/components/DashboardHub'
+import AwayManager from '@/components/AwayManager'
+import { checkPenalties } from '@/lib/penalties'
 
 export default async function DashboardPage({
   params,
@@ -19,12 +21,15 @@ export default async function DashboardPage({
   const { id } = await params
   const userId = session.user.id
 
+  // Appliquer les pénalités au chargement du dashboard
+  await checkPenalties(id).catch(() => {})
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const tomorrow = new Date(today)
   tomorrow.setDate(today.getDate() + 1)
 
-  const [coloc, lastMessages, nextEvent, latestMenu, user, pendingTasksCount, habitsData, expenses, boardCount] = await Promise.all([
+  const [coloc, lastMessages, nextEvent, latestMenu, user, pendingTasksCount, habitsData, expenses, boardCount, recentPenalties, awayVotes, latestBriefing] = await Promise.all([
     // Coloc + membres
     prisma.colocation.findUnique({
       where: { id },
@@ -97,6 +102,26 @@ export default async function DashboardPage({
 
     // Board count
     prisma.boardItem.count({ where: { colocId: id } }),
+
+    // Pénalités récentes (dernières 24h)
+    prisma.penaltyLog.findMany({
+      where: {
+        colocId: id,
+        userId,
+        createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    }),
+
+    // Votes away en attente
+    prisma.awayVote.findMany({ where: { colocId: id } }),
+
+    // Dernier briefing
+    prisma.briefing.findFirst({
+      orderBy: { date: 'desc' },
+      select: { date: true, score: true, sections: true },
+    }),
   ])
 
   if (!coloc) notFound()
@@ -155,7 +180,26 @@ export default async function DashboardPage({
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-4 sm:p-6">
+      <main className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4">
+        {/* Votes away en attente — visible par tous les membres */}
+        {awayVotes.length > 0 && (
+          <AwayManager
+            colocId={id}
+            currentUserId={userId}
+            members={coloc.members.map((m) => ({
+              userId: m.user.id,
+              username: m.user.username,
+              isAway: m.isAway,
+              awayStartDate: m.awayStartDate?.toISOString() ?? null,
+            }))}
+            currentUserIsAway={coloc.members.find((m) => m.userId === userId)?.isAway ?? false}
+            pendingVotes={awayVotes.map((v) => ({
+              targetId: v.targetId,
+              voterId: v.voterId,
+              approved: v.approved,
+            }))}
+          />
+        )}
         <PageTransition>
           <DashboardHub
             colocId={id}
@@ -167,6 +211,8 @@ export default async function DashboardPage({
               avatar: m.user.avatar,
               rankPoints: m.user.rankPoints,
               avatarConfig: m.user.avatarConfig ?? null,
+              isAway: m.isAway,
+              lazyBadge: m.lazyBadge,
             }))}
             lastMessages={lastMessages.reverse().map((m) => ({
               id: m.id,
@@ -191,6 +237,16 @@ export default async function DashboardPage({
             pendingTasksCount={pendingTasksCount}
             habitsToday={habitsData}
             hasSpotify={hasSpotify}
+            recentPenalties={recentPenalties.map((p) => ({
+              type: p.type,
+              message: p.message,
+              createdAt: p.createdAt.toISOString(),
+            }))}
+            latestBriefing={latestBriefing ? {
+              date: latestBriefing.date.toISOString(),
+              score: latestBriefing.score,
+              sections: latestBriefing.sections as unknown as { type: string; icon: string; articles: { title: string }[] }[],
+            } : null}
           />
         </PageTransition>
       </main>

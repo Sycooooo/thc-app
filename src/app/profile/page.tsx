@@ -35,6 +35,34 @@ export default async function ProfilePage() {
   const allAchievements = await prisma.achievement.findMany()
   const unlockedIds = new Set(user.achievements.map((a) => a.achievementId))
 
+  // Membership pour badges + pénalités
+  const membership = await prisma.userColoc.findFirst({
+    where: { userId: session.user.id },
+  })
+
+  // Tâches non faites (expired + pending en retard)
+  const overdueCount = membership ? await prisma.task.count({
+    where: {
+      assignedToId: session.user.id,
+      colocId: membership.colocId,
+      OR: [
+        { status: 'expired' },
+        { status: 'pending', dueDate: { lt: new Date() } },
+      ],
+    },
+  }) : 0
+
+  // Historique pénalités (30 derniers jours)
+  const penaltyLogs = membership ? await prisma.penaltyLog.findMany({
+    where: {
+      userId: session.user.id,
+      colocId: membership.colocId,
+      createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 20,
+  }) : []
+
   return (
     <div className="min-h-screen relative z-10" data-room="profil">
       <PageAmbiance theme="profil" />
@@ -149,6 +177,44 @@ export default async function ProfilePage() {
             </p>
           )}
         </div>
+
+        {/* Badges actifs */}
+        {(membership?.lazyBadge || membership?.isAway) && (
+          <div className="card card-glow p-5">
+            <h3 className="font-semibold text-t-primary mb-3">Badges actifs</h3>
+            <div className="flex flex-wrap gap-2">
+              {membership?.isAway && (
+                <span className="px-3 py-1.5 bg-blue-500/15 text-blue-400 rounded-full text-sm font-medium">Away</span>
+              )}
+              {membership?.lazyBadge && (
+                <span className="px-3 py-1.5 bg-amber-500/15 text-amber-400 rounded-full text-sm font-medium">Fainéant</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tâches non faites + Pénalités */}
+        {(overdueCount > 0 || penaltyLogs.length > 0) && (
+          <div className="card p-5 border border-red-500/20">
+            <h3 className="font-semibold text-red-400 mb-3">Alertes</h3>
+            {overdueCount > 0 && (
+              <div className="bg-red-500/10 rounded-lg p-3 mb-3">
+                <p className="text-sm text-red-300">{overdueCount} tâche{overdueCount > 1 ? 's' : ''} non faite{overdueCount > 1 ? 's' : ''}</p>
+              </div>
+            )}
+            {penaltyLogs.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs text-t-faint font-medium">Historique pénalités (30j)</p>
+                {penaltyLogs.map((p) => (
+                  <div key={p.id} className="flex items-start gap-2">
+                    <span className="text-xs text-red-400 shrink-0">{new Date(p.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
+                    <p className="text-xs text-red-300/80">{p.message}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Achievements */}
         <div className="bg-[#161628]/60 backdrop-blur-lg rounded-xl border border-[var(--border)] p-5" style={{ boxShadow: 'var(--shadow)' }}>

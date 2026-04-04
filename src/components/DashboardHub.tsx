@@ -12,11 +12,21 @@ import PixelIcon from '@/components/ui/PixelIcon'
 import PixelAvatar from '@/components/PixelAvatar'
 import type { AvatarConfigData } from '@/components/PixelAvatar'
 
+type MemberInfo = {
+  userId: string
+  username: string
+  avatar: string | null
+  rankPoints: number
+  avatarConfig: AvatarConfigData | null
+  isAway?: boolean
+  lazyBadge?: boolean
+}
+
 type Props = {
   colocId: string
   colocName: string
   currentUserId: string
-  members: { userId: string; username: string; avatar: string | null; rankPoints: number; avatarConfig: AvatarConfigData | null }[]
+  members: MemberInfo[]
   lastMessages: { id: string; content: string; username: string; createdAt: string; type: string }[]
   nextEvent: { title: string; startDate: string; color: string } | null
   todayMeal: { lunch: string | null; dinner: string | null } | null
@@ -26,6 +36,12 @@ type Props = {
   pendingTasksCount: number
   habitsToday: { completed: number; total: number }
   hasSpotify: boolean
+  recentPenalties?: { type: string; message: string; createdAt: string }[]
+  latestBriefing?: {
+    date: string
+    score: number
+    sections: { type: string; icon: string; articles: { title: string }[] }[]
+  } | null
 }
 
 function timeAgo(date: string) {
@@ -64,7 +80,7 @@ const fadeIn = {
 }
 
 export default function DashboardHub(props: Props) {
-  const { colocId, currentUserId, members, lastMessages, nextEvent, todayMeal, userBalance, boardCount, userProfile, pendingTasksCount, habitsToday, hasSpotify } = props
+  const { colocId, currentUserId, members, lastMessages, nextEvent, todayMeal, userBalance, boardCount, userProfile, pendingTasksCount, habitsToday, hasSpotify, recentPenalties, latestBriefing } = props
 
   const level = getLevel(userProfile.xp)
   const xpInfo = getXpForNextLevel(userProfile.xp)
@@ -118,6 +134,36 @@ export default function DashboardHub(props: Props) {
 
   return (
     <motion.div {...stagger} initial="initial" animate="animate" className="space-y-3">
+
+      {/* Briefing du jour */}
+      {latestBriefing && (
+        <motion.div {...fadeIn}>
+          <Link href={`/coloc/${colocId}/briefing`} className="block">
+            <div className="card card-glow p-4 border border-purple-500/20">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">📡</span>
+                  <span className="text-sm font-semibold text-t-primary">Briefing du jour</span>
+                </div>
+                {latestBriefing.score > 0 && (
+                  <span className="font-pixel text-[10px] px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+                    {latestBriefing.score}/10
+                  </span>
+                )}
+              </div>
+              <div className="space-y-1">
+                {latestBriefing.sections.map((s) => (
+                  <div key={s.type} className="flex items-center gap-2">
+                    <span className="text-xs">{s.icon}</span>
+                    <span className="text-xs text-t-muted truncate">{s.articles[0]?.title}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-accent mt-2">Voir le briefing complet →</p>
+            </div>
+          </Link>
+        </motion.div>
+      )}
 
       {/* Profil */}
       <motion.div {...fadeIn}>
@@ -321,6 +367,46 @@ export default function DashboardHub(props: Props) {
           </div>
         </Link>
       </motion.div>
+
+      {/* Membres avec badges */}
+      <motion.div {...fadeIn}>
+        <div className="card card-glow p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-semibold text-t-primary">Colocs</span>
+          </div>
+          <div className="space-y-2">
+            {members.map((m) => (
+              <div key={m.userId} className="flex items-center gap-2">
+                <PixelAvatar config={m.avatarConfig} fallbackPhoto={m.avatar} username={m.username} size="sm" />
+                <span className="text-xs text-t-primary">{m.username}</span>
+                {m.isAway && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-medium">Away</span>
+                )}
+                {m.lazyBadge && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">Fainéant</span>
+                )}
+                <RankBadge rank={getRankFromPoints(m.rankPoints)} size="sm" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Pénalités récentes */}
+      {recentPenalties && recentPenalties.length > 0 && (
+        <motion.div {...fadeIn}>
+          <div className="card p-4 border border-red-500/20">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-semibold text-red-400">Pénalités récentes</span>
+            </div>
+            <div className="space-y-1">
+              {recentPenalties.map((p, i) => (
+                <p key={i} className="text-xs text-red-300/80">{p.message}</p>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
     </motion.div>
   )

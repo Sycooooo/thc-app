@@ -41,6 +41,7 @@ model User {
   musicStories      MusicStory[]
   habits            Habit[]
   habitLogs         HabitLog[]
+  penaltyLogs       PenaltyLog[]
 }
 
 model Colocation {
@@ -67,12 +68,24 @@ model Colocation {
 
   musicStories    MusicStory[]
   habits          Habit[]
+  penaltyLogs     PenaltyLog[]
 }
 
 model UserColoc {
-  id          String    @id @default(cuid())
-  role        String    @default("member")
-  joinedAt    DateTime  @default(now())
+  id             String    @id @default(cuid())
+  role           String    @default("member")
+  joinedAt       DateTime  @default(now())
+
+  // Away / Vacances
+  isAway         Boolean   @default(false)
+  awayStartDate  DateTime?
+  awayConfirmed  Boolean   @default(false)
+
+  // Pénalités
+  penaltyXpMult  Float     @default(1.0)
+  penaltyUntil   DateTime?
+  lazyBadge      Boolean   @default(false)
+  lazyTasksDone  Int       @default(0)
 
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -174,14 +187,15 @@ model AvatarConfig {
   userId    String  @unique
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  skinTone  String  @default("medium")  // "light", "medium", "tan", "dark", "deep"
-  body      String  @default("default")
-  hair      String?                      // spriteName ou null
-  eyes      String  @default("default")
-  top       String?
-  bottom    String?
-  shoes     String?
-  accessory String?
+  skinTone     String  @default("medium")  // "light", "medium", "tan", "dark", "deep"
+  body         String  @default("default")
+  hair         String?                      // spriteName ou null
+  eyes         String  @default("default")
+  top          String?
+  bottom       String?
+  shoes        String?
+  accessory    String?
+  savedOutfit  Json?   // sauvegarde config avant strip (streak=0), restaurée après 3 tâches
 }
 
 // === Achievements ===
@@ -484,4 +498,45 @@ model Message {
 
   colocId   String
   coloc     Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
+}
+
+// === Pénalités ===
+
+model PenaltyLog {
+  id        String   @id @default(cuid())
+  type      String   // "expired_task", "inactivity_tax", "week_inactive", "habit_miss", "rank_demotion", "items_stripped"
+  amount    Int      // XP/coins perdus ou points déduits
+  message   String
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  colocId   String
+  coloc     Colocation @relation(fields: [colocId], references: [id], onDelete: Cascade)
+}
+
+// === Briefings Stratégiques ===
+
+model Briefing {
+  id        String   @id @default(cuid())
+  date      DateTime @unique
+  score     Float
+  rawHtml   String
+  sections  Json
+  sources   Json?
+  evalText  String?
+  createdAt DateTime @default(now())
+}
+
+// === Away Votes ===
+
+model AwayVote {
+  id        String   @id @default(cuid())
+  approved  Boolean
+  voterId   String
+  targetId  String
+  colocId   String
+  createdAt DateTime @default(now())
+
+  @@unique([voterId, targetId, colocId])
 }

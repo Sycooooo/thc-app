@@ -72,8 +72,21 @@ export async function POST(
   // Calculer les récompenses
   const streakMultiplier = getStreakMultiplier(habitStreak)
   const baseXp = XP_REWARDS[habit.difficulty] ?? 50
-  const xpGained = Math.round(baseXp * streakMultiplier)
+  let xpGained = Math.round(baseXp * streakMultiplier)
   const coinsGained = COIN_REWARDS[habit.difficulty] ?? 0
+
+  // Penalty multiplier + away boost
+  const membership = await prisma.userColoc.findUnique({
+    where: { userId_colocId: { userId: session.user.id, colocId } },
+  })
+  if (membership?.penaltyUntil && membership.penaltyUntil > new Date()) {
+    xpGained = Math.round(xpGained * membership.penaltyXpMult)
+  }
+  const totalMembers = await prisma.userColoc.count({ where: { colocId } })
+  const activeMembers = await prisma.userColoc.count({ where: { colocId, isAway: false } })
+  if (activeMembers > 0 && activeMembers < totalMembers) {
+    xpGained = Math.round(xpGained * (totalMembers / activeMembers))
+  }
 
   // Mettre à jour le streak global de l'user
   const user = await prisma.user.findUnique({ where: { id: session.user.id } })

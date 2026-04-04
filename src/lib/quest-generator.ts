@@ -30,9 +30,9 @@ export async function autoGenerateQuests(colocId: string) {
     return { generated: false, reason: 'already_done' }
   }
 
-  // Récupérer les membres
+  // Récupérer les membres actifs (pas away)
   const members = await prisma.userColoc.findMany({
-    where: { colocId },
+    where: { colocId, isAway: false },
     select: { userId: true },
   })
   if (members.length === 0) return { generated: false, reason: 'no_members' }

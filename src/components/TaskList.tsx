@@ -134,6 +134,7 @@ export default function TaskList({
   } | null>(null)
 
   const pending = tasks.filter((t) => t.status === 'pending' && (!t.assignedTo || t.assignedTo.id === currentUserId))
+  const expired = tasks.filter((t) => t.status === 'expired')
   const done = tasks.filter((t) => t.status === 'done')
 
   async function completeTask(taskId: string) {
@@ -346,6 +347,43 @@ export default function TaskList({
           </StaggerContainer>
         )}
       </div>
+
+      {/* Tâches expirées */}
+      {expired.length > 0 && (
+        <div>
+          <h2 className="font-semibold text-red-400 mb-3">
+            Expirées ({expired.length})
+          </h2>
+          <div className="space-y-2">
+            {expired.map((task, i) => (
+              <motion.div
+                key={task.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="bg-red-500/5 rounded-lg border border-red-500/20 p-4 flex items-center gap-4"
+              >
+                <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-red-400 text-xs">!</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-red-300">{task.title}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-pixel">
+                      Expirée — -70 XP
+                    </span>
+                    {task.assignedTo && (
+                      <span className="text-xs text-t-muted">
+                        👤 {task.assignedTo.username}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tâches terminées */}
       {done.length > 0 && (
