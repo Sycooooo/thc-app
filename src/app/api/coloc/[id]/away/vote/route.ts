@@ -3,6 +3,43 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { notify, notifyColoc } from '@/lib/notifications'
 
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+  }
+
+  const { id: colocId } = await params
+
+  const membership = await prisma.userColoc.findUnique({
+    where: { userId_colocId: { userId: session.user.id, colocId } },
+  })
+  if (!membership) {
+    return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
+  }
+
+  // Demandes en attente : awayStartDate set mais isAway encore false
+  const pendingMembers = await prisma.userColoc.findMany({
+    where: { colocId, awayStartDate: { not: null }, isAway: false },
+    include: { user: { select: { id: true, username: true } } },
+  })
+
+  const votes = await prisma.awayVote.findMany({
+    where: { colocId },
+    select: { targetId: true, voterId: true, approved: true },
+  })
+
+  const pending = pendingMembers.map((m) => ({
+    targetId: m.user.id,
+    username: m.user.username,
+  }))
+
+  return NextResponse.json({ votes, pending })
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

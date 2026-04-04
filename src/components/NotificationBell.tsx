@@ -21,6 +21,9 @@ const TYPE_ICONS: Record<string, string> = {
   new_board_item: '📌',
   quest_generated: '⚔️',
   mention: '💬',
+  away_request: '🏖️',
+  away_approved: '✈️',
+  away_rejected: '❌',
 }
 
 export default function NotificationBell() {

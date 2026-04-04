@@ -45,6 +45,12 @@ export async function POST(
     return NextResponse.json({ success: true, autoApproved: true })
   }
 
+  // Marquer la demande en cours (awayStartDate set, isAway reste false)
+  await prisma.userColoc.update({
+    where: { userId_colocId: { userId: session.user.id, colocId } },
+    data: { awayStartDate: new Date(), awayConfirmed: false },
+  })
+
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { username: true },
@@ -55,7 +61,7 @@ export async function POST(
     session.user.id,
     'away_request',
     `${user?.username ?? 'Un membre'} demande le mode vacances. Votez !`,
-    `/coloc/${colocId}`
+    `/profile/settings`
   )
 
   return NextResponse.json({ success: true, pendingVotes: otherMembers.length })

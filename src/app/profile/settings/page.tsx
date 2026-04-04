@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { api } from '@/lib/api'
+import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 import MyAffinities from '@/components/MyAffinities'
 import SpotifyLink from '@/components/SpotifyLink'
@@ -14,7 +15,7 @@ import SpotifyLink from '@/components/SpotifyLink'
 type ColocRaw = {
   id: string
   name: string
-  members: { userId: string; role: string; user: { id: string } }[]
+  members: { userId: string; role: string; isAway: boolean; user: { id: string } }[]
 }
 type Coloc = { id: string; name: string; role: string }
 type Privacy = { hideStats: boolean; hideOnline: boolean }
@@ -192,20 +193,110 @@ export default function SettingsPage() {
   const [leavingId, setLeavingId] = useState<string | null>(null)
   const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null)
 
+  // --- Mode vacances ---
+  const [isAway, setIsAway] = useState(false)
+  const [awayLoading, setAwayLoading] = useState(false)
+  const [awayRequested, setAwayRequested] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [pendingAwayRequests, setPendingAwayRequests] = useState<{ targetId: string; username: string }[]>([])
+  const [votedTargets, setVotedTargets] = useState<Set<string>>(new Set())
+
   useEffect(() => {
     api.get('/api/coloc').then((data: ColocRaw | null) => {
       if (!data) { setColocs([]); return }
       // On doit trouver le rôle de l'utilisateur courant dans la coloc
       fetch('/api/auth/session').then(r => r.json()).then(session => {
         const userId = session?.user?.id
+        setCurrentUserId(userId)
+        const myMembership = data.members.find(m => m.user.id === userId)
         setColocs([{
           id: data.id,
           name: data.name,
-          role: data.members.find(m => m.user.id === userId)?.role || 'member',
+          role: myMembership?.role || 'member',
         }])
+        setIsAway(myMembership?.isAway ?? false)
+
+        // Charger les votes en attente
+        api.get(`/api/coloc/${data.id}/away/vote`).then((voteData: { votes: { targetId: string; voterId: string; approved: boolean }[]; targets: { id: string; username: string }[] }) => {
+          if (!voteData?.votes?.length) return
+
+          // Targets uniques qui ne sont pas le user courant et pas déjà away
+          const targetIds = [...new Set(voteData.votes.map(v => v.targetId))]
+            .filter(tid => tid !== userId)
+          const requests = targetIds.map(tid => {
+            const target = voteData.targets.find(t => t.id === tid)
+            return { targetId: tid, username: target?.username ?? '?' }
+          })
+          setPendingAwayRequests(requests)
+
+          // Savoir si le user a déjà voté pour chaque target
+          const alreadyVoted = new Set(
+            voteData.votes
+              .filter(v => v.voterId === userId)
+              .map(v => v.targetId)
+          )
+          setVotedTargets(alreadyVoted)
+
+          // Vérifier si le user courant a une demande en attente
+          const myPending = voteData.votes.some(v => v.targetId === userId)
+          if (myPending) setAwayRequested(true)
+        }).catch(() => {})
       })
     }).catch(() => {})
   }, [])
+
+  async function requestAway() {
+    if (colocs.length === 0) return
+    setAwayLoading(true)
+    try {
+      const data = await api.post(`/api/coloc/${colocs[0].id}/away/request`)
+      if (data.autoApproved) {
+        toast.success('Mode vacances activé !')
+        setIsAway(true)
+      } else {
+        toast.success(`Demande envoyée ! ${data.pendingVotes} vote(s) en attente.`)
+        setAwayRequested(true)
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erreur')
+    }
+    setAwayLoading(false)
+  }
+
+  async function returnFromAway() {
+    if (colocs.length === 0) return
+    setAwayLoading(true)
+    try {
+      await api.post(`/api/coloc/${colocs[0].id}/away/return`)
+      toast.success('Bon retour !')
+      setIsAway(false)
+      setAwayRequested(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erreur')
+    }
+    setAwayLoading(false)
+  }
+
+  async function voteAway(targetId: string, approved: boolean) {
+    if (colocs.length === 0) return
+    setAwayLoading(true)
+    try {
+      const data = await api.post(`/api/coloc/${colocs[0].id}/away/vote`, { targetId, approved })
+      if (data.result === 'approved') {
+        toast.success('Vacances approuvées !')
+        setPendingAwayRequests(prev => prev.filter(r => r.targetId !== targetId))
+      } else if (data.result === 'rejected') {
+        toast.error('Demande refusée.')
+        setPendingAwayRequests(prev => prev.filter(r => r.targetId !== targetId))
+      } else {
+        toast.success('Vote enregistré !')
+        setVotedTargets(prev => new Set([...prev, targetId]))
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erreur')
+    }
+    setAwayLoading(false)
+  }
 
   async function handleLeave(colocId: string) {
     if (leaveConfirm !== colocId) {
@@ -450,6 +541,83 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+
+        {/* ========== MODE VACANCES ========== */}
+        {colocs.length > 0 && (
+          <>
+            <h2 className="text-xs font-bold text-t-faint uppercase tracking-wider pt-2">Mode Vacances</h2>
+
+            <div className="card card-glow p-5 space-y-4">
+              {/* Statut personnel */}
+              {isAway ? (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-blue-400 font-medium">Tu es en mode vacances</p>
+                    <p className="text-xs text-t-faint mt-0.5">Les tâches ne te sont plus assignées</p>
+                  </div>
+                  <button
+                    onClick={returnFromAway}
+                    disabled={awayLoading}
+                    className="px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition disabled:opacity-50"
+                  >
+                    {awayLoading ? '...' : 'Je suis de retour !'}
+                  </button>
+                </div>
+              ) : awayRequested ? (
+                <div>
+                  <p className="text-sm text-amber-400 font-medium">Demande envoyée</p>
+                  <p className="text-xs text-t-faint mt-0.5">En attente du vote de tes colocs...</p>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-t-primary">Partir en vacances</p>
+                    <p className="text-xs text-t-faint mt-0.5">Tu ne recevras plus de tâches pendant ton absence</p>
+                  </div>
+                  <button
+                    onClick={requestAway}
+                    disabled={awayLoading}
+                    className="px-4 py-2 bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 rounded-lg text-sm font-medium transition disabled:opacity-50"
+                  >
+                    {awayLoading ? '...' : 'Demander'}
+                  </button>
+                </div>
+              )}
+
+              {/* Demandes de vacances des autres colocs */}
+              {pendingAwayRequests.length > 0 && (
+                <div className="border-t border-[var(--border)] pt-4 space-y-3">
+                  <p className="text-xs text-t-faint font-medium uppercase tracking-wider">Demandes en attente</p>
+                  {pendingAwayRequests.map((req) => (
+                    <div key={req.targetId} className="flex items-center justify-between bg-surface-hover rounded-lg p-3">
+                      <span className="text-sm text-t-primary">{req.username} demande des vacances</span>
+                      {votedTargets.has(req.targetId) ? (
+                        <span className="text-xs text-green-400">Vote envoyé</span>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => voteAway(req.targetId, true)}
+                            disabled={awayLoading}
+                            className="px-3 py-1 bg-green-500/15 text-green-400 rounded text-xs font-medium hover:bg-green-500/25 transition disabled:opacity-50"
+                          >
+                            Accepter
+                          </button>
+                          <button
+                            onClick={() => voteAway(req.targetId, false)}
+                            disabled={awayLoading}
+                            className="px-3 py-1 bg-red-500/15 text-red-400 rounded text-xs font-medium hover:bg-red-500/25 transition disabled:opacity-50"
+                          >
+                            Refuser
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         {/* ========== PRÉFÉRENCES DE TÂCHES ========== */}
         <h2 className="text-xs font-bold text-t-faint uppercase tracking-wider pt-2">Préférences de tâches</h2>
