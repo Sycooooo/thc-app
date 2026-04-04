@@ -24,6 +24,11 @@ export async function GET(request: Request) {
     const tokens = await exchangeCode(code)
     const profile = await getSpotifyProfile(tokens.access_token)
 
+    // Supprimer tout ancien lien avec ce compte Spotify (autre user)
+    await prisma.spotifyAccount.deleteMany({
+      where: { spotifyUserId: profile.id },
+    })
+
     await prisma.spotifyAccount.upsert({
       where: { userId },
       create: {
