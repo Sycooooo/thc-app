@@ -216,29 +216,24 @@ export default function SettingsPage() {
         }])
         setIsAway(myMembership?.isAway ?? false)
 
-        // Charger les votes en attente
-        api.get(`/api/coloc/${data.id}/away/vote`).then((voteData: { votes: { targetId: string; voterId: string; approved: boolean }[]; targets: { id: string; username: string }[] }) => {
-          if (!voteData?.votes?.length) return
+        // Charger les demandes de vacances en attente
+        api.get(`/api/coloc/${data.id}/away/vote`).then((voteData: { votes: { targetId: string; voterId: string; approved: boolean }[]; pending: { targetId: string; username: string }[] }) => {
+          if (!voteData) return
 
-          // Targets uniques qui ne sont pas le user courant et pas déjà away
-          const targetIds = [...new Set(voteData.votes.map(v => v.targetId))]
-            .filter(tid => tid !== userId)
-          const requests = targetIds.map(tid => {
-            const target = voteData.targets.find(t => t.id === tid)
-            return { targetId: tid, username: target?.username ?? '?' }
-          })
-          setPendingAwayRequests(requests)
+          // Demandes des autres colocs (pas la mienne)
+          const otherRequests = (voteData.pending || []).filter(p => p.targetId !== userId)
+          setPendingAwayRequests(otherRequests)
 
           // Savoir si le user a déjà voté pour chaque target
           const alreadyVoted = new Set(
-            voteData.votes
+            (voteData.votes || [])
               .filter(v => v.voterId === userId)
               .map(v => v.targetId)
           )
           setVotedTargets(alreadyVoted)
 
           // Vérifier si le user courant a une demande en attente
-          const myPending = voteData.votes.some(v => v.targetId === userId)
+          const myPending = (voteData.pending || []).some(p => p.targetId === userId)
           if (myPending) setAwayRequested(true)
         }).catch(() => {})
       })

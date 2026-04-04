@@ -90,8 +90,12 @@ export async function POST(
   const anyRejected = votes.some((v) => !v.approved)
 
   if (anyRejected) {
-    // Nettoyer les votes et notifier le demandeur
+    // Nettoyer les votes, reset la demande, et notifier le demandeur
     await prisma.awayVote.deleteMany({ where: { targetId, colocId } })
+    await prisma.userColoc.update({
+      where: { userId_colocId: { userId: targetId, colocId } },
+      data: { awayStartDate: null, awayConfirmed: false },
+    })
     await notify(targetId, colocId, 'away_rejected', 'Ta demande de vacances a été refusée.')
     return NextResponse.json({ success: true, result: 'rejected' })
   }
