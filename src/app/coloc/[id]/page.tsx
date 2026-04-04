@@ -35,6 +35,7 @@ export default async function DashboardPage({
               select: {
                 id: true, username: true, avatar: true, rankPoints: true,
                 spotifyAccount: { select: { id: true } },
+                avatarConfig: { select: { skinTone: true, body: true, hair: true, eyes: true, top: true, bottom: true, shoes: true, accessory: true } },
               },
             },
           },
@@ -165,6 +166,7 @@ export default async function DashboardPage({
               username: m.user.username,
               avatar: m.user.avatar,
               rankPoints: m.user.rankPoints,
+              avatarConfig: m.user.avatarConfig ?? null,
             }))}
             lastMessages={lastMessages.reverse().map((m) => ({
               id: m.id,

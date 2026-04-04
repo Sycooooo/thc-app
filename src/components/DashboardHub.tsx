@@ -9,12 +9,14 @@ import { getLevel, getXpForNextLevel } from '@/lib/xp'
 import { getRankFromPoints } from '@/lib/ranking'
 import RankBadge from '@/components/RankBadge'
 import PixelIcon from '@/components/ui/PixelIcon'
+import PixelAvatar from '@/components/PixelAvatar'
+import type { AvatarConfigData } from '@/components/PixelAvatar'
 
 type Props = {
   colocId: string
   colocName: string
   currentUserId: string
-  members: { userId: string; username: string; avatar: string | null; rankPoints: number }[]
+  members: { userId: string; username: string; avatar: string | null; rankPoints: number; avatarConfig: AvatarConfigData | null }[]
   lastMessages: { id: string; content: string; username: string; createdAt: string; type: string }[]
   nextEvent: { title: string; startDate: string; color: string } | null
   todayMeal: { lunch: string | null; dinner: string | null } | null
@@ -121,9 +123,12 @@ export default function DashboardHub(props: Props) {
       <motion.div {...fadeIn}>
         <Link href="/profile" className="block">
           <div className="card card-glow p-4 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center text-lg font-bold text-accent">
-              {members.find((m) => m.userId === currentUserId)?.username[0].toUpperCase()}
-            </div>
+            <PixelAvatar
+              config={members.find((m) => m.userId === currentUserId)?.avatarConfig ?? null}
+              fallbackPhoto={members.find((m) => m.userId === currentUserId)?.avatar}
+              username={members.find((m) => m.userId === currentUserId)?.username ?? '?'}
+              size="md"
+            />
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-pixel text-[10px] text-accent">Niv. {level}</span>
