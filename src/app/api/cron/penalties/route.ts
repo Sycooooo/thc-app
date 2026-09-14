@@ -2,10 +2,18 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { checkPenalties } from '@/lib/penalties'
 
-// POST /api/cron/penalties
-// Appelé quotidiennement par un cron job.
-// Protégé par un secret dans le header Authorization.
+// GET|POST /api/cron/penalties
+// Appelé quotidiennement par le cron Vercel (GET, voir vercel.json)
+// ou à la main en POST. Protégé par un secret dans le header Authorization.
+export async function GET(request: Request) {
+  return runCron(request)
+}
+
 export async function POST(request: Request) {
+  return runCron(request)
+}
+
+async function runCron(request: Request) {
   const authHeader = request.headers.get('authorization')
   const secret = process.env.CRON_SECRET || 'cron-penalties-secret'
 
