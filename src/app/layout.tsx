@@ -43,7 +43,7 @@ export default function RootLayout({
       className={`${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} ${pressStart.variable} h-full antialiased`}
     >
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a14" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

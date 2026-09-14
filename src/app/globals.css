@@ -142,6 +142,29 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* === Zones sûres iPhone (encoche + barre d'accueil), app native Capacitor === */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+  /* Bandeau opaque sous la barre de statut : le contenu défile derrière sans transparaître */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background: var(--bg);
+    z-index: 60;
+    pointer-events: none;
+  }
+  .glass-header,
+  .glass-header-lofi {
+    top: env(safe-area-inset-top);
+  }
+}
+
 /* Film grain overlay */
 body::after {
   content: "";
