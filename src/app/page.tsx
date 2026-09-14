@@ -6,6 +6,9 @@ import PageAmbiance from '@/components/ui/PageAmbiance'
 import PixelIcon from '@/components/ui/PixelIcon'
 import RainOverlay from '@/components/ui/RainOverlay'
 
+// La page lit la session à chaque requête : jamais pré-rendue en statique.
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   const session = await auth()
 
